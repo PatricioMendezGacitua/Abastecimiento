@@ -1,0 +1,10 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"
+	controllerName="com.gasco.Inbound.controller.cargando" xmlns:html="http://www.w3.org/1999/xhtml">
+	<Page showHeader="false" showFooter="false" class="iconButton">
+		<content>
+			<VBox justifyContent="Center" alignItems="Center" height="100%" class="iconButton">
+				<BusyIndicator text="Espere un momento" class="sapUiSmallMarginBottom iconButton"/>
+			</VBox>
+		</content>
+	</Page>
+</mvc:View>

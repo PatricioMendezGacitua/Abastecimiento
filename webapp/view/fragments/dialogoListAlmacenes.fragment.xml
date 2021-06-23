@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<SelectDialog noDataText="Sin resultados" multiSelect="false" title="Lista de Almacenes (0)" liveChange="onSearch"
+		confirm="onValueHelpDialogClose" cancel="onValueHelpDialogClose" showClearButton="false"
+		items="{ path: 'modelAlmacenes>/', sorter: { path: 'Lgort', descending: false } }">
+		<StandardListItem title="{modelAlmacenes>Lgort}" description="{modelAlmacenes>Lgobe}" type="Active"/>
+	</SelectDialog>
+</core:FragmentDefinition>

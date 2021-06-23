@@ -1,0 +1,137 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout"
+	controllerName="com.gasco.Inbound.controller.Detail_Entrega" xmlns:html="http://www.w3.org/1999/xhtml">
+	<Page id="oPageDetailId" showHeader="true" showFooter="true">
+		<customHeader>
+			<Bar>
+				<contentLeft>
+					<Button visible="true" id="buttonMenuId" icon="sap-icon://menu2" press="volverAlListMenu"></Button>
+				</contentLeft>
+				<contentMiddle>
+					<Title id="tituloDetalleSolicitudView" text="Detalle Reserva N°"></Title>
+				</contentMiddle>
+				<contentRight>
+					<Button icon="sap-icon://synchronize" tooltip="Actualizar" type="Transparent" visible="false" press="iniciarView"/>
+					<Button visible="true" id="buttonMenu2Id" icon="sap-icon://vertical-grip" type="Transparent" tooltip="Más Opciones" press="openMoreOption"/>
+				</contentRight>
+			</Bar>
+		</customHeader>
+		<content>
+			<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
+				<VBox alignContent="Center" alignItems="Center">
+					<ObjectStatus text="Entregando" state="Success" inverted="true" textAlign="Center"></ObjectStatus>
+					<layoutData>
+						<l:GridData span="XL4 L4 M12 S12"/>
+					</layoutData>
+				</VBox>
+			</l:Grid>
+			<Toolbar>
+				<Title class="sapUiTinyMarginBegin" id="oTitleIdLEntregaDetail" text="Posiciones (0)"></Title>
+				<ToolbarSpacer/>
+			</Toolbar>
+			<List sticky="HeaderToolbar" id="idtableLPEntrega" selectionChange="openPH" updateFinished="countTitleLPEntrega" mode="None"
+				items="{oModeloDataTemporalDetailEntrega>/}">
+				<items>
+					<CustomListItem type="Inactive">
+						<VBox class="sapUiTinyMargin">
+							<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
+								<VBox>
+									<Label class="font-xSmaller" text="Material:" textAlign="Center" width="100%"></Label>
+									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>codMaterial}" textAlign="Center" wrapping="true"></Text>
+									<layoutData>
+										<l:GridData span="XL4 L4 M3 S3"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<Label class="font-xSmaller" text="Centro:" textAlign="Center" width="100%"></Label>
+									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>centro}" textAlign="Center" wrapping="true"></Text>
+									<layoutData>
+										<l:GridData span="XL5 L5 M3 S3"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<Label class="font-xSmaller" text="Almacén:" textAlign="Center" width="100%"></Label>
+									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>almacen}" textAlign="Center" wrapping="true"></Text>
+									<layoutData>
+										<l:GridData span="XL5 L5 M3 S3"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<Label class="font-xSmaller" text="Posición:" width="100%" textAlign="Center"></Label>
+									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>posicion}" textAlign="Center" wrapping="true"></Text>
+									<layoutData>
+										<l:GridData span="XL4 L4 M3 S3"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<Label class="font-xSmaller" text="Cantidad:" textAlign="Center" required="true" width="100%"></Label>
+									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>cantidad}" wrapping="true" textAlign="Center"></Text>
+									
+									<layoutData>
+										<l:GridData span="XL5 L5 M3 S3"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<Label class="font-xSmaller" text="Und. Medida:" textAlign="Center" width="100%"></Label>
+									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>unidad}" wrapping="true" textAlign="Center"></Text>
+									<layoutData>
+										<l:GridData span="XL4 L4 M3 S3"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<Label class="font-xSmaller" text="Lote:" textAlign="Center" width="100%"></Label>
+									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>Lote}" wrapping="true" textAlign="Center"></Text>
+									<layoutData>
+										<l:GridData span="XL4 L4 M3 S3"/>
+									</layoutData>
+								</VBox>
+								
+									<VBox>
+									<Label class="font-xSmaller" text="Ubicacion:" textAlign="Center" width="100%"></Label>
+									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>ubicacion}" wrapping="true" textAlign="Center"></Text>
+									<layoutData>
+										<l:GridData span="XL4 L4 M3 S3"/>
+									</layoutData>
+								</VBox>
+									<VBox>
+									
+									
+									<Button id="idImagenesEvidencia" tooltip="Añadir Evidencia" type="Transparent" icon="sap-icon://add-photo" iconFirst="true" press="capturePhoto"></Button>
+									<layoutData>
+										<l:GridData span="XL4 L4 M2 S2"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<Label ></Label>
+									<Link class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>URL}" wrapping="true" textAlign="Center"></Link>
+									<layoutData>
+										<l:GridData span="XL4 L4 M3 S4"/>
+									</layoutData>
+								</VBox>
+								   
+									<VBox>
+									<Button class="fontBold" width="100%"   tooltip="Añadir Evidencia" text="{oModeloDataTemporalDetailEntrega>DOCUMENTO}" type="Transparent" icon="sap-icon://attachment" iconFirst="true"></Button>
+									
+																				
+									<layoutData>
+										<l:GridData span="XL4 L4 M6 S6"/>
+									</layoutData>
+								</VBox>
+							</l:Grid>
+						</VBox>
+					</CustomListItem>
+				</items>
+			</List>
+		</content>
+		<footer>
+			<Bar id="oFooterPageId" visible="true">
+				<contentMiddle>
+					<ObjectStatus visible="false" id="oObjectStatusId"></ObjectStatus>
+				</contentMiddle>
+				<contentRight>
+					<Button id="oButtonRecepcionarId" type="Emphasized" text="Entregar" press="onEntregar"></Button>
+					<Button type="Reject" text="Cancelar" press="btnReestablecerEntrega"/>
+				</contentRight>
+			</Bar>
+		</footer>
+	</Page>
+</mvc:View>

@@ -1,0 +1,6 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:u="sap.ui.unified">
+	<u:Menu>
+		<u:MenuItem text="Ayuda" select="_dialogAyuda" icon="sap-icon://sys-help-2"/>
+		<u:MenuItem text="Datos de Usuario" select="_dialogActualizaDatos" icon="sap-icon://customer"/>
+	</u:Menu>
+</core:FragmentDefinition>

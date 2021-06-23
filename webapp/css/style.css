@@ -1,0 +1,357 @@
+.buttonListo{
+	background: #2b7c2b;
+    border-color: #2b7c2b;
+    border-radius: 0.2rem;
+}
+
+.buttonListo:not(.sapMBtnDisabled):active {
+    background: #226122;
+    border-color: #226122;
+    border-radius: 0.2rem;
+}
+
+.fontWhite{
+	color: white;
+	font-size: smaller;
+}
+
+.fontXXSmall{
+	font-size: xx-small !important;
+}
+
+.borderList {
+    border-bottom: 1px solid #89919a;
+}
+
+.sapMListTblCell.cellBorderRight {
+    border-right: 1px solid lightgray;
+}
+
+.sapMListTblCell.cellBorderLeft {
+    border-left: 1px solid lightgray;
+}
+
+.fontSizeSmall{
+	font-size: small;
+}
+
+.borderTopTable {
+    border-Top: 1px solid lightgray;
+}
+
+.fondoGris {
+    background: #ffffff;
+    border: 1px solid #bfbfbf;
+    min-height: 8.5rem;
+}
+
+.fondoFirmasGris {
+    background: #f9f9f9;
+}
+
+.backgroundWhite {
+    background: #fff !important;
+    border: 1px solid #e7e7e7 !important;
+}
+
+.borderGris {
+    border: 1px solid #ababab;
+}
+
+.padding5pxRight {
+    padding-right: 5px;
+}
+
+.padding5pxLeft {
+    padding-left: 5px;
+}
+
+.cursorDefault {
+    cursor: default;
+}
+
+.fondoGris:active {
+    background: #bfbfbf;
+}
+
+.fontMedium {
+    font-size: medium;
+}
+
+.marginTopMaster {
+    margin-top: 125px !important;
+}
+
+.marginLeft {
+    margin-left: 0.5rem;
+}
+
+.customText {
+    color: #346187 !important;
+    font-weight: bold !important;
+}
+
+.fontBold {
+    font-weight: bold;
+}
+
+.fondoAvatar {
+    background-color: #0095f0 !important;
+    border-color: #000000 !important;
+    color: #fff !important;
+}
+
+.marginTop0punto5rem {
+    margin-top: 1rem;
+}
+
+.fondoTile {
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    padding: 0.5rem;
+}
+
+.fondoTile:active {
+    background-color: #e5e5e5;
+    border-color: #e5e5e5;
+    color: white;
+}
+
+.textWhite {
+    color: white;
+}
+
+.image {
+    width: 100px;
+    height: 100px;
+}
+
+.fondoRojo {
+    background-color: red !important;
+}
+
+.textoTitulo {
+    font-size: 22px;
+    color: white !important;
+}
+
+.cienporciento {
+    width: 100%;
+}
+
+.borderError {
+    border: 2px solid red;
+}
+
+.font-smaller {
+    font-size: smaller;
+}
+
+.font-xSmaller {
+    font-size: x-small;
+}
+
+.fondoObjectHeader {
+    background: #eff4f9;
+}
+
+.scrollVertical {
+    height: 15rem;
+    overflow: auto;
+}
+
+.fontXSmall {
+    font-size: smaller;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.iconButton:active,
+.iconButton:active * {
+    outline: none !important;
+    -moz-outline-style: none !important;
+}
+
+.iconButton:focus,
+.iconButton:focus * {
+    outline: none !important;
+    -moz-outline-style: none !important;
+}
+
+.borderMap {
+    margin: 1px solid #ebebeb;
+}
+
+.sapMITBFilterIcon {
+    font-size: 2rem !important;
+}
+
+.sapMCrsl {
+    min-width: 0rem !important;
+}
+
+.sapMITBContent {
+    border-bottom: 0px !important;
+}
+
+.selectedButton {
+    background: #346187;
+    color: white;
+    border: 1px solid #346187;
+    border-radius: 0px 0px 0px 0px;
+}
+
+.padding1rem {
+    padding: 1rem;
+}
+
+.paddingRight0punto5rem {
+    padding-right: 0.5rem;
+}
+
+.paddingLeft0punto5rem {
+    padding-left: 0.5rem;
+}
+
+.buttonAddCustom {
+    width: 4rem;
+    background: #5496cd;
+    border-radius: 50px;
+    box-shadow: 1px 5px 20px #898989;
+    height: 4rem;
+    position: sticky;
+    bottom: 5%;
+    z-index: 1000000000000;
+    left: 80%;
+    color: white;
+    text-shadow: 0 0 0.125rem #000000b3;
+}
+
+.buttonAddCustomPressed {
+    width: 3.8rem;
+    background: #427cac;
+    border-radius: 50px;
+    box-shadow: 1px 5px 20px #898989;
+    height: 3.8rem;
+    position: sticky;
+    bottom: 5%;
+    z-index: 1000000000000;
+    left: 80%;
+    color: white;
+    text-shadow: 0;
+}
+
+.buttonAddCustom:hover {
+    background: #418ac7;
+}
+
+.buttonAddCustom:active {
+    background: #427cac;
+    text-shadow: 0;
+}
+
+.paddingLeft0punto5rem {
+    padding-left: 0.5rem;
+}
+
+.sapUiXSmallPaddingLeft {
+    padding-left: 1rem !important;
+}
+
+.fontSize1punto1rem {
+    font-size: 0.8rem;
+}
+
+.backgroundBlue {
+    background: #e8e8e8 !important;
+}
+
+.sapUiXSmallPaddingRight {
+    padding-right: 1rem !important;
+}
+
+.non-selectable {
+
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+.sapUiXSmallPaddingBottom {
+    padding-bottom: 0.6rem !important
+}
+
+
+.fontSize1punto1rem {
+    font-size: 0.8rem;
+}
+
+.iconButton:active,
+.iconButton:active * {
+    outline: none !important;
+    -moz-outline-style: none !important;
+}
+
+.iconButton:focus,
+.iconButton:focus * {
+    outline: none !important;
+    -moz-outline-style: none !important;
+}
+
+@font-face {
+    font-family: 'icomoon';
+    src: url('./../icon/icomoon.eot?5qvb9g');
+    src: url('./../icon/icomoon.eot?5qvb9g#iefix') format('embedded-opentype'), url('./../icon/icomoon.ttf?5qvb9g') format('truetype'), url('./..icon/icomoon.woff?5qvb9g') format('woff'), url('./..icon/icomoon.svg?5qvb9g#icomoon') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+
+[class^="icon-"],
+[class*=" icon-"] {
+    font-family: 'icomoon';
+    speak: none;
+    font-style: normal;
+    font-weight: bold;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+@font-face {
+    font-family: 'custom';
+    src: url('./../icon/custom.eot?5qvb9g');
+    src: url('./../icon/custom.eot?5qvb9g#iefix') format('embedded-opentype'), url('./../icon/custom.ttf?5qvb9g') format('truetype'), url('./..icon/custom.woff?5qvb9g') format('woff'), url('./..icon/custom.svg?5qvb9g#custom') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+
+[class^="iconn-"],
+[class*=" iconn-"] {
+    font-family: 'custom';
+    speak: none;
+    font-style: normal;
+    font-weight: bold;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-tanque:before {
+    content: "\0xe800";
+}
+
+.sinPaddingToolbar {}
+
+.sapMTB-Transparent-CTX.sapMTB.sinPaddingToolbar {
+    padding-left: 0rem;
+}
