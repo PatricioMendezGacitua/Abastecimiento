@@ -137,11 +137,11 @@ sap.ui.define([
 
 						if (data[e].Rsnum === idReserva) {
 
-							if (order === 3) {
+							/*if (order === 3) {
 								data[e].Lgpbe = "D0801";
 							} else if (order === 2) {
 								data[e].Lgpbe = "E0301";
-							}
+							}*/
 
 							(data[e].Charg.length > 0) ? data[e].state = true: data[e].state = false;
 
