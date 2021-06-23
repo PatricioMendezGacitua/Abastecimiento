@@ -27,7 +27,7 @@
 					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://duplicate" size="6rem" color="#346187" press="navToTraslado"></core:Icon>
 					<Text text="TRASLADO" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
 					<layoutData>
-						<l:GridData span="XL6 L6 M8 S6"/>
+						<l:GridData span="XL6 L6 M6 S7"/>
 					</layoutData>
 				</VBox>	
 				<VBox id="reservaId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
