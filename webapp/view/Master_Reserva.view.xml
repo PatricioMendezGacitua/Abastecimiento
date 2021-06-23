@@ -25,7 +25,7 @@
 				items="{oModeloTemporalesReserva>/}" noDataText="Sin resultados.">
 				<infoToolbar>
 					<Toolbar active="false">
-						<Label class="fontXXSmall" text="Búsqueda por: Reserva"/>
+						<Label class="fontXXSmall" text="Búsqueda por: Reserva o Almacén"/>
 					</Toolbar>
 				</infoToolbar>
 				<CustomListItem type="Navigation">

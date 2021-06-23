@@ -29,7 +29,7 @@
 				<ToolbarSpacer/>
 			</Toolbar>
 			<List sticky="HeaderToolbar" id="idtableLPReserva" selectionChange="openPH" updateFinished="countTitleLPReserva" mode="None"
-				items="{oModeloDataTemporalDetailReserva>/}">
+				items="{path: 'oModeloDataTemporalDetailReserva>/', sorter:{path:'oModeloDataTemporalDetailReserva>order', descending: false}}">
 				<items>
 					<CustomListItem type="Inactive">
 						<VBox class="sapUiTinyMargin">
@@ -106,8 +106,8 @@
 									</layoutData>
 								</VBox>
 								<VBox>
-									<Label class="font-xSmaller" text="Cantidad:" textAlign="Center" required="true" width="100%"></Label>
-									<Input class="fontBold" width="100%" textAlign="Center" type="Number"></Input>
+									<Label class="font-xSmaller" text="Cantidad Picking:" textAlign="Center" required="true" width="100%"></Label>
+									<StepInput class="fontBold" width="100%" textAlign="Center" min = "{oModeloDataTemporalDetailReserva>minData}"  max = "{oModeloDataTemporalDetailReserva>maxData}" value = "{oModeloDataTemporalDetailReserva>value}"></StepInput>
 									<layoutData>
 										<l:GridData span="XL5 L5 M12 S12"/>
 									</layoutData>

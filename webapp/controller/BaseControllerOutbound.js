@@ -126,29 +126,91 @@ sap.ui.define([
 				}.bind(this));
 
 		},
-		
+
 		cargaPosiciones: function (data, idReserva) {
 			return new Promise(
 				function resolver(resolve) {
-					  var oModel = [];
-					  
-					for(var e=0;e<data.length;e++){
-						if(data[e].Rsnum === idReserva){
-							(data[e].Charg.length>0)?data[e].state = true:data[e].state = false;
+					var oModel = [];
+					var arrayUbicaciones = [];
+					var order = 1;
+
+					for (var e = 0; e < data.length; e++) {
+						if (data[e].Rsnum === idReserva) {
+							(data[e].Charg.length > 0) ? data[e].state = true: data[e].state = false;
+
+							data[e].CantSolicitada = Number(data[e].CantSolicitada);
+							data[e].CantPreparada = Number(data[e].CantPreparada);
+							data[e].minData = 0;
+							data[e].maxData = data[e].CantSolicitada - data[e].CantPreparada;
+							data[e].value = 0;
+							(data[e].Lgpbe.length > 0) ? arrayUbicaciones.push(data[e].Lgpbe): "";
+							data[e].order = order;
+							order++;
 							oModel.push(data[e]);
-							
-							
-							
-							
+
 						}
-                       if (data.length === (e + 1)) {
-                       	    resolve (oModel);
-                       }
+						if (data.length === (e + 1)) {
+							this.consultaConOrden();
+							this.consultaConOrden(arrayUbicaciones, oModel).then(function (respuestaconsultaConOrden) {
+								resolve(respuestaconsultaConOrden);
+							}.bind(this));
+
+						}
 					}
-					
-					
-					
-					
+
+				}.bind(this));
+		},
+
+		consultaConOrden: function (arrayUbicaciones, model) {
+			return new Promise(
+				function resolver(resolve) {
+					var oFilters = [];
+
+					var filterEstado = new Filter({
+						path: "ID_ESTADO_TX",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: 1
+					});
+
+					arrayUbicaciones.forEach(function (element) {
+						oFilters.push(new sap.ui.model.Filter({
+							path: "CODIGO",
+							operator: sap.ui.model.FilterOperator.EQ,
+							value1: element
+						}));
+					}.bind(this));
+
+					var finalFilter = new sap.ui.model.Filter({
+						filters: oFilters,
+						and: false
+					});
+
+					var finalFinalFilter = new sap.ui.model.Filter({
+						filters: [finalFilter, filterEstado],
+						and: true
+					});
+
+					this.getView().getModel("oModeloHanaSalida").read("/PrioridadUbicacion", {
+						filters: [finalFinalFilter],
+						sorters: [
+							new sap.ui.model.Sorter("ORDEN", false),
+							new sap.ui.model.Sorter("CODIGO", false)
+						],
+						success: function (oResults) {
+
+							if (oResults.results.length > 0) {
+								resolve(model);
+								/*oResults.results.forEach(function (element2) {
+									console.log("Ubicación: " + element2.CODIGO + " -----------> prioridad: " + element2.ORDEN);
+								}.bind(this));*/
+							} else {
+								resolve(model);
+							}
+						}.bind(this),
+						error: function (oError){
+							resolve(model);
+						}.bind(this)
+					});
 				}.bind(this));
 		},
 
@@ -193,7 +255,7 @@ sap.ui.define([
 						success: function (oResult) {
 							var datos = oResult.results;
 							if (datos.length > 0) {
-							console.log(datos);
+								console.log(datos);
 
 								for (var e = 0; e < datos.length; e++) {
 									var record = {};
@@ -208,20 +270,19 @@ sap.ui.define([
 									record.FECHA_A_PRESENTAR = this.convertFechaXSJS(datos[e].Dexdat);
 									record.HORA_A_PRESENTAR = this.getHora(datos[e].Texdat);
 									record.NRORESERVA = datos[e].Rsnum;
-									record.TITULO_ESTADO_INGRESO = (sValueTipo==="PEN")?"Pendiente":"";
-									record.STATE_ESTADO_INGRESO = (sValueTipo==="PEN")?"Warning":"";
+									record.TITULO_ESTADO_INGRESO = (sValueTipo === "PEN") ? "Pendiente" : "";
+									record.STATE_ESTADO_INGRESO = (sValueTipo === "PEN") ? "Warning" : "";
 
 									datosFinal.push(record);
 
 									if (datos.length === (e + 1)) {
-									
+
 										datosF = this.eliminaDuplicado(datosFinal, "NRORESERVA");
-									
+
 										var data = new JSONModel(datos);
 										sap.ui.getCore().setModel(data, "oModeloTemporalesReservaCore");
 										var model = sap.ui.getCore().getModel("oModeloTemporalesReservaCore").getData();
-										
-										
+
 										resolve({
 											mensajeError: "",
 											datos: datosF
@@ -241,7 +302,7 @@ sap.ui.define([
 									});
 								}*/
 							} else {
-							
+
 								resolve({
 									mensajeError: "Número pedido sin posiciones para trasladar",
 									datos: []
@@ -1511,7 +1572,7 @@ sap.ui.define([
 			}
 			return dateFormatted;
 		},
-		
+
 		getHora: function (date) {
 
 			var d = new Date(date.ms * 1000);
@@ -1524,7 +1585,7 @@ sap.ui.define([
 			return result;
 
 		},
-		
+
 		/*getFecha: function(date){
 			var fecha;
 			if(date!== null){

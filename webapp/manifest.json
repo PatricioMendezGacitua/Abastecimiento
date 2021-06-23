@@ -22,6 +22,14 @@
 				"type": "OData",
 				"uri": "/HANA/INGRESO_MERCADERIA/servicio.xsodata"
 			},
+			"salidaMercancia": {
+				"settings": {
+					"localUri": "localService/metadata.xml",
+					"odataVersion": "2.0"
+				},
+				"type": "OData",
+				"uri": "/HANA/EGRESO_MERCADERIA/servicio.xsodata"
+			},
 			"ZSCP_INGRESO_MERCANCIA_SRV": {
 				"uri": "/GW_ODP/odata/SAP/ZSCP_INGRESO_MERCANCIA_SRV;v=1/",
 				"type": "OData",
@@ -88,6 +96,15 @@
 					"defaultBindingMode": "TwoWay"
 				},
 				"dataSource": "mainService",
+				"preload": true
+			},
+			"oModeloHanaSalida": {
+				"settings": {
+					"defaultCountMode": "Inline",
+					"defaultUpdateMethod": "sap.ui.model.odata.UpdateMethod.Put",
+					"defaultBindingMode": "TwoWay"
+				},
+				"dataSource": "salidaMercancia",
 				"preload": true
 			},
 			"oModeloSAPERP": {

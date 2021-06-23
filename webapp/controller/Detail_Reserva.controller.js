@@ -19,11 +19,17 @@ sap.ui.define([
 			this.idIngreso = oArgs.idReserva;
 			this.idEstadoIngreso = oArgs.ingreso;
 			var model = sap.ui.getCore().getModel("oModeloTemporalesReservaCore").getData();
+			
+			this.openBusyDialogCargando();
+			
+			
+			
 			this.getView().byId("tituloDetalleSolicitudView").setText("Detalle Reserva N°" + this.idIngreso);
 			this.cargaPosiciones(model, this.idIngreso).then(function (respuestacargaPosiciones) {
 				var oModel = new JSONModel(respuestacargaPosiciones);
-				
+			
 				this.getView().setModel(oModel, "oModeloDataTemporalDetailReserva");
+				this.BusyDialogCargando.close();
 
 			}.bind(this));
 

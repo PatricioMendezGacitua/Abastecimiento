@@ -59,29 +59,54 @@ sap.ui.define([
 			}.bind(this));
 
 		},
+		
+		
+		
 
-		buscarAutocompletar: function (oEvent) {
-
-			var oSearchFieldBuscar = this.getView().byId("oSearchFieldBuscarId");
-			var value = "X";
-			if (oSearchFieldBuscar.getValue().trim().length > 0) {
-				value = oSearchFieldBuscar.getValue().trim();
+		buscarAutocompletarReserva: function (oEvent) {/*		var aFilters = [];
+			var sQuery = oEvent.getSource().getValue();
+			if (sQuery && sQuery.length > 0) {
+				var filterRE = new Filter("NRORESERVA", FilterOperator.Contains, sQuery);
+				aFilters.push(filterRE);
+				var filterCM = new Filter("MATERIAL", FilterOperator.Contains, sQuery);
+				aFilters.push(filterCM);
+				var filterAL = new Filter("ALMACEN", FilterOperator.Contains, sQuery);
+				aFilters.push(filterAL);
+			}
+            
+			// update list binding
+			var oList = this.byId("idList");
+			var oBinding = oList.getBinding("items");
+			debugger
+			oBinding.filter(aFilters, "Application");*/
+			
+			var sValue = oEvent.getSource().getValue();
+			var filterFinal = [];
+			if (sValue.trim().length > 0) {
+				var oFilterNombre = new Filter({
+					path: "NRORESERVA",
+					operator: FilterOperator.Contains,
+					value1: sValue,
+					caseSensitive: false
+				});
+				var oFilterApellido = new Filter({
+					path: "ALMACEN",
+					operator: FilterOperator.Contains,
+					value1: sValue,
+					caseSensitive: false
+				});
+				
+				filterFinal = new Filter({
+					filters: [oFilterNombre, oFilterApellido],
+					and: false
+				});
 			}
 
-			var clear = oEvent.getParameter("clearButtonPressed");
-			var refresh = oEvent.getParameter("refreshButtonPressed");
-
-			if (clear) {
-				this.iniciarView("X", this.filtroDePantallaSeleccionado);
-			} else if (refresh) {
-				this.iniciarView(value, this.filtroDePantallaSeleccionado);
-			} else {
-				if (value.length > 0) {
-					this.iniciarView(value, this.filtroDePantallaSeleccionado);
-				}
-			}
-
-		},
+			var oList = this.byId("idList");
+			var oBinding = oList.getBinding("items");
+		
+			oBinding.filter(filterFinal, "Application");
+			},
 
 		onlyNumber: function (oEvent) {
 			var obj = oEvent.getSource();
@@ -126,7 +151,7 @@ sap.ui.define([
 			if (oArgs.estadoIngreso == "4") {
 				this.idEstadoIngreso = "1";
 			}
-
+            this.getView().byId("oSearchFieldBuscarReservaId").setValue();
 			//this.iniciarView("X", this.idEstadoIngreso);
             var sValueNroSAP = "ADGCONSULTIN";
             var sValueTipo = "PEN";
