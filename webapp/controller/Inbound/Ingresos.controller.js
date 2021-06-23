@@ -1,15 +1,15 @@
 sap.ui.define([
-	"com/gasco/Inbound/controller/BaseController",
+	"com/gasco/Inbound/controller/Inbound/BaseController",
 	"sap/m/MessageToast",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
 	"sap/ndc/BarcodeScanner"
 ], function (BaseController, MessageToast, JSONModel, MessageBox, BarcodeScanner) {
 
-	return BaseController.extend("com.gasco.Inbound.controller.Inbound", {
+	return BaseController.extend("com.gasco.Inbound.controller.Inbound.Ingresos", {
 
 		onInit: function () {
-			this.getOwnerComponent().getRouter().getRoute("inbound").attachMatched(this._onRouteMatched, this);
+			this.getOwnerComponent().getRouter().getRoute("ingresos").attachMatched(this._onRouteMatched, this);
 		},
 
 		_onRouteMatched: function () {

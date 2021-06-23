@@ -1,5 +1,5 @@
 sap.ui.define([
-	"com/gasco/Inbound/controller/BaseController",
+	"com/gasco/Inbound/controller/Inbound/BaseController",
 	"sap/ui/model/Filter",
 	"sap/m/Dialog",
 	"sap/m/Button",
@@ -23,7 +23,7 @@ sap.ui.define([
 	GroupHeaderListItem) {
 	var evento;
 
-	return BaseController.extend("com.gasco.Inbound.controller.Master_Recepciones", {
+	return BaseController.extend("com.gasco.Inbound.controller.Inbound.Master_Recepciones", {
 
 		onInit: function () {
 			this._route = this.getOwnerComponent().getRouter();

@@ -3,7 +3,7 @@ sap.ui.define([
 ], function (Controller) {
 	"use strict";
 
-	return Controller.extend("com.gasco.Inbound.controller.SplitScreen", {
+	return Controller.extend("com.gasco.Inbound.controller.Inbound.SplitScreen", {
 
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.

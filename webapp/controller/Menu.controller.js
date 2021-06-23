@@ -88,7 +88,7 @@ sap.ui.define([
 		},
 		navToInbound: function () {
 			this._oStorage.put("navegacion_IngresoMercaderia", "si");
-			this._route.navTo("inbound");
+			this._route.navTo("ingresos");
 		},
 		
 		navToMenuOutbound: function () {

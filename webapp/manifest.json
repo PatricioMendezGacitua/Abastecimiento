@@ -159,10 +159,10 @@
 					]
 				},
 				{
-					"name": "inbound",
+					"name": "ingresos",
 					"pattern": "Ingresos",
 					"target": [
-						"Inbound"
+						"Ingresos"
 					]
 				},
 				{
@@ -234,10 +234,6 @@
 						"Master_Entrega"
 					]
 				},
-				
-				
-				
-				
 				{
 					"name": "Recepciones_Master_Dos",
 					"pattern": "Recepciones_Masters/{estadoIngreso}",
@@ -278,39 +274,39 @@
 				"Menu": {
 					"viewName": "Menu"
 				},
-				"Inbound": {
-					"viewName": "Inbound"
+				"Ingresos": {
+					"viewName": "Inbound.Ingresos"
 				},
 				"menuOutbound": {
 					"viewName": "MenuOutbound"
 				},
 				"splitscreenTarget": {
-					"viewName": "SplitScreen",
+					"viewName": "Inbound.SplitScreen",
 					"viewId": "splitView"
 				},
 				"Master_Recepciones": {
-					"viewName": "Master_Recepciones",
+					"viewName": "Inbound.Master_Recepciones",
 					"viewLevel": 0,
 					"parent": "splitscreenTarget",
 					"controlId": "splitContainer",
 					"controlAggregation": "masterPages"
 				},
 				"Detail_Zero": {
-					"viewName": "Detail_Zero",
+					"viewName": "Inbound.Detail_Zero",
 					"viewLevel": 0,
 					"parent": "splitscreenTarget",
 					"controlId": "splitContainer",
 					"controlAggregation": "detailPages"
 				},
 				"Detail_Recepciones": {
-					"viewName": "Detail_Recepciones",
+					"viewName": "Inbound.Detail_Recepciones",
 					"viewLevel": 0,
 					"parent": "splitscreenTarget",
 					"controlId": "splitContainer",
 					"controlAggregation": "detailPages"
 				},
 				"SplitScreen": {
-					"viewName": "SplitScreen"
+					"viewName": "Inbound.SplitScreen"
 				},
 				"MenuOutbound": {
 					"viewType": "XML",

@@ -1,12 +1,12 @@
 sap.ui.define([
-	"com/gasco/Inbound/controller/BaseController",
+	"com/gasco/Inbound/controller/Inbound/BaseController",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageToast",
 	"sap/m/MessageBox"
 ], function (Controller, JSONModel, MessageToast, MessageBox) {
 	"use strict";
 
-	return Controller.extend("com.gasco.Inbound.controller.Detail_Zero", {
+	return Controller.extend("com.gasco.Inbound.controller.Inbound.Detail_Zero", {
 
 		onInit: function () {
 			this._route = this.getOwnerComponent().getRouter();

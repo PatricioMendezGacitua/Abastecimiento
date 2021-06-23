@@ -1,13 +1,13 @@
 <mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" controllerName="com.gasco.Inbound.controller.Menu"
 	xmlns:html="http://www.w3.org/1999/xhtml" xmlns:l="sap.ui.layout">
-	<Page title="Ingreso de Mercadería">
+	<Page title="Abastecimiento">
 		<customHeader>
 			<Bar>
 				<contentLeft>
 					<Text width="35px" text=""></Text>
 				</contentLeft>
 				<contentMiddle>
-					<Text text="Ingreso de Mercadería"></Text>
+					<Text text="Abastecimiento"></Text>
 				</contentMiddle>
 				<contentRight>
 					<Button icon="sap-icon://vertical-grip" type="Transparent" tooltip="Más Opciones" press="openMoreOption"/>
