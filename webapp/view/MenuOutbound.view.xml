@@ -1,0 +1,76 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" controllerName="com.gasco.Inbound.controller.MenuOutbound"
+	xmlns:html="http://www.w3.org/1999/xhtml" xmlns:l="sap.ui.layout">
+	<Page title="Salida de Mercadería">
+		<customHeader>
+			<Bar>
+			<contentLeft>
+					<Button type="Transparent" icon="sap-icon://navigation-left-arrow" press="onBackMain"></Button>
+				</contentLeft>
+				<contentMiddle>
+					<Text text="Salida de Mercadería"></Text>
+				</contentMiddle>
+				<contentRight>
+					<Button icon="sap-icon://vertical-grip" type="Transparent" tooltip="Más Opciones" press="openMoreOption"/>
+				</contentRight>
+			</Bar>
+		</customHeader>
+		<content>
+			<l:Grid id="gridMenuOutboundId" class="sapUiMediumMarginTop" hSpacing="2" vSpacing="2" width="100%">
+			
+			    <VBox id="traspasosId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://action" size="6rem" color="#346187" press="navToTraspaso"></core:Icon>
+					<Text text="TRASPASOS" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL6 L6 M6 S6"/>
+					</layoutData>
+				</VBox>	
+				<VBox id="trasladosId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://duplicate" size="6rem" color="#346187" press="navToTraslado"></core:Icon>
+					<Text text="TRASLADO" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL6 L6 M6 S6"/>
+					</layoutData>
+				</VBox>	
+				<VBox id="reservaId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://accelerated" size="6rem" color="#346187" press="navToReserva"></core:Icon>
+					<Text text="RESERVA" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL6 L6 M6 S6"/>
+					</layoutData>
+				</VBox>	
+				
+				<VBox id="entregaId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://activity-2" size="6rem" color="#346187" press="navToEntrega"></core:Icon>
+					<Text text="ENTREGA" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL6 L6 M6 S6"/>
+					</layoutData>
+				</VBox>	
+				
+				<VBox id="inventarioId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://form" size="6rem" color="#346187" press="navToInventario"></core:Icon>
+					<Text text="INVENTARIO" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL6 L6 M6 S6"/>
+					</layoutData>
+				</VBox>	
+				
+				<VBox id="gBodegaDiarioId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://activity-individual" size="6rem" color="#346187" press="navToGestionBodegaDiario"></core:Icon>
+					<Text text="GESTION BODEGA" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL6 L6 M6 S6"/>
+					</layoutData>
+				</VBox>	
+				
+			</l:Grid>
+			<MessagePage id="messagePageErrorUser" visible="false" icon="sap-icon://locked" showHeader="false"
+				description="Tu perfil no cuenta con los permisos para visualizar esta aplicación.." text="¡Aviso!">
+				<buttons>
+					<Button type="Emphasized" text="Salir" press="logOutApp"></Button>
+				</buttons>
+			</MessagePage>
+		</content>
+	
+	</Page>
+</mvc:View>

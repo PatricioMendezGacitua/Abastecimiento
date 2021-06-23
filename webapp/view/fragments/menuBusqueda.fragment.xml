@@ -1,0 +1,68 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
+	<Dialog busyIndicatorDelay='0' title="Búsqueda Orden de Compra" type='Message' contentWidth="400px" contentHeight="auto">
+		<content>
+			<VBox class="borderList">
+				<Label text="Lectura Código QR" class="sapUiTinyMarginTop"></Label>
+				<Button icon="sap-icon://bar-code" press="onPressLecturaQR" type="Ghost" width="100%" class="sapUiMediumMarginBottom"></Button>
+			</VBox>
+			<VBox class="sapUiMediumMarginTop">
+				<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
+					<Select width="100%" forceSelection="true" id="oSelectpeBusquedaId" change="onRestablecerBusqueda">
+						<core:Item text="RUT Proveedor" key="RUT_PROVEEDOR"></core:Item>
+						<core:Item text="Número Material" key="NRO_MATERIAL"></core:Item>
+						<layoutData>
+							<l:GridData span="XL12 L12 M12 S12"/>
+						</layoutData>
+					</Select>
+					<!--<RadioButton id="oRadioButtonBusquedaRPId" text="RUT Proveedor" selected="true" width="100%">
+						<layoutData>
+							<l:GridData span="XL12 L12 M12 S12"/>
+						</layoutData>
+					</RadioButton>
+					<RadioButton id="oRadioButtonBusquedaNMId" text="Código Material" selected="false" width="100%">
+							<layoutData>
+								<l:GridData span="XL12 L12 M12 S12"/>
+						</layoutData>
+					</RadioButton>-->
+					<Input width="100%" id="oInputBusquedaOCId">
+						<layoutData>
+							<l:GridData span="XL10 L10 M10 S10"/>
+						</layoutData>
+					</Input>
+					<Button icon="sap-icon://search" type="Emphasized" width="100%" press="onSearchBusquedaOrdenDeCompra">
+						<layoutData>
+							<l:GridData span="XL2 L2 M2 S2"/>
+						</layoutData>
+					</Button>
+				</l:Grid>
+				<List class="sapUiSmallMarginTop" id="oTitleIdBRM" mode="SingleSelectLeft" selectionChange="onSelectOCBusqueda" noDataText="Sin resultados"
+					enableBusyIndicator="true" headerText="Resultados (0)" growing="true" items="{ path: 'oModeloResultadosBusqueda>/' }">
+					<CustomListItem >
+						<VBox class="sapUiSmallMarginTop sapUiSmallMarginBottom" width="auto" height="100%">
+							<l:Grid hSpacing="0,1" vSpacing="0,1">
+								<Title class="sapUiTinyMarginTop" text="{oModeloResultadosBusqueda>Ebeln}" tooltip="{oModeloResultadosBusqueda>Ebeln}" level="H3"
+									titleStyle="H3">
+									<layoutData>
+										<l:GridData span="XL12 L12 M12 S12"/>
+									</layoutData>
+								</Title>
+								<VBox>
+									<Text class="sapUiTinyMarginTop" text="Proveedor: {oModeloResultadosBusqueda>Name1}" wrapping="true"></Text>
+									<Text class="sapUiTinyMarginTop"
+										text="Fecha Documento: {path: 'oModeloResultadosBusqueda>Bedat', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd/MM/yyyy', style: 'medium'}}"
+										wrapping="true"></Text>
+									<layoutData>
+										<l:GridData span="XL12 L12 M12 S12"/>
+									</layoutData>
+								</VBox>
+							</l:Grid>
+						</VBox>
+					</CustomListItem>
+				</List>
+			</VBox>
+		</content>
+		<buttons>
+			<Button text="Cancelar" type="Transparent" press="cerrarDialogoMenuBusqueda"/>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,30 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:ff="sap.f">
+	<Dialog busyIndicatorDelay='0' title="Tus Datos" type='Message' contentWidth="500px" contentHeight="auto" verticalScrolling="true">
+		<customHeader>
+			<Bar>
+				<contentMiddle>
+					<Title text="Tus Datos"></Title>
+				</contentMiddle>
+				<contentRight>
+					<Button icon="sap-icon://decline" press="dialogActualizaDatosClose"/>
+				</contentRight>
+			</Bar>
+		</customHeader>
+		<content>
+			<VBox class="sapUiContentPadding">
+				<Label text="Nombre" design="Bold"></Label>
+				<Input editable="false" width="100%" value="{oModelUser>/NOMBRE_COMPLETO}"></Input>
+				<Label class="sapUiSmallMarginTop" text="Correo" design="Bold"></Label>
+				<Input editable="false" width="100%" value="{oModelUser>/CORREO}"></Input>
+				<Label class="sapUiSmallMarginTop" text="Código Usuario" design="Bold"></Label>
+				<Input editable="false" width="100%" value="{oModelUser>/USER_SCP_COD}"></Input>
+			</VBox>
+			<HBox class="sapUiMediumMarginTop" justifyContent="Center" alignItems="Center">
+				<Label id="versionAppId" class="font-smaller" design="Bold" text=""></Label>
+			</HBox>
+		</content>
+		<endButton>
+			<Button type="Reject" text="Cerrar Sesión" press="logOutApp"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

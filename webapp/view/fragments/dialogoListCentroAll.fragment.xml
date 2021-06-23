@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<SelectDialog noDataText="Sin resultados" multiSelect="false" title="Lista de Centros (0)" liveChange="onSearchCentro"
+		confirm="onValueHelpDialogCloseCentro" cancel="onValueHelpDialogCloseCentro" showClearButton="false"
+		items="{ path: 'modelCentroC>/' }">
+		<StandardListItem title="{modelCentroC>titulo}" description="{modelCentroC>descripcion}" type="Active"/>
+	</SelectDialog>
+</core:FragmentDefinition>

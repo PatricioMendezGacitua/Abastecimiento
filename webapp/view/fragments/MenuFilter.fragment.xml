@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:u="sap.ui.unified">
+	<u:Menu>
+		<u:MenuItem text="Pendientes" select="cambioDeEstadoUno"/>
+		<u:MenuItem text="Recepcionadas" select="cambioDeEstadoDos"/>
+		<u:MenuItem text="Anuladas" select="cambioDeEstadoTres"/>
+	</u:Menu>
+</core:FragmentDefinition>

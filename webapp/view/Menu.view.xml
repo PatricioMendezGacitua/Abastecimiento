@@ -1,0 +1,49 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" controllerName="com.gasco.Inbound.controller.Menu"
+	xmlns:html="http://www.w3.org/1999/xhtml" xmlns:l="sap.ui.layout">
+	<Page title="Ingreso de Mercadería">
+		<customHeader>
+			<Bar>
+				<contentLeft>
+					<Text width="35px" text=""></Text>
+				</contentLeft>
+				<contentMiddle>
+					<Text text="Ingreso de Mercadería"></Text>
+				</contentMiddle>
+				<contentRight>
+					<Button icon="sap-icon://vertical-grip" type="Transparent" tooltip="Más Opciones" press="openMoreOption"/>
+				</contentRight>
+			</Bar>
+		</customHeader>
+		<content>
+			<l:Grid id="gridMenuId" class="sapUiMediumMarginTop" hSpacing="2" vSpacing="2" width="100%">
+				<VBox id="recepacionesId" visible="false" alignItems="Center" justifyContent="Center" class="fondoTile" blocked="false">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://activity-2" size="6rem" color="#346187" press="navToLibroObra"></core:Icon>
+					<Text text="RECEPCIONES" class="sapUiSmallMarginTop sapUiSmallMarginBottom fontMedium customText" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL6 L6 M6 S12"/>
+					</layoutData>
+				</VBox>
+				<VBox id="inboundId" visible="false" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://inbox" size="6rem" color="#346187" press="navToMantencion"></core:Icon>
+					<Text text="INBOUND" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL6 L6 M6 S12"/>
+					</layoutData>
+				</VBox>
+			    <VBox id="outboundId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://outbox" size="6rem" color="#346187" press="navToOutBound"></core:Icon>
+					<Text text="OUTBOUND" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL6 L6 M6 S12"/>
+					</layoutData>
+				</VBox>	
+			</l:Grid>
+			<MessagePage id="messagePageErrorUser" visible="false" icon="sap-icon://locked" showHeader="false"
+				description="Tu perfil no cuenta con los permisos para visualizar esta aplicación.." text="¡Aviso!">
+				<buttons>
+					<Button type="Emphasized" text="Salir" press="logOutApp"></Button>
+				</buttons>
+			</MessagePage>
+		</content>
+	</Page>
+</mvc:View>

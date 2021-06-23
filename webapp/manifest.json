@@ -1,0 +1,346 @@
+{
+	"_version": "1.12.0",
+	"sap.app": {
+		"id": "com.gasco.Inbound",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"applicationVersion": {
+			"version": "1.0.0"
+		},
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"sourceTemplate": {
+			"id": "ui5template.basicSAPUI5ApplicationProject",
+			"version": "1.40.12"
+		},
+		"dataSources": {
+			"mainService": {
+				"settings": {
+					"localUri": "localService/metadata.xml",
+					"odataVersion": "2.0"
+				},
+				"type": "OData",
+				"uri": "/HANA/INGRESO_MERCADERIA/servicio.xsodata"
+			},
+			"ZSCP_INGRESO_MERCANCIA_SRV": {
+				"uri": "/GW_ODP/odata/SAP/ZSCP_INGRESO_MERCANCIA_SRV;v=1/",
+				"type": "OData",
+				"settings": {
+					"localUri": "localService/metadata.xml"
+				}
+			},
+			"ZSCP_SALIDA_MERCANCIA_SRV": {
+				"uri": "/GW_ODP/odata/SAP/ZSCP_SALIDA_MERCANCIA_SRV;v=1/",
+				"type": "OData",
+				"settings": {
+					"localUri": "localService/metadata.xml"
+				}
+			}
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"icons": {
+			"icon": "",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+	"sap.ui5": {
+		"flexEnabled": false,
+		"rootView": {
+			"viewName": "com.gasco.Inbound.view.App",
+			"type": "XML",
+			"async": true,
+			"id": "App"
+		},
+		"dependencies": {
+			"minUI5Version": "1.65.6",
+			"libs": {
+				"sap.m": {},
+				"sap.ui.core": {},
+				"sap.ui.layout": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "com.gasco.Inbound.i18n.i18n"
+				}
+			},
+			"oModeloHanaIngresoMercaderia": {
+				"settings": {
+					"defaultCountMode": "Inline",
+					"defaultUpdateMethod": "sap.ui.model.odata.UpdateMethod.Put",
+					"defaultBindingMode": "TwoWay"
+				},
+				"dataSource": "mainService",
+				"preload": true
+			},
+			"oModeloSAPERP": {
+				"type": "sap.ui.model.odata.v2.ODataModel",
+				"settings": {
+					"defaultOperationMode": "Server",
+					"defaultBindingMode": "OneWay",
+					"defaultCountMode": "Request"
+				},
+				"dataSource": "ZSCP_INGRESO_MERCANCIA_SRV",
+				"preload": true
+			},
+			"oModelSAPERP": {
+				"type": "sap.ui.model.odata.v2.ODataModel",
+				"settings": {
+					"defaultOperationMode": "Server",
+					"defaultBindingMode": "OneWay",
+					"defaultCountMode": "Request"
+				},
+				"dataSource": "ZSCP_SALIDA_MERCANCIA_SRV",
+				"preload": true
+			}
+		},
+		"resources": {
+			"css": [
+				{
+					"uri": "css/style.css"
+				}
+			]
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"async": true,
+				"viewPath": "com.gasco.Inbound.view",
+				"controlAggregation": "pages",
+				"controlId": "app",
+				"clearControlAggregation": false
+			},
+			"routes": [
+				{
+					"name": "cargando",
+					"pattern": "",
+					"target": "Cargando"
+				},
+				{
+					"name": "Menu",
+					"pattern": "Menu",
+					"target": [
+						"Menu"
+					]
+				},
+				{
+					"name": "inbound",
+					"pattern": "Ingresos",
+					"target": [
+						"Inbound"
+					]
+				},
+				{
+					"name": "outbound",
+					"pattern": "Egresos",
+					"target": [
+						"MenuOutbound"
+					]
+				},
+				{
+					"name": "traspaso",
+					"pattern": "Traspaso",
+					"target": [
+						"Detail_Traspaso"
+					]
+				},
+				{
+					"name": "traslado",
+					"pattern": "Traslado",
+					"target": [
+						"Detail_Traslado"
+					]
+				},
+				{
+					"name": "inventario",
+					"pattern": "Inventario",
+					"target": [
+						"Detail_Inventario"
+					]
+				},
+				{
+					"name": "Recepciones_Master",
+					"pattern": "Recepciones_Master/{estadoIngreso}",
+					"target": [
+						"Detail_Zero",
+						"Master_Recepciones"
+					]
+				},
+				{
+					"name": "reserva_master",
+					"pattern": "reserva_master/{estadoReserva}",
+					"target": [
+						"Detail_Zero_Outbound",
+						"Master_Reserva"
+					]
+				},
+					{
+					"name": "reserva_master_Dos",
+					"pattern": "reserva_master/{estadoReserva}/{idreserva}",
+					"target": [
+						"Detail_Zero_Outbound",
+						"Master_Reserva"
+					]
+				},
+				
+				{
+					"name": "Entrega_master",
+					"pattern": "Entrega_master/{estadoReserva}",
+					"target": [
+						"Detail_Zero_Outbound_Entrega",
+						"Master_Entrega"
+					]
+				},
+					{
+					"name": "Entrega_master_Dos",
+					"pattern": "Entrega_master/{estadoReserva}/{idreserva}",
+					"target": [
+						"Detail_Zero_Outbound_Entrega",
+						"Master_Entrega"
+					]
+				},
+				
+				
+				
+				
+				{
+					"name": "Recepciones_Master_Dos",
+					"pattern": "Recepciones_Masters/{estadoIngreso}",
+					"target": [
+						"Detail_Zero",
+						"Master_Recepciones"
+					]
+				},
+				{
+					"name": "Recepciones_Detail",
+					"pattern": "Recepciones_Detail/{ingreso}/{estadoIngreso}",
+					"target": [
+						"Master_Recepciones",
+						"Detail_Recepciones"
+					]
+				},
+				{
+					"name": "Reserva_Detail",
+					"pattern": "Reserva_Detail/{ingreso}/{idReserva}",
+					"target": [
+						"Master_Reserva",
+						"Detail_Reserva"
+					]
+				},
+				{
+					"name": "Entrega_Detail",
+					"pattern": "Entrega_Detail/{ingreso}/{estadoIngreso}",
+					"target": [
+						"Master_Entrega",
+						"Detail_Entrega"
+					]
+				}
+			],
+			"targets": {
+				"Cargando": {
+					"viewName": "cargando"
+				},
+				"Menu": {
+					"viewName": "Menu"
+				},
+				"Inbound": {
+					"viewName": "Inbound"
+				},
+				"menuOutbound": {
+					"viewName": "MenuOutbound"
+				},
+				"splitscreenTarget": {
+					"viewName": "SplitScreen",
+					"viewId": "splitView"
+				},
+				"Master_Recepciones": {
+					"viewName": "Master_Recepciones",
+					"viewLevel": 0,
+					"parent": "splitscreenTarget",
+					"controlId": "splitContainer",
+					"controlAggregation": "masterPages"
+				},
+				"Detail_Zero": {
+					"viewName": "Detail_Zero",
+					"viewLevel": 0,
+					"parent": "splitscreenTarget",
+					"controlId": "splitContainer",
+					"controlAggregation": "detailPages"
+				},
+				"Detail_Recepciones": {
+					"viewName": "Detail_Recepciones",
+					"viewLevel": 0,
+					"parent": "splitscreenTarget",
+					"controlId": "splitContainer",
+					"controlAggregation": "detailPages"
+				},
+				"SplitScreen": {
+					"viewName": "SplitScreen"
+				},
+				"MenuOutbound": {
+					"viewType": "XML",
+					"viewName": "MenuOutbound"
+				},
+				"Detail_Traspaso": {
+					"viewType": "XML",
+					"viewName": "Detail_Traspaso"
+				},
+				"Detail_Traslado": {
+					"viewType": "XML",
+					"viewName": "Detail_Traslado"
+				},
+				"Detail_Inventario": {
+					"viewType": "XML",
+					"viewName": "Detail_Inventario"
+				},
+				"Detail_Reserva": {
+					"viewType": "XML",
+					"viewName": "Detail_Reserva"
+				},
+				"Detail_Zero_Outbound": {
+					"viewType": "XML",
+					"viewName": "Detail_Zero_Outbound"
+				},
+				"Master_Reserva": {
+					"viewType": "XML",
+					"viewName": "Master_Reserva"
+				}
+				,
+				"Detail_Entrega": {
+					"viewType": "XML",
+					"viewName": "Detail_Entrega"
+				},
+				"Detail_Zero_Outbound_Entrega": {
+					"viewType": "XML",
+					"viewName": "Detail_Zero_Outbound_Entrega"
+				},
+				"Master_Entrega": {
+					"viewType": "XML",
+					"viewName": "Master_Entrega"
+				}
+			}
+		}
+	},
+	"sap.platform.hcp": {
+		"uri": "webapp",
+		"_version": "1.1.0"
+	}
+}

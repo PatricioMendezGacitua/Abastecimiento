@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The {{}} placeholder values, if any, will be updated before the first build. -->
+<!-- Change the App Name, App Version, App Description and Min OS Versions in the 
+     build wizard UI rather than manually modifying their values here. -->
+<!-- Do not change the widget "id" value here. -->
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.sap.webide.x4ced6a78ab824be3b334bbe1d1d1201c" version="1.7">
+    <name>Ingreso Mercaderia</name>
+    <description/>
+    <author href="http://cordova.io">SAP hybrid mobile solution</author>
+    <content src="index.html"/>
+    <access origin="*"/>
+
+    <allow-intent href="http://*/*"/>
+    <allow-intent href="https://*/*"/>
+    <allow-intent href="tel:*"/>
+    <allow-intent href="sms:*"/>
+    <allow-intent href="mailto:*"/>
+    <allow-intent href="geo:*"/>
+    <allow-navigation href="*"/>
+
+    <preference name="AutoHideSplashScreen" value="true"/>
+    <preference name="FadeSplashScreen" value="false"/>
+    <preference name="helpUrl" value="https://help.sap.com/viewer/8e5c63b6470a4255861c259f3b2d9b41/Cloud/en-US/ee5b45f82bd845a2a9668e99213bdb3b.html"/>
+    <preference name="xwalkVersion" value="23+"/>
+
+    <!-- Do not modify the spec attribute values. Cloud build service will replace them with the platform versions of the available build stacks. -->
+    <engine name="ios" spec="*"/>
+    <engine name="android" spec="*"/>
+
+    <platform name="android">
+        <allow-intent href="market:*"/>
+        <allow-intent href="sapauthenticator:*"/>
+
+        <preference name="android-minSdkVersion" value="23"/>
+        <preference name="android-targetSdkVersion" value="29"/>
+        <preference name="xwalkMultipleApk" value="false"/>
+        <preference name="Orientation" value="default"/>
+
+        <!-- Do not modify the content of these icon & splash tags. Instead, upload your images from the cloud build wizard. -->
+        <icon src="res/android/drawable/icon.png"/>
+        <icon density="hdpi" src="res/android/drawable/icon.png"/>
+        <icon density="hdpi" src="res/android/drawable-hdpi/icon.png"/>
+        <icon density="ldpi" src="res/android/drawable-ldpi/icon.png"/>
+        <icon density="mdpi" src="res/android/drawable-mdpi/icon.png"/>
+        <icon density="xhdpi" src="res/android/drawable-xhdpi/icon.png"/>
+        <icon density="xxhdpi" src="res/android/drawable-xxhdpi/icon.png"/>
+        <icon density="xxxhdpi" src="res/android/drawable-xxxhdpi/icon.png"/>
+        <splash density="land-hdpi" src="res/screen/android/splash-land-hdpi.png"/>
+        <splash density="land-ldpi" src="res/screen/android/splash-land-ldpi.png"/>
+        <splash density="land-mdpi" src="res/screen/android/splash-land-mdpi.png"/>
+        <splash density="land-xhdpi" src="res/screen/android/splash-land-xhdpi.png"/>
+        <splash density="land-xxhdpi" src="res/screen/android/splash-land-xxhdpi.png"/>
+        <splash density="land-xxxhdpi" src="res/screen/android/splash-land-xxxhdpi.png"/>
+        <splash density="port-hdpi" src="res/screen/android/splash-port-hdpi.png"/>
+        <splash density="port-ldpi" src="res/screen/android/splash-port-ldpi.png"/>
+        <splash density="port-mdpi" src="res/screen/android/splash-port-mdpi.png"/>
+        <splash density="port-xhdpi" src="res/screen/android/splash-port-xhdpi.png"/>
+        <splash density="port-xxhdpi" src="res/screen/android/splash-port-xxhdpi.png"/>
+        <splash density="port-xxxhdpi" src="res/screen/android/splash-port-xxxhdpi.png"/>
+    </platform>
+
+    <platform name="ios">
+        <!-- Do not modify the content of these icon & splash tags. Instead, upload your images from the cloud build wizard. -->
+        <icon src="res/icon/ios/icon-20.png" width="20" height="20"/>
+        <icon src="res/icon/ios/icon-Small-40@3x.png" width="120" height="120"/>
+        <icon src="res/icon/ios/icon-60@3x.png" width="180" height="180"/>
+        <icon src="res/icon/ios/icon-Small@3x.png" width="87" height="87"/>
+
+        <!-- iOS 7.0+ -->
+        <!-- iPhone / iPod Touch  -->
+        <icon src="res/icon/ios/icon-60.png" width="60" height="60"/>
+        <icon src="res/icon/ios/icon-60@2x.png" width="120" height="120"/>
+        <!-- iPad -->
+        <icon src="res/icon/ios/icon-76.png" width="76" height="76"/>
+        <icon src="res/icon/ios/icon-76@2x.png" width="152" height="152"/>
+        <!-- iOS 6.1 -->
+        <!-- Spotlight Icon -->
+        <icon src="res/icon/ios/icon-40.png" width="40" height="40"/>
+        <icon src="res/icon/ios/icon-40@2x.png" width="80" height="80"/>
+        <!-- iPhone / iPod Touch -->
+        <icon src="res/icon/ios/icon.png" width="57" height="57"/>
+        <icon src="res/icon/ios/icon@2x.png" width="114" height="114"/>
+        <!-- iPad -->
+        <icon src="res/icon/ios/icon-72.png" width="72" height="72"/>
+        <icon src="res/icon/ios/icon-72@2x.png" width="144" height="144"/>
+        <!-- iPhone Spotlight and Settings Icon -->
+        <icon src="res/icon/ios/icon-small.png" width="29" height="29"/>
+        <icon src="res/icon/ios/icon-small@2x.png" width="58" height="58"/>
+        <!-- iPad Spotlight and Settings Icon -->
+        <icon src="res/icon/ios/icon-50.png" width="50" height="50"/>
+        <icon src="res/icon/ios/icon-50@2x.png" width="100" height="100"/>
+        <!-- iPad Pro Spotlight and Settings Icon -->
+        <icon src="res/icon/ios/icon-83.5@2x.png" width="167" height="167"/>
+        <!-- Marketing icon -->
+        <icon src="res/icon/ios/icon-1024.png" width="1024" height="1024"/>																			   
+        <splash height="480" src="res/screen/ios/Default~iphone.png" width="320"/>
+        <splash height="960" src="res/screen/ios/Default@2x~iphone.png" width="640"/>
+        <splash height="1024" src="res/screen/ios/Default-Portrait~ipad.png" width="768"/>
+        <splash height="2048" src="res/screen/ios/Default-Portrait@2x~ipad.png" width="1536"/>
+        <splash height="768" src="res/screen/ios/Default-Landscape~ipad.png" width="1024"/>
+        <splash height="1536" src="res/screen/ios/Default-Landscape@2x~ipad.png" width="2048"/>
+        <splash height="1136" src="res/screen/ios/Default-568h@2x~iphone.png" width="640"/>
+        <splash height="1334" src="res/screen/ios/Default-667h@2x.png" width="750"/>
+        <splash height="750" src="res/screen/ios/Default-Landscape@2x~iphone6.png" width="1334"/>
+        <splash height="2208" src="res/screen/ios/Default-Portrait-736h@3x.png" width="1242"/>
+        <splash height="1242" src="res/screen/ios/Default-Landscape-736h@3x.png" width="2208"/>
+        <splash height="2732" src="res/screen/ios/Default-iPadPro-Portrait@2x~ipad.png" width="2048"/>
+        <splash height="2048" src="res/screen/ios/Default-iPadPro-Landscape@2x~ipad.png" width="2732"/>
+
+        <splash src="res/screen/ios/Default@2x~universal~anyany.png"/>
+        <splash src="res/screen/ios/Default@2x~universal~comany.png"/>
+        <splash src="res/screen/ios/Default@2x~universal~comcom.png"/>
+        <splash src="res/screen/ios/Default@3x~universal~anyany.png"/>
+        <splash src="res/screen/ios/Default@3x~universal~anycom.png"/>
+        <splash src="res/screen/ios/Default@3x~universal~comany.png"/>
+        
+        <allow-intent href="itms:*"/>
+        <allow-intent href="itms-apps:*"/>
+        
+        <preference name="Orientation" value="all"/>
+        <preference name="deployment-target" value="13.0"/>
+        <preference name="StatusBarOverlaysWebView" value="false"/>
+        <preference name="StatusBarStyle" value="default"/>
+        <preference name="StatusBarBackgroundColor" value="#FFFFFF"/>
+        
+        <!-- iOS Split View support  -->
+        <edit-config file="*-Info.plist" mode="merge" target="UIRequiresFullScreen">
+            <false/>
+        </edit-config>
+        <edit-config file="*-Info.plist" mode="merge" target="UILaunchStoryboardName">
+            <string>CDVLaunchScreen</string>
+        </edit-config>
+
+        <!-- Required for certificate import -->
+        <edit-config file="*-Info.plist" mode="merge" target="LSSupportsOpeningDocumentsInPlace">
+            <false/>
+        </edit-config>
+
+        <edit-config target="NSCameraUsageDescription" file="*-Info.plist" mode="merge">
+            <string>App would like to access the camera.</string>
+        </edit-config>
+        <edit-config target="NSPhotoLibraryUsageDescription" file="*-Info.plist" mode="merge">
+            <string>App would like to access the library.</string>
+        </edit-config>
+        <edit-config target="NSLocationWhenInUseUsageDescription" file="*-Info.plist" mode="merge">
+            <string>App would like to access location.</string>
+        </edit-config>
+        <edit-config target="NSLocationAlwaysUsageDescription" file="*-Info.plist" mode="merge">
+            <string>App would like to access location.</string>
+        </edit-config>
+        <edit-config target="NSMicrophoneUsageDescription" file="*-Info.plist" mode="merge">
+            <string>App would like to access the microphone.</string>
+        </edit-config>
+        <edit-config target="NSContactsUsageDescription" file="*-Info.plist" mode="merge">
+            <string>App would like to access contacts.</string>
+        </edit-config>
+        <edit-config target="NSCalendarsUsageDescription" file="*-Info.plist" mode="merge">
+            <string>App would like to access the calendar.</string>
+        </edit-config>
+        <edit-config target="NSFaceIDUsageDescription" file="*-Info.plist" mode="merge">
+            <string>App would like to access the face Id.</string>
+        </edit-config>
+    </platform>
+
+    <!-- The latest available version of Kapsel and default Cordova plugins in Cloud Build Service will -->
+    <!-- be installed, i.e. their "spec" attribute values, if added, will be ignored. -->
+    <plugin name="kapsel-plugin-apppreferences"/>
+    <plugin name="kapsel-plugin-authproxy"/>
+    <plugin name="kapsel-plugin-corelibs"/>
+    <plugin name="kapsel-plugin-e2etrace"/>
+    <plugin name="kapsel-plugin-encryptedstorage"/>
+    <plugin name="kapsel-plugin-i18n"/>
+    <plugin name="kapsel-plugin-logger"/>
+    <plugin name="kapsel-plugin-logon"/>
+    <plugin name="kapsel-plugin-settings"/>
+    <plugin name="kapsel-plugin-usage"/>
+    <plugin name="kapsel-plugin-xhook"/>
+	
+    <plugin name="cordova-plugin-device"/>
+    <plugin name="cordova-plugin-dialogs"/>
+    <plugin name="cordova-plugin-file"/>
+    <plugin name="cordova-plugin-network-information"/>
+    <plugin name="cordova-plugin-screen-orientation"/>
+    <plugin name="cordova-plugin-splashscreen"/>
+    <plugin name="cordova-plugin-statusbar"/>
+	
+    <plugin name="kapsel-plugin-attachmentviewer"/>
+    <plugin name="kapsel-plugin-barcodescanner"/>
+    <plugin name="kapsel-plugin-calendar"/>
+    <plugin name="kapsel-plugin-inappbrowser"/>
+    <plugin name="cordova-plugin-camera"/>
+    <plugin name="cordova-plugin-geolocation"/>
+    <plugin name="cordova-plugin-whitelist"/>
+
+</widget>
