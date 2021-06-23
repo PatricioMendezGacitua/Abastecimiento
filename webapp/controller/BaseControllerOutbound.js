@@ -133,9 +133,16 @@ sap.ui.define([
 					var oModel = [];
 					var arrayUbicaciones = [];
 					var order = 1;
-
 					for (var e = 0; e < data.length; e++) {
+
 						if (data[e].Rsnum === idReserva) {
+
+							if (order === 3) {
+								data[e].Lgpbe = "D0801";
+							} else if (order === 2) {
+								data[e].Lgpbe = "E0301";
+							}
+
 							(data[e].Charg.length > 0) ? data[e].state = true: data[e].state = false;
 
 							data[e].CantSolicitada = Number(data[e].CantSolicitada);
@@ -150,9 +157,11 @@ sap.ui.define([
 
 						}
 						if (data.length === (e + 1)) {
-							this.consultaConOrden();
+
 							this.consultaConOrden(arrayUbicaciones, oModel).then(function (respuestaconsultaConOrden) {
-								resolve(respuestaconsultaConOrden);
+								this.ordenarUbicaciones(respuestaconsultaConOrden, oModel).then(function (respuestaOrdenarUbicaciones) {
+									resolve(respuestaOrdenarUbicaciones);
+								}.bind(this));
 							}.bind(this));
 
 						}
@@ -197,20 +206,66 @@ sap.ui.define([
 							new sap.ui.model.Sorter("CODIGO", false)
 						],
 						success: function (oResults) {
-
-							if (oResults.results.length > 0) {
-								resolve(model);
-								/*oResults.results.forEach(function (element2) {
-									console.log("Ubicación: " + element2.CODIGO + " -----------> prioridad: " + element2.ORDEN);
-								}.bind(this));*/
-							} else {
-								resolve(model);
-							}
+							resolve(oResults.results);
 						}.bind(this),
-						error: function (oError){
-							resolve(model);
+						error: function (oError) {
+							resolve([]);
 						}.bind(this)
 					});
+				}.bind(this));
+		},
+
+		ordenarUbicaciones: function (arrayUbicacionesHana, oModel) {
+			return new Promise(
+				function resolver(resolve) {
+					var arrayNuevo = [];
+					var functionRecorrer = function (item, i) {
+						var ultimoNumero = arrayUbicacionesHana[arrayUbicacionesHana.length - 1].ORDEN;
+						if (item.length === i) {
+
+							oModel.forEach(function (element2, index2) {
+
+								if (element2.flagOrden !== "X") {
+									ultimoNumero++;
+									element2.order = ultimoNumero;
+									arrayNuevo.push(element2);
+								}
+
+								if (oModel.length === (index2 + 1)) {
+									resolve(arrayNuevo);
+								}
+
+							}.bind(this));
+
+						} else {
+
+							var pos = item[i];
+
+							oModel.forEach(function (element, index) {
+
+								if (pos.CODIGO === element.Lgpbe) {
+									var record = element;
+									record.order = pos.ORDEN;
+									arrayNuevo.push(record);
+									element.flagOrden = "X";
+
+								}
+
+								if (oModel.length === (index + 1)) {
+									i++;
+									functionRecorrer(item, i);
+								}
+
+							}.bind(this));
+
+						}
+					}.bind(this);
+					if (arrayUbicacionesHana.length > 0) {
+						functionRecorrer(arrayUbicacionesHana, 0);
+					} else {
+						resolve(oModel);
+					}
+
 				}.bind(this));
 		},
 
