@@ -103,7 +103,7 @@
 				</CustomListItem>
 			</List>
 		</content>
-		<footer>
+		<!--<footer>
 			<Bar>
 				<contentLeft></contentLeft>
 				<contentMiddle>
@@ -121,6 +121,6 @@
 					<ToggleButton id="oToggleButtonAnularOCId" type="Transparent" icon="sap-icon://delete" pressed="false" press="onToggleAnularOrden"></ToggleButton>
 				</contentRight>
 			</Bar>
-		</footer>
+		</footer>-->
 	</Page>
 </mvc:View>

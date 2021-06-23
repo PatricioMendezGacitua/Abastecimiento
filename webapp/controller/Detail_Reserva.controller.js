@@ -18,44 +18,27 @@ sap.ui.define([
 			var oArgs = oEvent.getParameter("arguments");
 			this.idIngreso = oArgs.idReserva;
 			this.idEstadoIngreso = oArgs.ingreso;
-			var model = sap.ui.getCore().getModel("oModeloTemporalesReservaCore").getData();
 			
-			this.openBusyDialogCargando();
-			
-			
-			
-			this.getView().byId("tituloDetalleSolicitudView").setText("Detalle Reserva N°" + this.idIngreso);
-			this.cargaPosiciones(model, this.idIngreso).then(function (respuestacargaPosiciones) {
-				var oModel = new JSONModel(respuestacargaPosiciones);
-			
-				this.getView().setModel(oModel, "oModeloDataTemporalDetailReserva");
-				this.BusyDialogCargando.close();
 
-			}.bind(this));
+			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
+			if (this._oStorage.get("navegacion_IngresoMercaderia") === "si") {
+				this._oStorage.put("navegacion_IngresoMercaderia", "no");
+				var model = sap.ui.getCore().getModel("oModeloTemporalesReservaCore").getData();
+				this.openBusyDialogCargando();
 
-		
+				this.getView().byId("tituloDetalleSolicitudView").setText("Detalle Reserva N°" + this.idIngreso);
+				this.cargaPosiciones(model, this.idIngreso).then(function (respuestacargaPosiciones) {
+					var oModel = new JSONModel(respuestacargaPosiciones);
 
-			/*var arr = [{
-				"codMaterial":101529,
-				"unidad":"C/U",
-				"centro":7110,
-				"almacen":1100,
-				"posicion": 10,
-				"Lote":"",
-				"ubicacion": 1109
-				
-			},
-			{
-				"codMaterial":101539,
-				"unidad":"C/U",
-				"centro":7110,
-				"almacen":1100,
-				"posicion": 20,
-				"Lote":"45",
-				"ubicacion": 1109
-				
+					this.getView().setModel(oModel, "oModeloDataTemporalDetailReserva");
+					this.BusyDialogCargando.close();
+
+				}.bind(this));
+			} else {
+				this.resetMasterDetail();
 			}
-			];*/
+
+			
 
 		},
 
@@ -643,9 +626,7 @@ sap.ui.define([
 			this.getOwnerComponent().getRouter().navTo("reserva_master_Dos", {
 				estadoReserva: this.idEstadoIngreso,
 				idreserva: this.idIngreso
-				
 
-				
 			});
 		},
 

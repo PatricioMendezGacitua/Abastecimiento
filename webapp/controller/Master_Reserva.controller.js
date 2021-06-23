@@ -63,22 +63,7 @@ sap.ui.define([
 		
 		
 
-		buscarAutocompletarReserva: function (oEvent) {/*		var aFilters = [];
-			var sQuery = oEvent.getSource().getValue();
-			if (sQuery && sQuery.length > 0) {
-				var filterRE = new Filter("NRORESERVA", FilterOperator.Contains, sQuery);
-				aFilters.push(filterRE);
-				var filterCM = new Filter("MATERIAL", FilterOperator.Contains, sQuery);
-				aFilters.push(filterCM);
-				var filterAL = new Filter("ALMACEN", FilterOperator.Contains, sQuery);
-				aFilters.push(filterAL);
-			}
-            
-			// update list binding
-			var oList = this.byId("idList");
-			var oBinding = oList.getBinding("items");
-			debugger
-			oBinding.filter(aFilters, "Application");*/
+		buscarAutocompletarReserva: function (oEvent) {
 			
 			var sValue = oEvent.getSource().getValue();
 			var filterFinal = [];
@@ -134,6 +119,7 @@ sap.ui.define([
 			var oComponent = this.getOwnerComponent();
 			this._route = oComponent.getRouter();
 			var oArgs = oEvent.getParameter("arguments");
+			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 
 			this.rootViewName = oEvent.getParameter("name");
 			this.texto = "Pendiente";
@@ -227,9 +213,9 @@ sap.ui.define([
 		},
 
 		cambioDeEstadoBase: function (idEstadoIngreso) {
-			var toggle = this.getView().byId("oToggleButtonAnularOCId");
+			/*var toggle = this.getView().byId("oToggleButtonAnularOCId");
 
-			var visible = false;
+			var visible = false;*/
 			this.filtroDePantallaSeleccionado = idEstadoIngreso;
 			this.setearTextoMenuButton();
 
@@ -271,8 +257,8 @@ sap.ui.define([
 		},
 
 		onToggleAnularOrden: function () {
-			var toggle = this.getView().byId("oToggleButtonAnularOCId");
-			this.onToggleAnularOrdenBase(toggle.getPressed());
+			/*var toggle = this.getView().byId("oToggleButtonAnularOCId");
+			this.onToggleAnularOrdenBase(toggle.getPressed());*/
 		},
 
 		onToggleAnularOrdenBase: function (pressed) {
@@ -380,9 +366,9 @@ sap.ui.define([
 
 		bindItemsList: function (temporales) {
 
-			var toggle = this.getView().byId("oToggleButtonAnularOCId");
-			toggle.setEnabled(true);
-			var oModeloTemporales = new JSONModel([]);
+		/*	var toggle = this.getView().byId("oToggleButtonAnularOCId");
+			toggle.setEnabled(true);*/
+		var oModeloTemporales = new JSONModel([]);
 			this.getView().setModel(oModeloTemporales, "oModeloTemporalesReserva");
 			
 
@@ -391,7 +377,7 @@ sap.ui.define([
 			}
 
 			if (temporales.length === 0) {
-				toggle.setEnabled(false);
+				
 			}
 
 			oModeloTemporales.setData(temporales);
@@ -451,7 +437,7 @@ sap.ui.define([
 			var idReserva = base.getBindingContext("oModeloTemporalesReserva").getProperty(paths).NRORESERVA;
 			var idEstadoIngreso = 1;// base.getBindingContext("oModeloTemporalesReserva").getProperty(paths).ID_ESTADO_INGRESO;
 
-			//this._oStorage.put("navegacion_IngresoMercaderia", "si");
+			this._oStorage.put("navegacion_IngresoMercaderia", "si");
 			this.getOwnerComponent().getRouter().navTo("Reserva_Detail", {
 				idReserva: idReserva,
 				ingreso: idEstadoIngreso
