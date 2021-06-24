@@ -111,6 +111,12 @@
     padding: 0.5rem;
 }
 
+.fondoTilePM {
+    background-color: #00b8ff38;
+    border: 1px solid #e5e5e5;
+    padding: 0.5rem;
+}
+
 .fondoTile:active {
     background-color: #e5e5e5;
     border-color: #e5e5e5;
