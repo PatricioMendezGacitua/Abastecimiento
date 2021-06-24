@@ -15,29 +15,74 @@
 			</Bar>
 		</customHeader>
 		<content>
-			<l:Grid id="gridMenuId" class="sapUiMediumMarginTop" hSpacing="2" vSpacing="2" width="100%">
-				<VBox id="recepacionesId" visible="false" alignItems="Center" justifyContent="Center" class="fondoTile" blocked="false">
-					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://activity-2" size="6rem" color="#346187" press="navToLibroObra"></core:Icon>
-					<Text text="RECEPCIONES" class="sapUiSmallMarginTop sapUiSmallMarginBottom fontMedium customText" textAlign="Center"></Text>
+			<VBox id="oVBoMenuId" width="100%">
+				<Toolbar class="sapUiSmallMarginTop" width="100%">
+					<Title text="INBOUND" titleStyle="H2" level="H2"></Title>
+				</Toolbar>
+				<l:Grid class="sapUiMediumMarginTop" hSpacing="2" vSpacing="2" width="100%">
+					<VBox id="recepacionesId" visible="false" alignItems="Center" justifyContent="Center" class="fondoTile" blocked="false">
+						<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://activity-2" size="6rem" color="#346187" press="navToLibroObra"></core:Icon>
+						<Text text="RECEPCIONES" class="sapUiSmallMarginTop sapUiSmallMarginBottom fontMedium customText" textAlign="Center"></Text>
+						<layoutData>
+							<l:GridData span="XL6 L6 M6 S12"/>
+						</layoutData>
+					</VBox>
+					<VBox id="ingresosId" visible="false" alignItems="Center" justifyContent="Center" class="fondoTile">
+						<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://inbox" size="6rem" color="#346187" press="navToMantencion"></core:Icon>
+						<Text text="INGRESOS" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+						<layoutData>
+							<l:GridData span="XL6 L6 M6 S12"/>
+						</layoutData>
+					</VBox>
+				</l:Grid>
+				<Toolbar class="sapUiSmallMarginTop" width="100%">
+					<Title text="OUTBOUND" titleStyle="H2" level="H2"></Title>
+				</Toolbar>
+				<l:Grid class="sapUiMediumMarginTop" hSpacing="2" vSpacing="2" width="100%">
+					<VBox id="traspasosId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://action" size="6rem" color="#346187" press="navToTraspaso"></core:Icon>
+					<Text text="TRASPASOS" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
 					<layoutData>
-						<l:GridData span="XL6 L6 M6 S12"/>
-					</layoutData>
-				</VBox>
-				<VBox id="inboundId" visible="false" alignItems="Center" justifyContent="Center" class="fondoTile">
-					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://inbox" size="6rem" color="#346187" press="navToMantencion"></core:Icon>
-					<Text text="INBOUND" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
-					<layoutData>
-						<l:GridData span="XL6 L6 M6 S12"/>
-					</layoutData>
-				</VBox>
-			    <VBox id="outboundId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
-					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://outbox" size="6rem" color="#346187" press="navToOutBound"></core:Icon>
-					<Text text="OUTBOUND" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
-					<layoutData>
-						<l:GridData span="XL6 L6 M6 S12"/>
+						<l:GridData span="XL12 L12 M12 S12"/>
 					</layoutData>
 				</VBox>	
-			</l:Grid>
+				<VBox id="trasladosId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://duplicate" size="6rem" color="#346187" press="navToTraslado"></core:Icon>
+					<Text text="TRASLADO" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL12 L12 M12 S12"/>
+					</layoutData>
+				</VBox>	
+				<VBox id="reservaId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://accelerated" size="6rem" color="#346187" press="navToReserva"></core:Icon>
+					<Text text="RESERVA" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL12 L12 M12 S12"/>
+					</layoutData>
+				</VBox>	
+				<VBox id="entregaId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://activity-2" size="6rem" color="#346187" press="navToEntrega"></core:Icon>
+					<Text text="ENTREGA" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL12 L12 M12 S12"/>
+					</layoutData>
+				</VBox>	
+				<VBox id="inventarioId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://form" size="6rem" color="#346187" press="navToInventario"></core:Icon>
+					<Text text="INVENTARIO" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL12 L12 M12 S12"/>
+					</layoutData>
+				</VBox>	
+				<VBox id="gBodegaDiarioId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
+					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://activity-individual" size="6rem" color="#346187" press="navToGestionBodegaDiario"></core:Icon>
+					<Text text="GESTION BODEGA" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
+					<layoutData>
+						<l:GridData span="XL12 L12 M12 S12"/>
+					</layoutData>
+				</VBox>
+				</l:Grid>
+			</VBox>
 			<MessagePage id="messagePageErrorUser" visible="false" icon="sap-icon://locked" showHeader="false"
 				description="Tu perfil no cuenta con los permisos para visualizar esta aplicación.." text="¡Aviso!">
 				<buttons>

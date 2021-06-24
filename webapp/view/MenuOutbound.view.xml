@@ -37,7 +37,6 @@
 						<l:GridData span="XL12 L12 M12 S12"/>
 					</layoutData>
 				</VBox>	
-				
 				<VBox id="entregaId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
 					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://activity-2" size="6rem" color="#346187" press="navToEntrega"></core:Icon>
 					<Text text="ENTREGA" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
@@ -45,7 +44,6 @@
 						<l:GridData span="XL12 L12 M12 S12"/>
 					</layoutData>
 				</VBox>	
-				
 				<VBox id="inventarioId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
 					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://form" size="6rem" color="#346187" press="navToInventario"></core:Icon>
 					<Text text="INVENTARIO" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
@@ -53,7 +51,6 @@
 						<l:GridData span="XL12 L12 M12 S12"/>
 					</layoutData>
 				</VBox>	
-				
 				<VBox id="gBodegaDiarioId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
 					<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://activity-individual" size="6rem" color="#346187" press="navToGestionBodegaDiario"></core:Icon>
 					<Text text="GESTION BODEGA" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
@@ -61,7 +58,6 @@
 						<l:GridData span="XL12 L12 M12 S12"/>
 					</layoutData>
 				</VBox>	
-				
 			</l:Grid>
 			<MessagePage id="messagePageErrorUser" visible="false" icon="sap-icon://locked" showHeader="false"
 				description="Tu perfil no cuenta con los permisos para visualizar esta aplicación.." text="¡Aviso!">

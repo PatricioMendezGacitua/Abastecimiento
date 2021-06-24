@@ -24,19 +24,19 @@ sap.ui.define([
 		},
 		iniciarApp: function () {
 			var recepaciones = this.getView().byId("recepacionesId");
-			var inbound = this.getView().byId("inboundId");
+			var ingresos = this.getView().byId("ingresosId");
 			if (recepaciones !== undefined) {
 				recepaciones.setVisible(false);
 			}
 
-			if (inbound !== undefined) {
-				inbound.setVisible(false);
+			if (ingresos !== undefined) {
+				ingresos.setVisible(false);
 			}
 
 			var messagePage = this.getView().byId("messagePageErrorUser");
-			var gridPage = this.getView().byId("gridMenuId");
+			var oVBoMenu = this.getView().byId("oVBoMenuId");
 
-			gridPage.setVisible(true);
+			oVBoMenu.setVisible(true);
 			messagePage.setVisible(false);
 
 			var datos_user_IngresoMercaderia = this._oStorage.get("datos_user_IngresoMercaderia");
@@ -46,32 +46,63 @@ sap.ui.define([
 			}
 
 			if (datos_user_IngresoMercaderia.ES_BODEGUERO) {
-				inbound.setVisible(true);
+				ingresos.setVisible(true);
 			}
 
 			if (!datos_user_IngresoMercaderia.ES_SUPERVISOR && !datos_user_IngresoMercaderia.ES_BODEGUERO) {
-				gridPage.setVisible(false);
+				oVBoMenu.setVisible(false);
 				messagePage.setVisible(true);
 			}
-
+			
+			//#region INBOUND
+			
 			this.getView().byId("recepacionesId").addEventDelegate({
 				ontap: function () {
 					this.navToRecepcions();
 				}.bind(this)
 			});
-			this.getView().byId("inboundId").addEventDelegate({
+			this.getView().byId("ingresosId").addEventDelegate({
 				ontap: function () {
-					this.navToInbound();
+					this.navToIngresos();
 				}.bind(this)
 			});
 			
-			this.getView().byId("outboundId").addEventDelegate({
+			//#endregion 
+			
+			
+			//#region OUTBOUND
+			
+			this.getView().byId("traspasosId").addEventDelegate({
 				ontap: function () {
-					this.navToMenuOutbound();
+					this.navToTraspaso();
+				}.bind(this)
+			});
+
+			this.getView().byId("trasladosId").addEventDelegate({
+				ontap: function () {
+					this.navToTraslado();
+				}.bind(this)
+			});
+
+			this.getView().byId("reservaId").addEventDelegate({
+				ontap: function () {
+					this.navToReserva();
 				}.bind(this)
 			});
 			
+			this.getView().byId("entregaId").addEventDelegate({
+				ontap: function () {
+					this.navToEntrega();
+				}.bind(this)
+			});
+
+			this.getView().byId("inventarioId").addEventDelegate({
+				ontap: function () {
+					this.navToInventario();
+				}.bind(this)
+			});
 			
+			//#endregion 
 			
 			
 			
@@ -86,14 +117,40 @@ sap.ui.define([
 				estadoIngreso: "1"
 			});
 		},
-		navToInbound: function () {
+		navToIngresos: function () {
 			this._oStorage.put("navegacion_IngresoMercaderia", "si");
 			this._route.navTo("ingresos");
 		},
 		
-		navToMenuOutbound: function () {
+		navToTraspaso: function () {
 			this._oStorage.put("navegacion_IngresoMercaderia", "si");
-			this._route.navTo("outbound");
+			this._route.navTo("traspaso");
+		},
+
+		navToTraslado: function () {
+			this._oStorage.put("navegacion_IngresoMercaderia", "si");
+			this._route.navTo("traslado");
+		},
+
+		navToInventario: function () {
+			this._oStorage.put("navegacion_IngresoMercaderia", "si");
+			this._route.navTo("inventario");
+		},
+
+		navToReserva: function () {
+			this._oStorage.put("navegacion_IngresoMercaderia", "si");
+
+			this._route.navTo("reserva_master", {
+				estadoReserva: "1"
+			});
+		},
+		
+		navToEntrega: function () {
+			this._oStorage.put("navegacion_IngresoMercaderia", "si");
+
+			this._route.navTo("Entrega_master", {
+				estadoReserva: "1"
+			});
 		}
 
 	});
