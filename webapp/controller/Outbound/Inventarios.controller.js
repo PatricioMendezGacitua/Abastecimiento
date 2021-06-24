@@ -6,7 +6,7 @@ sap.ui.define([
 	"sap/ndc/BarcodeScanner"
 ], function (BaseController, MessageToast, JSONModel, MessageBox, BarcodeScanner) {
 
-	return BaseController.extend("com.gasco.Inbound.controller.Outbound.Detail_Inventario", {
+	return BaseController.extend("com.gasco.Inbound.controller.Outbound.Inventarios", {
 
 		onInit: function () {
 			this.getOwnerComponent().getRouter().getRoute("inventario").attachMatched(this._onRouteMatched, this);
@@ -15,10 +15,10 @@ sap.ui.define([
 		_onRouteMatched: function () {
 			var oComponent = this.getOwnerComponent();
 			this._route = oComponent.getRouter();
-			this.getView().byId("idtableLPInventario").setVisible(false);
-			this.getView().byId("idGridPosInventario").setVisible(false);
-			this.getView().byId("oTitleIdLInventario").setVisible(false);
-			this.getView().byId("idGridInventario").setVisible(false);
+			//this.getView().byId("idtableLPInventario").setVisible(false);
+			//this.getView().byId("idGridPosInventario").setVisible(false);
+			//this.getView().byId("oTitleIdLInventario").setVisible(false);
+			//this.getView().byId("idGridInventario").setVisible(false);
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 			this.objectFragment = [{
 				"id": "idPosTraspasoCodMat",
@@ -62,7 +62,7 @@ sap.ui.define([
 				"required": true,
 				"type": "dt"
 			}, {
-				"id": "oInputGuiaDespachoTraspaso",
+				"id": "oInputDocumentoInventarioTraspaso",
 				"required": true,
 				"type": "ip"
 			}, {
@@ -98,69 +98,82 @@ sap.ui.define([
 		},
 
 		onPressBuscarInventario: function (oEvent) {
-			this.getView().byId("idtableLPInventario").setVisible(true);
-			this.getView().byId("idGridPosInventario").setVisible(true);
-			this.getView().byId("oTitleIdLInventario").setVisible(true);
-			this.getView().byId("idGridInventario").setVisible(true);
+			//this.getView().byId("idtableLPInventario").setVisible(true);
+			//this.getView().byId("idGridPosInventario").setVisible(true);
+			var oInputDocumentoInventario = this.getView().byId("oInputDocumentoInventarioTraspaso");
 
-			this.getView().byId("idCentroInventario").setValue("7110");
-			this.getView().byId("idAmacenInventario").setValue("1139");
+			if (oInputDocumentoInventario.getValue().trim().length > 0) {
 
-			var arrInventario = [{
-				"Pos": 10,
-				"Material": "103032",
-				"Ubicacion": "1130",
-				"DenMaterial": "Conector Codo macho 6 mm",
-				"Centro": 7110,
-				"Almacen": 1130,
-				"CantEntrega": 5,
-				"UM": "C/U",
-				"CtdPicking": 0,
-				"Lote": "",
-				"Fecha_Picking": "25.05.2021"
-			}, {
-				"Pos": 20,
-				"Material": "115009",
-				"Ubicacion": "1150",
-				"DenMaterial": "Union Tee 4 mm",
-				"Centro": 7110,
-				"Almacen": 1130,
-				"CantEntrega": 5,
-				"UM": "C/U",
-				"CtdPicking": 0,
-				"Lote": 15,
-				"Fecha_Picking": "25.05.2021"
-			}, {
-				"Pos": 30,
-				"Material": "101166",
-				"Ubicacion": "1160",
-				"DenMaterial": "GOLILLA ACRILONITRILO 23",
-				"Centro": 7110,
-				"Almacen": 1130,
-				"CantEntrega": 7,
-				"UM": "C/U",
-				"CtdPicking": 0,
-				"Lote": "",
-				"Fecha_Picking": "25.05.2021"
-			}];
+				this.getView().byId("oDatePickerFInv").setEditable(true);
+				this.getView().byId("oInputUsuarioReg").setEditable(true);
 
-			var model = new JSONModel(arrInventario);
-			this.getView().setModel(model, "oModelInventario");
+				this.getView().byId("idCentroInventario").setValue("7110");
+				this.getView().byId("idAmacenInventario").setValue("1139");
+
+				var arrInventario = [{
+					"Pos": 10,
+					"Material": "103032",
+					"Ubicacion": "1130",
+					"DenMaterial": "Conector Codo macho 6 mm",
+					"Centro": 7110,
+					"Almacen": 1130,
+					"CantEntrega": 5,
+					"UM": "C/U",
+					"CtdPicking": 0,
+					"Lote": "",
+					"Fecha_Picking": "25.05.2021"
+				}, {
+					"Pos": 20,
+					"Material": "115009",
+					"Ubicacion": "1150",
+					"DenMaterial": "Union Tee 4 mm",
+					"Centro": 7110,
+					"Almacen": 1130,
+					"CantEntrega": 5,
+					"UM": "C/U",
+					"CtdPicking": 0,
+					"Lote": 15,
+					"Fecha_Picking": "25.05.2021"
+				}, {
+					"Pos": 30,
+					"Material": "101166",
+					"Ubicacion": "1160",
+					"DenMaterial": "GOLILLA ACRILONITRILO 23",
+					"Centro": 7110,
+					"Almacen": 1130,
+					"CantEntrega": 7,
+					"UM": "C/U",
+					"CtdPicking": 0,
+					"Lote": "",
+					"Fecha_Picking": "25.05.2021"
+				}];
+
+				var model = new JSONModel(arrInventario);
+				this.getView().setModel(model, "oModelInventario");
+			} else {
+				oInputDocumentoInventario.setValueState("Error");
+				MessageToast.show("Ingrese un documento inventario para la búsqueda");
+				jQuery.sap.delayedCall(3000, this, function () {
+					oInputDocumentoInventario.setValueState("None");
+				}.bind(this));
+			}
 
 		},
 
 		btnReestablecerInventario: function (oEvent) {
 
-			this.getView().byId("idtableLPInventario").setVisible(false);
-			this.getView().byId("idGridPosInventario").setVisible(false);
-			this.getView().byId("oTitleIdLInventario").setVisible(false);
-			this.getView().byId("idGridInventario").setVisible(false);
+			//this.getView().byId("idtableLPInventario").setVisible(false);
+			//this.getView().byId("idGridPosInventario").setVisible(false);
+			this.getView().byId("idCentroInventario").setValue();
+			this.getView().byId("idAmacenInventario").setValue();
+			this.getView().byId("oDatePickerFInv").setEditable(false);
+			this.getView().byId("oInputUsuarioReg").setEditable(false);
 			var model = new JSONModel([]);
 
 			this.getView().setModel(model, "oModelInventario");
 			this.getView().getModel("oModelInventario").refresh();
 
-			this.getView().byId("oInputGuiaDespachoTraspaso").setValue("");
+			this.getView().byId("oInputDocumentoInventarioTraspaso").setValue("");
 			this.getView().byId("oDatePickerFInv").setValue("");
 			this.getView().byId("oInputPeriodo").setValue("");
 			this.getView().byId("oInputUsuarioReg").setValue("");

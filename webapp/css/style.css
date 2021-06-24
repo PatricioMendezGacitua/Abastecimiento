@@ -112,7 +112,8 @@
 }
 
 .fondoTilePM {
-    background-color: #00b8ff38;
+/*  	 background-color: #fff; */
+ background-color: #00b8ff38;
     border: 1px solid #e5e5e5;
     padding: 0.5rem;
 }

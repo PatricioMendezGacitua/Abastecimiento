@@ -183,7 +183,7 @@
 					"name": "inventario",
 					"pattern": "Inventario",
 					"target": [
-						"Detail_Inventario"
+						"Inventarios"
 					]
 				},
 				{
@@ -306,9 +306,9 @@
 					"viewType": "XML",
 					"viewName": "Outbound.Detail_Traslado"
 				},
-				"Detail_Inventario": {
+				"Inventarios": {
 					"viewType": "XML",
-					"viewName": "Outbound.Detail_Inventario"
+					"viewName": "Outbound.Inventarios"
 				},
 				"Detail_Reserva": {
 					"viewType": "XML",

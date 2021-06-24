@@ -1,4 +1,4 @@
-<mvc:View controllerName="com.gasco.Inbound.controller.Outbound.Detail_Inventario" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc"
+<mvc:View controllerName="com.gasco.Inbound.controller.Outbound.Inventarios" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc"
 	xmlns="sap.m" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:l="sap.ui.layout">
 	<html:style type="text/css">
 		div[data-mydata="0"]>div { opacity: 0.3; }
@@ -21,14 +21,38 @@
 			<l:Grid hSpacing="1" vSpacing="0.5" width="100%" class="sapUiSmallMarginTop">
 				<VBox>
 					<Label class="font-smaller" text="Documento Inventario:" required="true" design="Bold" width="100%"></Label>
-					<Input id="oInputGuiaDespachoTraspaso" type="Number" width="100%" liveChange="onUpperCase" maxLength="16"></Input>
+					<Input id="oInputDocumentoInventarioTraspaso" type="Tel" width="100%" liveChange="onlyNumber" maxLength="16"></Input>
 					<layoutData>
-						<l:GridData span="XL12 L12 M12 S12"/>
+						<l:GridData span="XL8 L8 M8 S8"/>
 					</layoutData>
 				</VBox>
-				<VBox >
+				<VBox>
+					<Label class="font-smaller" text="" required="false" width="100%"></Label>
+					<Button id="oButtonBuscarId" text="Buscar" type="Emphasized" width="100%" press="onPressBuscarInventario" icon="sap-icon://search"
+						iconFirst="true"></Button>
+					<layoutData>
+						<l:GridData span="XL4 L4 M4 S4"/>
+					</layoutData>
+				</VBox>
+				</l:Grid>
+				<l:Grid hSpacing="1" vSpacing="0.5" width="100%" class="sapUiSmallMarginTop">
+				<VBox>
+					<Label class="font-smaller" design="Bold" text="Centro:" textAlign="Begin" width="100%"></Label>
+					<Input id="idCentroInventario" editable="false" width="100%"></Input>
+					<layoutData>
+						<l:GridData span="XL6 L6 M6 S6"/>
+					</layoutData>
+				</VBox>
+				<VBox>
+					<Label class="font-smaller" design="Bold" text="Almacén:" textAlign="Begin" width="100%"></Label>
+					<Input id="idAmacenInventario" editable="false" width="100%"></Input>
+					<layoutData>
+						<l:GridData span="XL6 L6 M6 S6"/>
+					</layoutData>
+				</VBox>
+				<VBox>
 					<Label class="font-smaller" design="Bold" text="Fecha Recuento:" required="true" textAlign="Begin" width="100%"></Label>
-					<DatePicker id="oDatePickerFInv" width="100%" change="alSeleccionarFechaInv" placeholder="Seleccione..." displayFormat="dd/MM/YYYY"></DatePicker>
+					<DatePicker id="oDatePickerFInv" editable="false" width="100%" change="alSeleccionarFechaInv" placeholder="Seleccione..." displayFormat="dd/MM/YYYY"></DatePicker>
 					<layoutData>
 						<l:GridData span="XL8 L8 M8 S8"/>
 					</layoutData>
@@ -42,46 +66,19 @@
 				</VBox>
 				<VBox>
 					<Label class="font-smaller" text="Usuario Registro Inventario:" required="true" design="Bold" width="100%"></Label>
-					<Input id="oInputUsuarioReg" width="100%" liveChange="onUpperCase" maxLength="16"></Input>
+					<Input id="oInputUsuarioReg" width="100%" editable="false" liveChange="onUpperCase" maxLength="16"></Input>
 					<layoutData>
 						<l:GridData span="XL12 L12 M12 S12"/>
 					</layoutData>
 				</VBox>
-				<Button id="oButtonBuscarId" text="Buscar" type="Emphasized" width="100%" press="onPressBuscarInventario" icon="sap-icon://search"
-					iconFirst="true">
-					<layoutData>
-						<l:GridData span="XL6 L6 M6 S6"/>
-					</layoutData>
-				</Button>
-				<Button text="Restablecer" type="Ghost" width="100%" press="btnReestablecerInventario">
-					<layoutData>
-						<l:GridData span="XL6 L6 M6 S6"/>
-					</layoutData>
-				</Button>
 			</l:Grid>
-			<l:Grid id="idGridInventario" visible="false" hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
-				<VBox >
-					<Label class="font-smaller" design="Bold" text="Centro:" textAlign="Begin" width="100%"></Label>
-					<Input id="idCentroInventario" width="100%" enabled="false"></Input>
-					<layoutData>
-						<l:GridData span="XL6 L6 M6 S6"/>
-					</layoutData>
-				</VBox>
-				<VBox >
-					<Label class="font-smaller" design="Bold" text="Almacen:" textAlign="Begin" width="100%"></Label>
-					<Input id="idAmacenInventario" width="100%" enabled="false"></Input>
-					<layoutData>
-						<l:GridData span="XL6 L6 M6 S6"/>
-					</layoutData>
-				</VBox>
-			</l:Grid>
-			<l:Grid id="idGridPosInventario" visible="false" hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
+			<l:Grid id="idGridPosInventario" hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiSmallyMarginTop">
 				<Toolbar>
 					<Title class="sapUiTinyMarginBegin" id="oTitleIdLInventario" text="Posiciones (0)" visible="true"></Title>
 					<ToolbarSpacer/>
 				</Toolbar>
-				<List sticky="HeaderToolbar" visible="false" id="idtableLPInventario" selectionChange="openPH" updateFinished="countTitleLPInventario"
-					mode="None" items="{oModelInventario>/}">
+				<List sticky="HeaderToolbar" id="idtableLPInventario" selectionChange="openPH" updateFinished="countTitleLPInventario" mode="None"
+					items="{oModelInventario>/}">
 					<items>
 						<CustomListItem type="Inactive">
 							<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
@@ -148,10 +145,11 @@
 			</VBox>
 		</content>
 		<footer>
-			<OverflowToolbar>
+			<Toolbar>
 				<ToolbarSpacer/>
-				<Button type="Accept" text="Inventariar" press="btnAceptarInventario"/>
-			</OverflowToolbar>
+				<Button text="Restablecer" type="Ghost" press="btnReestablecerInventario"></Button>
+				<Button type="Emphasized" enabled="false" text="Inventariar" press="btnAceptarInventario"/>
+			</Toolbar>
 		</footer>
 	</Page>
 </mvc:View>
