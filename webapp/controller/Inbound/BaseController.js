@@ -22,39 +22,7 @@ sap.ui.define([
 	FilterOperator,
 	consultaUsuario) {
 	"use strict";
-	var sessionTime = new Date();
-	var session;
 	return Controller.extend("com.gasco.Inbound.controller.Inbound.BaseController", {
-
-		initBaseController: function () {
-			$(document.body).click(function () {
-				sessionTime = new Date();
-
-			}.bind(this));
-
-			$(document.body).keyup(function () {
-				sessionTime = new Date();
-
-			}.bind(this));
-
-			session = setInterval(function () {
-				var startMsec = new Date();
-				var elapsed = startMsec.getTime() - sessionTime.getTime();
-				if (elapsed >= 600000) {
-					clearInterval(session);
-					MessageBox.warning(
-						"La sesión del navegador ha expirado. Es necesario recargar la página. \n Pulse OK para recargar la página actual.", {
-							title: "Sesión de navegador ha expirado",
-							actions: [sap.m.MessageBox.Action.OK],
-							styleClass: "",
-							onClose: function (sAction) {
-								var myLocation = location;
-								myLocation.reload();
-							}
-						});
-				}
-			}, 600000);
-		}(),
 
 		openMoreOption: function (oEvent) {
 
@@ -573,33 +541,6 @@ sap.ui.define([
 				}.bind(this)
 			});
 
-		},
-
-		
-
-		_dialogActualizaDatos: function (oEvent) {
-			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
-
-			this._valueDialogActualizaDatos = sap.ui.xmlfragment(
-				"com.gasco.Inbound.view.fragments.dialogoActualizaDatos", this);
-
-			this._valueDialogActualizaDatos.attachAfterClose(function () {
-				this._valueDialogActualizaDatos.destroy();
-			}.bind(this));
-
-			var datos = this._oStorage.get("datos_user_IngresoMercaderia");
-			var modelUser = new JSONModel(datos);
-			this._valueDialogActualizaDatos.setModel(modelUser, "oModelUser");
-
-			this._valueDialogActualizaDatos.open();
-
-			var versionApp = "Versión v1.7.0";
-			sap.ui.getCore().byId("versionAppId").setText(versionApp);
-
-		},
-
-		dialogActualizaDatosClose: function () {
-			this._valueDialogActualizaDatos.destroy();
 		},
 
 		openListAlmacenesSupervisor: function (oEvent) {

@@ -23,8 +23,8 @@
 				<Label id="versionAppId" class="font-smaller" design="Bold" text=""></Label>
 			</HBox>
 		</content>
-		<endButton>
-			<Button type="Reject" text="Cerrar Sesión" press="logOutApp"/>
-		</endButton>
+		<buttons>
+			<Button width="100%" type="Reject" text="Cerrar Sesión" press="logOutApp"/>
+		</buttons>
 	</Dialog>
 </core:FragmentDefinition>

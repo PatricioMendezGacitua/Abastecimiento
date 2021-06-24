@@ -71,6 +71,31 @@ sap.ui.define([
 			this._menu.open(this._bKeyboard, oButton, eDock.BeginTop, eDock.BeginBottom, oButton);
 
 		},
+		
+		_dialogActualizaDatos: function (oEvent) {
+			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
+
+			this._valueDialogActualizaDatos = sap.ui.xmlfragment(
+				"com.gasco.Inbound.view.fragments.dialogoActualizaDatos", this);
+
+			this._valueDialogActualizaDatos.attachAfterClose(function () {
+				this._valueDialogActualizaDatos.destroy();
+			}.bind(this));
+
+			var datos = this._oStorage.get("datos_user_IngresoMercaderia");
+			var modelUser = new JSONModel(datos);
+			this._valueDialogActualizaDatos.setModel(modelUser, "oModelUser");
+
+			this._valueDialogActualizaDatos.open();
+
+			var versionApp = "Versión v1.7.0";
+			sap.ui.getCore().byId("versionAppId").setText(versionApp);
+
+		},
+
+		dialogActualizaDatosClose: function () {
+			this._valueDialogActualizaDatos.destroy();
+		},
 
 		consultaUser: function () {
 
