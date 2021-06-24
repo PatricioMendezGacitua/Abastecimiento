@@ -901,7 +901,8 @@ sap.ui.define([
 
 		openListAlmacenesInbound: function (oEvent) {
 			var obj = oEvent.getSource();
-			var datos = obj.getBindingContext("oModeloPosicionesIngresoMercaderia").getObject();
+			var datos = obj.getBindingContext("oModeloDataTemporalDetailReserva").getObject();
+			
 			var numeroCentro = datos.Werks;
 			this.seleccionAlmacen = obj.getText();
 			this.openListAlmacenesBase(numeroCentro, obj);
