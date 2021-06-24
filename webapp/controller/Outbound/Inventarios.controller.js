@@ -15,10 +15,7 @@ sap.ui.define([
 		_onRouteMatched: function () {
 			var oComponent = this.getOwnerComponent();
 			this._route = oComponent.getRouter();
-			//this.getView().byId("idtableLPInventario").setVisible(false);
-			//this.getView().byId("idGridPosInventario").setVisible(false);
-			//this.getView().byId("oTitleIdLInventario").setVisible(false);
-			//this.getView().byId("idGridInventario").setVisible(false);
+
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 			this.objectFragment = [{
 				"id": "idPosTraspasoCodMat",
@@ -90,20 +87,16 @@ sap.ui.define([
 
 		countTitleLPInventario: function (oEvent) {
 
-			//Actualiza el numero de registros
-
 			this.getView().byId("oTitleIdLInventario").setText("Posiciones (" + this.getView().byId("idtableLPInventario").getItems().length +
 				")");
 
 		},
 
 		onPressBuscarInventario: function (oEvent) {
-			//this.getView().byId("idtableLPInventario").setVisible(true);
-			//this.getView().byId("idGridPosInventario").setVisible(true);
 			var oInputDocumentoInventario = this.getView().byId("oInputDocumentoInventarioTraspaso");
 
 			if (oInputDocumentoInventario.getValue().trim().length > 0) {
-
+				oInputDocumentoInventario.setEditable(false);
 				this.getView().byId("oDatePickerFInv").setEditable(true);
 				this.getView().byId("oInputUsuarioReg").setEditable(true);
 
@@ -148,6 +141,14 @@ sap.ui.define([
 					"Fecha_Picking": "25.05.2021"
 				}];
 
+				arrInventario.forEach(function (element) {
+					if (element.Lote === "") {
+						element.visibleLote = false;
+					} else {
+						element.visibleLote = true;
+					}
+				}.bind(this));
+
 				var model = new JSONModel(arrInventario);
 				this.getView().setModel(model, "oModelInventario");
 			} else {
@@ -161,9 +162,7 @@ sap.ui.define([
 		},
 
 		btnReestablecerInventario: function (oEvent) {
-
-			//this.getView().byId("idtableLPInventario").setVisible(false);
-			//this.getView().byId("idGridPosInventario").setVisible(false);
+			var oInputDocumentoInventario = this.getView().byId("oInputDocumentoInventarioTraspaso");
 			this.getView().byId("idCentroInventario").setValue();
 			this.getView().byId("idAmacenInventario").setValue();
 			this.getView().byId("oDatePickerFInv").setEditable(false);
@@ -173,7 +172,8 @@ sap.ui.define([
 			this.getView().setModel(model, "oModelInventario");
 			this.getView().getModel("oModelInventario").refresh();
 
-			this.getView().byId("oInputDocumentoInventarioTraspaso").setValue("");
+			oInputDocumentoInventario.setEditable(true);
+			oInputDocumentoInventario.setValue("");
 			this.getView().byId("oDatePickerFInv").setValue("");
 			this.getView().byId("oInputPeriodo").setValue("");
 			this.getView().byId("oInputUsuarioReg").setValue("");
@@ -230,33 +230,7 @@ sap.ui.define([
 				}.bind(this)
 			});
 
-		},
-
-		/**
-		 * Similar to onAfterRendering, but this hook is invoked before the controller's View is re-rendered
-		 * (NOT before the first rendering! onInit() is used for that one!).
-		 * @memberOf com.gasco.Inbound.view.Detail_Traslado
-		 */
-		//	onBeforeRendering: function() {
-		//
-		//	},
-
-		/**
-		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
-		 * This hook is the same one that SAPUI5 controls get after being rendered.
-		 * @memberOf com.gasco.Inbound.view.Detail_Traslado
-		 */
-		//	onAfterRendering: function() {
-		//
-		//	},
-
-		/**
-		 * Called when the Controller is destroyed. Use this one to free resources and finalize activities.
-		 * @memberOf com.gasco.Inbound.view.Detail_Traslado
-		 */
-		//	onExit: function() {
-		//
-		//	}
+		}
 
 	});
 

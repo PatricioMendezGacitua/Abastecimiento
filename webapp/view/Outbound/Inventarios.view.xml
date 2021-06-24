@@ -34,8 +34,8 @@
 						<l:GridData span="XL4 L4 M4 S4"/>
 					</layoutData>
 				</VBox>
-				</l:Grid>
-				<l:Grid hSpacing="1" vSpacing="0.5" width="100%" class="sapUiSmallMarginTop">
+			</l:Grid>
+			<l:Grid hSpacing="1" vSpacing="0.5" width="100%" class="sapUiSmallMarginTop">
 				<VBox>
 					<Label class="font-smaller" design="Bold" text="Centro:" textAlign="Begin" width="100%"></Label>
 					<Input id="idCentroInventario" editable="false" width="100%"></Input>
@@ -52,7 +52,8 @@
 				</VBox>
 				<VBox>
 					<Label class="font-smaller" design="Bold" text="Fecha Recuento:" required="true" textAlign="Begin" width="100%"></Label>
-					<DatePicker id="oDatePickerFInv" editable="false" width="100%" change="alSeleccionarFechaInv" placeholder="Seleccione..." displayFormat="dd/MM/YYYY"></DatePicker>
+					<DatePicker id="oDatePickerFInv" editable="false" width="100%" change="alSeleccionarFechaInv" placeholder="Seleccione..."
+						displayFormat="dd/MM/YYYY"></DatePicker>
 					<layoutData>
 						<l:GridData span="XL8 L8 M8 S8"/>
 					</layoutData>
@@ -66,7 +67,7 @@
 				</VBox>
 				<VBox>
 					<Label class="font-smaller" text="Usuario Registro Inventario:" required="true" design="Bold" width="100%"></Label>
-					<Input id="oInputUsuarioReg" width="100%" editable="false" liveChange="onUpperCase" maxLength="16"></Input>
+					<Input id="oInputUsuarioReg" width="100%" editable="false" liveChange="onUpperCase2" maxLength="16"></Input>
 					<layoutData>
 						<l:GridData span="XL12 L12 M12 S12"/>
 					</layoutData>
@@ -83,15 +84,15 @@
 						<CustomListItem type="Inactive">
 							<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
 								<VBox>
-									<Label class="font-xSmaller" text="Material:" textAlign="Center"></Label>
+									<Label class="font-xSmaller" text="Material:" textAlign="Begin"></Label>
 									<Text class="fontBold" width="100%" text="{oModelInventario>Material}" wrapping="true"></Text>
 									<layoutData>
 										<l:GridData span="XL4 L4 M4 S4"/>
 									</layoutData>
 								</VBox>
 								<VBox>
-									<Label class="font-xSmaller" text="Lote:" textAlign="Center" width="100%"></Label>
-									<Text class="fontBold" width="100%" text="{oModelInventario>Lote}" wrapping="true" textAlign="Center"></Text>
+									<Label class="font-xSmaller" text="Ubicación" textAlign="Center" width="100%"></Label>
+									<Text class="fontBold" width="100%" text="{oModelInventario>Ubicacion}" wrapping="true" textAlign="Center"></Text>
 									<layoutData>
 										<l:GridData span="XL4 L4 M4 S4"/>
 									</layoutData>
@@ -104,34 +105,33 @@
 									</layoutData>
 								</VBox>
 								<VBox>
-									<Label class="font-xSmaller" text="Denominación Material:" textAlign="Center" width="100%"></Label>
-									<Text class="fontBold" width="100%" text="{oModelInventario>DenMaterial}" textAlign="Center" wrapping="true"></Text>
+									<Label class="font-xSmaller" text="Denominación Material:" textAlign="Begin" width="100%"></Label>
+									<Text class="fontBold" width="100%" text="{oModelInventario>DenMaterial}" textAlign="Begin" wrapping="true"></Text>
 									<layoutData>
 										<l:GridData span="XL12 L12 M12 S12"/>
 									</layoutData>
 								</VBox>
 								<VBox>
-									<Label class="font-xSmaller" text="Cantidad:" textAlign="Center" required="true" width="100%"></Label>
-									<Input class="fontBold" width="100%" textAlign="Center" type="Number"></Input>
+									<Label class="font-xSmaller" text="Cantidad:" textAlign="Begin" required="true" width="100%"></Label>
+									<StepInput min="0" width="100%" textAlign="Center"/>
 									<layoutData>
-										<l:GridData span="XL5 L5 M4 S4"/>
+										<l:GridData span="XL8 L8 M8 S8"/>
 									</layoutData>
 								</VBox>
 								<VBox>
 									<Label class="font-xSmaller" text="Und. Medida:" textAlign="Center" width="100%"></Label>
-									<Text class="fontBold" width="100%" text="{oModelInventario>UM}" wrapping="true" textAlign="Center"></Text>
+									<Text class="fontBold sapUiTinyMarginTop" width="100%" text="{oModelInventario>UM}" wrapping="true" textAlign="Center"></Text>
 									<layoutData>
 										<l:GridData span="XL4 L4 M4 S4"/>
 									</layoutData>
 								</VBox>
-								<VBox>
-									<Label class="font-xSmaller" text="Ubicación" textAlign="Center" width="100%"></Label>
-									<Text class="fontBold" width="100%" text="{oModelInventario>Ubicacion}" wrapping="true" textAlign="Center"></Text>
+								<VBox visible="{oModelInventario>visibleLote}">
+									<Label class="font-xSmaller" text="Lote:" textAlign="Begin" width="100%"></Label>
+									<Text class="fontBold" width="100%" text="{oModelInventario>Lote}" wrapping="true" textAlign="Begin"></Text>
 									<layoutData>
-										<l:GridData span="XL4 L4 M4 S4"/>
+										<l:GridData span="XL12 L12 M12 S12"/>
 									</layoutData>
 								</VBox>
-								<!--<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%"></l:Grid>-->
 							</l:Grid>
 						</CustomListItem>
 					</items>
@@ -148,7 +148,7 @@
 			<Toolbar>
 				<ToolbarSpacer/>
 				<Button text="Restablecer" type="Ghost" press="btnReestablecerInventario"></Button>
-				<Button type="Emphasized" enabled="false" text="Inventariar" press="btnAceptarInventario"/>
+				<Button type="Emphasized" text="Inventariar" press="btnAceptarInventario"/>
 			</Toolbar>
 		</footer>
 	</Page>
