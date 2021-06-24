@@ -1,12 +1,12 @@
 sap.ui.define([
-			"com/gasco/Inbound/controller/BaseController",
+			"com/gasco/Inbound/controller/Outbound/BaseController",
 			"sap/m/MessageToast",
 			"sap/ui/model/json/JSONModel",
 			"sap/m/MessageBox",
 			"sap/ndc/BarcodeScanner"
 		], function (BaseController, MessageToast, JSONModel, MessageBox, BarcodeScanner) {
 
-			return BaseController.extend("com.gasco.Inbound.controller.Detail_Traspaso", {
+			return BaseController.extend("com.gasco.Inbound.controller.Outbound.Detail_Traspaso", {
 
 				onInit: function () {
 					this.getOwnerComponent().getRouter().getRoute("traspaso").attachMatched(this._onRouteMatched, this);
@@ -231,7 +231,7 @@ sap.ui.define([
 
 								this.cerrar(this.InputsViewCabeceraTraslado, "", "vista");
 
-								this._route.navTo("outbound");
+								this._route.navTo("Menu");
 							}
 						}.bind(this)
 					});
@@ -390,7 +390,7 @@ sap.ui.define([
 											this.modeloPosTraspaso = new JSONModel([]);
 											this.getView().setModel(this.modeloPosTraspaso, "oModelPosTraslado");
 											this.getView().getModel().refresh();
-											this._route.navTo("outbound");
+											this._route.navTo("Menu");
 										}.bind(this));
 
 									} else {

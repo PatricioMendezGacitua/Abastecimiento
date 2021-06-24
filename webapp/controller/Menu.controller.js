@@ -23,6 +23,7 @@ sap.ui.define([
 			}
 		},
 		iniciarApp: function () {
+			this.getView().byId("oPageAbastecimientoId").scrollTo(0,0);
 			var recepaciones = this.getView().byId("recepacionesId");
 			var ingresos = this.getView().byId("ingresosId");
 			if (recepaciones !== undefined) {

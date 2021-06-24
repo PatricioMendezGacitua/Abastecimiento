@@ -1,12 +1,12 @@
 sap.ui.define([
-			"com/gasco/Inbound/controller/BaseController",
+			"com/gasco/Inbound/controller/Outbound/BaseController",
 			"sap/m/MessageToast",
 			"sap/ui/model/json/JSONModel",
 			"sap/m/MessageBox",
 			"sap/ndc/BarcodeScanner"
 		], function (BaseController, MessageToast, JSONModel, MessageBox, BarcodeScanner) {
 
-			return BaseController.extend("com.gasco.Inbound.controller.Detail_Inventario", {
+			return BaseController.extend("com.gasco.Inbound.controller.Outbound.Detail_Inventario", {
 
 				onInit: function () {
 					this.getOwnerComponent().getRouter().getRoute("inventario").attachMatched(this._onRouteMatched, this);
@@ -171,7 +171,7 @@ sap.ui.define([
 										jQuery.sap.delayedCall(3000, this, function () {
 
 											this.btnReestablecerInventario();
-											//this._route.navTo("outbound");
+											//this._route.navTo("Menu");
 										}.bind(this));
 
 									/*} else {
@@ -204,10 +204,8 @@ sap.ui.define([
 						onClose: function (sAction) {
 							if (sAction === "Si") {
 								this._oStorage.put("logeoIngresoMerecaderia", "Si");
-
-							
 								this.btnReestablecerInventario();
-								this._route.navTo("outbound");
+								this._route.navTo("Menu");
 							}
 						}.bind(this)
 					});

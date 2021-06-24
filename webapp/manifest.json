@@ -166,13 +166,6 @@
 					]
 				},
 				{
-					"name": "outbound",
-					"pattern": "Egresos",
-					"target": [
-						"MenuOutbound"
-					]
-				},
-				{
 					"name": "traspaso",
 					"pattern": "Traspaso",
 					"target": [
@@ -277,9 +270,6 @@
 				"Ingresos": {
 					"viewName": "Inbound.Ingresos"
 				},
-				"menuOutbound": {
-					"viewName": "MenuOutbound"
-				},
 				"splitscreenTarget": {
 					"viewName": "Inbound.SplitScreen",
 					"viewId": "splitView"
@@ -308,46 +298,42 @@
 				"SplitScreen": {
 					"viewName": "Inbound.SplitScreen"
 				},
-				"MenuOutbound": {
-					"viewType": "XML",
-					"viewName": "MenuOutbound"
-				},
 				"Detail_Traspaso": {
 					"viewType": "XML",
-					"viewName": "Detail_Traspaso"
+					"viewName": "Outbound.Detail_Traspaso"
 				},
 				"Detail_Traslado": {
 					"viewType": "XML",
-					"viewName": "Detail_Traslado"
+					"viewName": "Outbound.Detail_Traslado"
 				},
 				"Detail_Inventario": {
 					"viewType": "XML",
-					"viewName": "Detail_Inventario"
+					"viewName": "Outbound.Detail_Inventario"
 				},
 				"Detail_Reserva": {
 					"viewType": "XML",
-					"viewName": "Detail_Reserva"
+					"viewName": "Outbound.Detail_Reserva"
 				},
 				"Detail_Zero_Outbound": {
 					"viewType": "XML",
-					"viewName": "Detail_Zero_Outbound"
+					"viewName": "Outbound.Detail_Zero_Outbound"
 				},
 				"Master_Reserva": {
 					"viewType": "XML",
-					"viewName": "Master_Reserva"
+					"viewName": "Outbound.Master_Reserva"
 				}
 				,
 				"Detail_Entrega": {
 					"viewType": "XML",
-					"viewName": "Detail_Entrega"
+					"viewName": "Outbound.Detail_Entrega"
 				},
 				"Detail_Zero_Outbound_Entrega": {
 					"viewType": "XML",
-					"viewName": "Detail_Zero_Outbound_Entrega"
+					"viewName": "Outbound.Detail_Zero_Outbound_Entrega"
 				},
 				"Master_Entrega": {
 					"viewType": "XML",
-					"viewName": "Master_Entrega"
+					"viewName": "Outbound.Master_Entrega"
 				}
 			}
 		}

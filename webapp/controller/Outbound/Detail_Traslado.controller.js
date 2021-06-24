@@ -1,12 +1,12 @@
 sap.ui.define([
-	"com/gasco/Inbound/controller/BaseControllerOutbound",
+	"com/gasco/Inbound/controller/Outbound/BaseController",
 	"sap/m/MessageToast",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
 	"sap/ndc/BarcodeScanner"
 ], function (BaseController, MessageToast, JSONModel, MessageBox, BarcodeScanner) {
 
-	return BaseController.extend("com.gasco.Inbound.controller.Detail_Traslado", {
+	return BaseController.extend("com.gasco.Inbound.controller.Outbound.Detail_Traslado", {
 
 		onInit: function () {
 			this.getOwnerComponent().getRouter().getRoute("traslado").attachMatched(this._onRouteMatched, this);
@@ -297,7 +297,7 @@ sap.ui.define([
 							this.getView().byId("btnAceptarTraslado").setEnabled(false);
 							this.getView().byId("btnReestablecerTraslado").setEnabled(false);
 							this.getView().byId("oButtonBuscarId").setEnabled(true);
-							//this._route.navTo("outbound");
+							//this._route.navTo("Menu");
 						}.bind(this));
 
 						/*} else {
@@ -361,7 +361,7 @@ sap.ui.define([
 						this._oStorage.put("logeoIngresoMerecaderia", "Si");
 
 						this.btnReestablecerTraslado();
-						this._route.navTo("outbound");
+						this._route.navTo("Menu");
 					}
 				}.bind(this)
 			});

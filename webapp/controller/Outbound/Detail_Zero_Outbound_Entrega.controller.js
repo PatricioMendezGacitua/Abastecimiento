@@ -3,7 +3,7 @@ sap.ui.define([
 ], function (Controller) {
 	"use strict";
 
-	return Controller.extend("com.gasco.Inbound.controller.Detail_Zero_Outbound_Entrega", {
+	return Controller.extend("com.gasco.Inbound.controller.Outbound.Detail_Zero_Outbound_Entrega", {
 
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.

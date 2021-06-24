@@ -24,7 +24,7 @@ sap.ui.define([
 	"use strict";
 	var sessionTime = new Date();
 	var session;
-	return Controller.extend("com.gasco.Inbound.controller.BaseController", {
+	return Controller.extend("com.gasco.Inbound.controller.Outbound.BaseController", {
 
 		initBaseController: function () {
 			$(document.body).click(function () {

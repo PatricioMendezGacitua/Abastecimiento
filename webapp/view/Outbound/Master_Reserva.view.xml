@@ -1,13 +1,13 @@
 <mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout"
-	controllerName="com.gasco.Inbound.controller.Master_Entrega" xmlns:html="http://www.w3.org/1999/xhtml">
-	<Page id="idPageMaster" title="Entregas (0)" showFooter="true" floatingFooter="false">
+	controllerName="com.gasco.Inbound.controller.Outbound.Master_Reserva" xmlns:html="http://www.w3.org/1999/xhtml">
+	<Page id="idPageMaster" title="Reservas (0)" showFooter="true" floatingFooter="false">
 		<customHeader>
 			<Bar>
 				<contentLeft>
 					<Button type="Transparent" icon="sap-icon://navigation-left-arrow" press="onBackHomeOutbound"></Button>
 				</contentLeft>
 				<contentMiddle>
-					<Text id="idPagina" text="Entregas (0)"></Text>
+					<Text id="idPagina" text="Reservas (0)"></Text>
 				</contentMiddle>
 				<contentRight>
 					<Button icon="sap-icon://vertical-grip" type="Transparent" tooltip="Más Opciones" press="openMoreOption"/>
@@ -16,78 +16,82 @@
 		</customHeader>
 		<subHeader>
 			<Toolbar width="100%">
-				<SearchField id="oSearchFieldBuscarEntregaId" liveChange="onlyNumberChart" search="buscarAutocompletarEntrega" width="100%" showRefreshButton="true"/>
+				<SearchField id="oSearchFieldBuscarReservaId" liveChange="onlyNumberChart" search="buscarAutocompletarReserva" width="100%" showRefreshButton="true"/>
 			</Toolbar>
 		</subHeader>
 		<content>
-			<PullToRefresh id="pullToRefreshEntrega" refresh="handleRefreshEntrega"/>
-			<List id="idList" selectionChange="onListItemPressed" sticky="InfoToolbar" mode="SingleSelectMaster" delete="onAnulaEntrega" includeItemInSelection="true"
-				items="{oModeloTemporalesEntrega>/}" noDataText="Sin resultados.">
+			<PullToRefresh id="pullToRefreshReserva" refresh="handleRefreshReserva"/>
+			<List id="idList" selectionChange="onListItemPressed" sticky="InfoToolbar" mode="SingleSelectMaster" delete="onAnulaReserva" includeItemInSelection="true"
+				items="{oModeloTemporalesReserva>/}" noDataText="Sin resultados.">
 				<infoToolbar>
 					<Toolbar active="false">
-						<Label class="fontXXSmall" text="Búsqueda por: Reserva"/>
+						<Label class="fontXXSmall" text="Búsqueda por: Reserva o Almacén"/>
 					</Toolbar>
 				</infoToolbar>
 				<CustomListItem type="Navigation">
 					<VBox class="sapUiSmallMarginBegin sapUiSmallMarginTop sapUiSmallMarginBottom" width="auto" height="100%">
 						<l:Grid hSpacing="0,1" vSpacing="0,1">
-							<Title class="sapUiTinyMarginTop" text="Reserva N°{oModeloTemporalesEntrega>ID_RESERVA}" level="H4" titleStyle="H4" wrapping="true">
+							<Title class="sapUiTinyMarginTop" text="Reserva N°{oModeloTemporalesReserva>NRORESERVA}" level="H4" titleStyle="H4" wrapping="true">
 								<layoutData>
 									<l:GridData span="XL7 L7 M7 S8"/>
 								</layoutData>
 							</Title>
 							<VBox width="auto" height="35px" justifyContent="Center" alignItems="Center">
-								<ObjectStatus text="{oModeloTemporalesEntrega>TITULO_ESTADO_INGRESO}" state="{oModeloTemporalesEntrega>STATE_ESTADO_INGRESO}" inverted="true"></ObjectStatus>
+								<ObjectStatus text="{oModeloTemporalesReserva>TITULO_ESTADO_INGRESO}" state="{oModeloTemporalesReserva>STATE_ESTADO_INGRESO}" inverted="true"></ObjectStatus>
 								<layoutData>
 									<l:GridData span="XL5 L5 M5 S4"/>
 								</layoutData>
 							</VBox>
 						</l:Grid>
-						<HBox width="100%" height="100%">
+						<HBox width="100%" height="100%" visible="false">
 							<Label text="Posición:"></Label>
-							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>POSICION}" wrapping="true"></Text>
+							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesReserva>POSICION}" wrapping="true"></Text>
 							<layoutData>
 									<l:GridData span="XL5 L5 M6 S6"/>
 								</layoutData>
 						</HBox>
 						<HBox width="100%" height="100%">
 							<Label text="Tipo Despacho:"></Label>
-							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>TIPO_DESPACHO}" wrapping="true"></Text>
+							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesReserva>TIPO_DESPACHO}" wrapping="true"></Text>
 						</HBox>
-						<HBox width="100%" height="100%">
-							<Label text="Denominación:"></Label>
-							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>DENOMINACION}" wrapping="true"></Text>
-						</HBox>
+						
 						<HBox width="100%" height="100%">
 							<Label text="Centro:"></Label>
-							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>CENTRO}" wrapping="true"></Text>
+							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesReserva>CENTRO}" wrapping="true"></Text>
 						</HBox>
 						<HBox width="100%" height="100%">
 							<Label text="Almacen:"></Label>
-							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>ALMACEN}" wrapping="true"></Text>
+							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesReserva>ALMACEN}" wrapping="true"></Text>
 						</HBox>
 						<HBox width="100%" height="100%">
 							<Label text="Material:"></Label>
-							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>MATERIAL}" wrapping="true"></Text>
+							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesReserva>MATERIAL}" wrapping="true"></Text>
 						</HBox>
+						
+						<HBox width="100%" height="100%"   visible="false">
+							<Label text="Denominación:"></Label>
+							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesReserva>DENOMINACION}" wrapping="true"></Text>
+						</HBox>
+						
+						
 						<HBox width="100%" height="100%">
 							<Label text="Texto Breve:"></Label>
-							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>TEXTO_BREVE}" wrapping="true"></Text>
+							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesReserva>TEXTO_BREVE}" wrapping="true"></Text>
 								<layoutData>
 									<l:GridData span="XL5 L5 M6 S6"/>
 								</layoutData>
 						</HBox>
 						<HBox width="100%" height="100%">
 							<Label text="Ejecutado Por:"></Label>
-							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>EJECUTADO}" wrapping="true"></Text>
+							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesReserva>EJECUTADO}" wrapping="true"></Text>
 						</HBox>
-							<HBox width="100%" height="100%">
+							<HBox width="100%" height="100%"  visible="false">
 							<Label text="Cant. Solicitada:"></Label>
-							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>CANT_SOL}" wrapping="true"></Text>
+							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesReserva>CANT_SOL}" wrapping="true"></Text>
 						</HBox>
 						<HBox width="100%" height="100%">
 							<Label text="Fecha y Hora:"></Label>
-							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>FECHA_A_PRESENTAR} - {oModeloTemporalesEntrega>HORA_A_PRESENTAR}" textAlign="Center"
+							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesReserva>FECHA_A_PRESENTAR} - {oModeloTemporalesReserva>HORA_A_PRESENTAR}" textAlign="Center"
 								width="100%" wrapping="true"></Text>
 						</HBox>
 						<!--<HBox width="100%" height="100%" visible="{oModeloTemporalesReserva>VISIBLE_NRO_DOCUMENTO}">
@@ -99,7 +103,7 @@
 				</CustomListItem>
 			</List>
 		</content>
-		<footer>
+		<!--<footer>
 			<Bar>
 				<contentLeft></contentLeft>
 				<contentMiddle>
@@ -117,6 +121,6 @@
 					<ToggleButton id="oToggleButtonAnularOCId" type="Transparent" icon="sap-icon://delete" pressed="false" press="onToggleAnularOrden"></ToggleButton>
 				</contentRight>
 			</Bar>
-		</footer>
+		</footer>-->
 	</Page>
 </mvc:View>

@@ -1,64 +1,55 @@
 sap.ui.define([
-	"com/gasco/Inbound/controller/BaseController",
+	"com/gasco/Inbound/controller/Outbound/BaseController",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageToast",
 	"sap/m/MessageBox"
 ], function (Controller, JSONModel, MessageToast, MessageBox) {
 	"use strict";
 
-	return Controller.extend("com.gasco.Inbound.controller.Detail_Entrega", {
+	return Controller.extend("com.gasco.Inbound.controller.Outbound.Detail_Reserva", {
 
 		onInit: function () {
 			this._route = this.getOwnerComponent().getRouter();
-			this._route.getRoute("Entrega_Detail").attachMatched(this._onRouteMatched, this);
+			this._route.getRoute("Reserva_Detail").attachMatched(this._onRouteMatched, this);
 		},
 
 		_onRouteMatched: function (oEvent) {
-			this.corre =1;
+
 			var oArgs = oEvent.getParameter("arguments");
-				this.idIngreso = oArgs.ingreso;
-				this.idEstadoIngreso = oArgs.estadoIngreso;
+			this.idIngreso = oArgs.idReserva;
+			this.idEstadoIngreso = oArgs.ingreso;
+			
+
+			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
+			if (this._oStorage.get("navegacion_IngresoMercaderia") === "si") {
+				this._oStorage.put("navegacion_IngresoMercaderia", "no");
+				var model = sap.ui.getCore().getModel("oModeloTemporalesReservaCore").getData();
+				this.openBusyDialogCargando();
+
 				this.getView().byId("tituloDetalleSolicitudView").setText("Detalle Reserva N°" + this.idIngreso);
-                var arr = [{
-                	"codMaterial":101529,
-                	"unidad":"C/U",
-                	"centro":7110,
-                	"almacen":1100,
-                	"posicion": 10,
-                	"Lote":"",
-                	"ubicacion": 1109,
-                	"cantidad":3,
-                	"URL":"",
-                	"DOCUMENTO":""
-                	
-                },
-                {
-                	"codMaterial":101539,
-                	"unidad":"C/U",
-                	"centro":7110,
-                	"almacen":1100,
-                	"posicion": 20,
-                	"Lote":"45",
-                	"ubicacion": 1109,
-                	"cantidad":3
-                	
-                }
-                ];
-                var model = new JSONModel(arr);
-		this.getView().setModel(model,"oModeloDataTemporalDetailEntrega");
-		
+				this.cargaPosiciones(model, this.idIngreso).then(function (respuestacargaPosiciones) {
+					var oModel = new JSONModel(respuestacargaPosiciones);
+
+					this.getView().setModel(oModel, "oModeloDataTemporalDetailReserva");
+					this.BusyDialogCargando.close();
+
+				}.bind(this));
+			} else {
+				this.resetMasterDetail();
+			}
+
 			
-			
+
 		},
-		
-		
-		countTitleLPEntrega: function(oEvent) {
 
-					//Actualiza el numero de registros
+		countTitleLPReserva: function (oEvent) {
 
-					this.getView().byId("oTitleIdLEntregaDetail").setText("Posiciones Entrega(" + this.getView().byId("idtableLPEntrega").getItems().length + ")");
+			//Actualiza el numero de registros
 
-				},
+			this.getView().byId("oTitleIdLReservaDetail").setText("Posiciones Reserva(" + this.getView().byId("idtableLPReserva").getItems().length +
+				")");
+
+		},
 
 		enabledObjectView: function (cond) {
 			var oVBoxRecepcion = this.getView().byId("oVBoxRecepcionId");
@@ -79,107 +70,101 @@ sap.ui.define([
 		},
 
 		iniciarView: function (idEstadoIngreso) {
-		//	this.openBusyDialogCargando();
-		
-		var data = [{
-			"TITULO_ESTADO_POSICION": "Preparando"
-		}];
-		
-		
-		
-		
-		
-		this.bindView(data);
-		
-		
-		
-		/*	this.temporalesPorUsuarioConectado(this.userSCPCod, this.idIngreso, this.idEstadoIngreso, true).then(function (
-				respuestaTemporalesPorUsuarioConectado) {
-				var data = respuestaTemporalesPorUsuarioConectado[0];
-				this.idOC = data.ID_OC;
-				this.ordenDeCompra = data.ORDEN_DE_COMPRA;
-				this.idEstadoIngresoFull = data.ID_ESTADO_INGRESO;
-				var oObjectStatus = this.getView().byId("oObjectStatusId");
+			//	this.openBusyDialogCargando();
 
-				oObjectStatus.setState(data.STATE_ESTADO_INGRESO);
-				oObjectStatus.setText(data.TITULO_ESTADO_INGRESO);
-				oObjectStatus.setVisible(data.VISIBLE_ESTADO_INGRESO);
+			var data = [{
+				"TITULO_ESTADO_POSICION": "Preparando"
+			}];
 
-				var oFooterPage = this.getView().byId("oFooterPageId");
-				oFooterPage.setVisible(true);
+			this.bindView(data);
 
-				var numeroDocumentoVBOX = this.getView().byId("idNumeroDocumentoVBOX");
-				var oTextNroDocuento = this.getView().byId("oTextNroDocuentoId");
+			/*	this.temporalesPorUsuarioConectado(this.userSCPCod, this.idIngreso, this.idEstadoIngreso, true).then(function (
+					respuestaTemporalesPorUsuarioConectado) {
+					var data = respuestaTemporalesPorUsuarioConectado[0];
+					this.idOC = data.ID_OC;
+					this.ordenDeCompra = data.ORDEN_DE_COMPRA;
+					this.idEstadoIngresoFull = data.ID_ESTADO_INGRESO;
+					var oObjectStatus = this.getView().byId("oObjectStatusId");
 
-				numeroDocumentoVBOX.setVisible(data.VISIBLE_NRO_DOCUMENTO);
-				oTextNroDocuento.setText(data.NUMERO_INGRESO_ERP);
+					oObjectStatus.setState(data.STATE_ESTADO_INGRESO);
+					oObjectStatus.setText(data.TITULO_ESTADO_INGRESO);
+					oObjectStatus.setVisible(data.VISIBLE_ESTADO_INGRESO);
 
-				var textoErrorVBOX = this.getView().byId("idTextoErrorVBOX");
-				var oTextMotivoFalla = this.getView().byId("oTextMotivoFallaId");
+					var oFooterPage = this.getView().byId("oFooterPageId");
+					oFooterPage.setVisible(true);
 
-				textoErrorVBOX.setVisible(data.VISIBLE_TEXTO_ERROR);
-				oTextMotivoFalla.setText(data.TEXTO_ERROR);
+					var numeroDocumentoVBOX = this.getView().byId("idNumeroDocumentoVBOX");
+					var oTextNroDocuento = this.getView().byId("oTextNroDocuentoId");
 
-				var oInputOCRecepcion = this.getView().byId("oInputOCRecepcion");
-				var oDatePickerFCRecepcion = this.getView().byId("oDatePickerFCRecepcion");
-				var oInputPatenteRecepcion = this.getView().byId("oInputPatenteRecepcion");
-				var oInputGuiaDespachoRecepcion = this.getView().byId("oInputGuiaDespachoRecepcion");
-				var oDatePickerFDRecepcion = this.getView().byId("oDatePickerFDRecepcion");
-				var oTextAreaObservacionRecepcion = this.getView().byId("oTextAreaObservacionRecepcion");
-				var oButtonRecepcionar = this.getView().byId("oButtonRecepcionarId");
-				oButtonRecepcionar.setEnabled(false);
+					numeroDocumentoVBOX.setVisible(data.VISIBLE_NRO_DOCUMENTO);
+					oTextNroDocuento.setText(data.NUMERO_INGRESO_ERP);
 
-				var arrPicker = [{
-					id: "oDatePickerFDRecepcion",
-					type: "date"
-				}, {
-					id: "oDatePickerFCRecepcion",
-					type: "date"
-				}];
+					var textoErrorVBOX = this.getView().byId("idTextoErrorVBOX");
+					var oTextMotivoFalla = this.getView().byId("oTextMotivoFallaId");
 
-				this.functionDisablePicker(arrPicker);
+					textoErrorVBOX.setVisible(data.VISIBLE_TEXTO_ERROR);
+					oTextMotivoFalla.setText(data.TEXTO_ERROR);
 
-				////oDatePickerFDRecepcion.setMaxDate(new Date());
+					var oInputOCRecepcion = this.getView().byId("oInputOCRecepcion");
+					var oDatePickerFCRecepcion = this.getView().byId("oDatePickerFCRecepcion");
+					var oInputPatenteRecepcion = this.getView().byId("oInputPatenteRecepcion");
+					var oInputGuiaDespachoRecepcion = this.getView().byId("oInputGuiaDespachoRecepcion");
+					var oDatePickerFDRecepcion = this.getView().byId("oDatePickerFDRecepcion");
+					var oTextAreaObservacionRecepcion = this.getView().byId("oTextAreaObservacionRecepcion");
+					var oButtonRecepcionar = this.getView().byId("oButtonRecepcionarId");
+					oButtonRecepcionar.setEnabled(false);
 
-				var hoy = new Date();
-				var unMesesEnMilisegundos = 2629750000;
-				var resta = hoy.getTime() - unMesesEnMilisegundos;
+					var arrPicker = [{
+						id: "oDatePickerFDRecepcion",
+						type: "date"
+					}, {
+						id: "oDatePickerFCRecepcion",
+						type: "date"
+					}];
 
-				var primerDiaDelMes = new Date(resta);
-				primerDiaDelMes = primerDiaDelMes.setDate(1);
+					this.functionDisablePicker(arrPicker);
 
-				var fechaHaceTresMesesEnMilisegundos = new Date(primerDiaDelMes);
-				oDatePickerFCRecepcion.setMinDate(new Date(fechaHaceTresMesesEnMilisegundos));
-				oDatePickerFCRecepcion.setMaxDate(hoy);
+					////oDatePickerFDRecepcion.setMaxDate(new Date());
 
-				oInputOCRecepcion.setValue(data.ORDEN_DE_COMPRA);
-				oDatePickerFCRecepcion.setDateValue(this.fechaRevert(data.FECHA_CONTABILIZACION));
-				oInputPatenteRecepcion.setValue(data.PATENTE);
-				oInputGuiaDespachoRecepcion.setValue(data.GUIA_DESPACHO);
-				oDatePickerFDRecepcion.setDateValue(this.fechaRevert(data.FECHA_GUIA_DESPACHO));
-				oTextAreaObservacionRecepcion.setValue(data.OBSERVACION);
+					var hoy = new Date();
+					var unMesesEnMilisegundos = 2629750000;
+					var resta = hoy.getTime() - unMesesEnMilisegundos;
 
-				var countSeriado = 0;
-				data.POSICIONES.forEach(function (element, index) {
-					if (element.TITULO_TIPO_POSICION === "Seriado") {
-						countSeriado++;
-					}
+					var primerDiaDelMes = new Date(resta);
+					primerDiaDelMes = primerDiaDelMes.setDate(1);
 
-					if (data.POSICIONES.length === (index + 1)) {
-						if (countSeriado === 0) {
-							oButtonRecepcionar.setEnabled(true);
-						} else {
-							MessageBox.information('Ingreso temporal N°' + this.idIngreso +
-								' cuenta con una o más posiciones de tipo "Seriado". \n Para recepcionar esté ingreso debe acceder desde el Portal Web.', {
-									title: "Aviso",
-									onClose: function (sAction) {}.bind(this)
-								});
+					var fechaHaceTresMesesEnMilisegundos = new Date(primerDiaDelMes);
+					oDatePickerFCRecepcion.setMinDate(new Date(fechaHaceTresMesesEnMilisegundos));
+					oDatePickerFCRecepcion.setMaxDate(hoy);
+
+					oInputOCRecepcion.setValue(data.ORDEN_DE_COMPRA);
+					oDatePickerFCRecepcion.setDateValue(this.fechaRevert(data.FECHA_CONTABILIZACION));
+					oInputPatenteRecepcion.setValue(data.PATENTE);
+					oInputGuiaDespachoRecepcion.setValue(data.GUIA_DESPACHO);
+					oDatePickerFDRecepcion.setDateValue(this.fechaRevert(data.FECHA_GUIA_DESPACHO));
+					oTextAreaObservacionRecepcion.setValue(data.OBSERVACION);
+
+					var countSeriado = 0;
+					data.POSICIONES.forEach(function (element, index) {
+						if (element.TITULO_TIPO_POSICION === "Seriado") {
+							countSeriado++;
 						}
-					}
-				}.bind(this));
 
-				this.bindView(data);
-			}.bind(this));*/
+						if (data.POSICIONES.length === (index + 1)) {
+							if (countSeriado === 0) {
+								oButtonRecepcionar.setEnabled(true);
+							} else {
+								MessageBox.information('Ingreso temporal N°' + this.idIngreso +
+									' cuenta con una o más posiciones de tipo "Seriado". \n Para recepcionar esté ingreso debe acceder desde el Portal Web.', {
+										title: "Aviso",
+										onClose: function (sAction) {}.bind(this)
+									});
+							}
+						}
+					}.bind(this));
+
+					this.bindView(data);
+				}.bind(this));*/
 
 		},
 
@@ -268,113 +253,72 @@ sap.ui.define([
 				}
 			}.bind(this));
 		},
-		
-		btnReestablecerEntrega: function(oEvent){
-			
+
+		btnReestablecerReserva: function (oEvent) {
+
 			MessageBox.information('¿Seguro deseas cancelar?', {
-							title: "Aviso",
-							actions: ["Si", "No"],
-							styleClass: "",
-							onClose: function (sAction) {
-								if (sAction === "Si") {
-									//this._oStorage.put("logeoIngresoMerecaderia", "Si");
-									//if (!this.validar(this.InputsViewCabeceraTraslado, "", "vista")) {
-													this._route.navTo("Entrega_master_Dos", {
-													estadoReserva: "Cancelar",
-													idreserva: this.idIngreso
-													
-											});
-										
-										
+				title: "Aviso",
+				actions: ["Si", "No"],
+				styleClass: "",
+				onClose: function (sAction) {
+					if (sAction === "Si") {
+						//this._oStorage.put("logeoIngresoMerecaderia", "Si");
+						//if (!this.validar(this.InputsViewCabeceraTraslado, "", "vista")) {
+						this._route.navTo("reserva_master_Dos", {
+							estadoReserva: "Cancelar",
+							idreserva: this.idIngreso
 
-									/*} else {
-										MessageToast.show("Complete los datos obligatorios.");
-										jQuery.sap.delayedCall(3000, this, function () {
-											this.cerrar(this.InputsViewCabeceraTraslado, "", "vista");
-											this.quitarState(this.InputsViewCabeceraTraslado, "", "vista");
-										}.bind(this));
-									}*/
-									
+						});
 
-									
-								}
-							}.bind(this)
+						/*} else {
+							MessageToast.show("Complete los datos obligatorios.");
+							jQuery.sap.delayedCall(3000, this, function () {
+								this.cerrar(this.InputsViewCabeceraTraslado, "", "vista");
+								this.quitarState(this.InputsViewCabeceraTraslado, "", "vista");
+							}.bind(this));
+						}*/
 
-					
-				});
+					}
+				}.bind(this)
+
+			});
 		},
-		capturePhoto: function (oEvent) {
-			this.path = oEvent.getSource().getBindingContext("oModeloDataTemporalDetailEntrega").getPath();
-			this.path = this.path.slice(1,this.path.length);
-			var oNav = navigator.camera;
-			oNav.getPicture(this.onPhotoDataSuccess.bind(this), this.onFail, {
-				quality: 25,
-				destinationType: oNav.DestinationType.DATA_URL
+
+		onReservar: function (oEvent) {
+
+			MessageBox.information('¿Seguro deseas reservar?', {
+				title: "Aviso",
+				actions: ["Si", "No"],
+				styleClass: "",
+				onClose: function (sAction) {
+					if (sAction === "Si") {
+						//this._oStorage.put("logeoIngresoMerecaderia", "Si");
+						//if (!this.validar(this.InputsViewCabeceraTraslado, "", "vista")) {
+
+						MessageToast.show("Reserva Realizada");
+						jQuery.sap.delayedCall(3000, this, function () {
+							//t
+							this._route.navTo("reserva_master_Dos", {
+								estadoReserva: "Reservar",
+								idreserva: this.idIngreso
+
+							});
+							//this._route.navTo("outbound");
+						}.bind(this));
+
+						/*} else {
+							MessageToast.show("Complete los datos obligatorios.");
+							jQuery.sap.delayedCall(3000, this, function () {
+								this.cerrar(this.InputsViewCabeceraTraslado, "", "vista");
+								this.quitarState(this.InputsViewCabeceraTraslado, "", "vista");
+							}.bind(this));
+						}*/
+
+					}
+				}.bind(this)
+
 			});
 
-		},
-		
-		onPhotoDataSuccess: function (imageData) {
-
-			var imagen = "data:image/png;base64," + imageData;
-			var carousel = this.getView().byId("myImageEntregaProyecto");
-			var oModelImages = this.getView().getModel("oModeloDataTemporalDetailEntrega");
-			var json = {
-				URL: imagen,
-				VISIBLE: true
-			};
-			oModelImages.getData()[this.path].URL="imagen_" + this.corre +".jpg"
-			oModelImages.refresh();
-			this.corre ++;
-
-		},
-		
-		onEntregar: function(oEvent){
-			
-					MessageBox.information('¿Seguro deseas Entregar?', {
-							title: "Aviso",
-							actions: ["Si", "No"],
-							styleClass: "",
-							onClose: function (sAction) {
-								if (sAction === "Si") {
-									//this._oStorage.put("logeoIngresoMerecaderia", "Si");
-									//if (!this.validar(this.InputsViewCabeceraTraslado, "", "vista")) {
-
-										MessageToast.show("Entrega Realizada");
-										jQuery.sap.delayedCall(3000, this, function () {
-                                            //t
-											this._route.navTo("Entrega_master_Dos", {
-													estadoReserva: "Entregar",
-													idreserva: this.idIngreso
-													
-											});
-											//this._route.navTo("outbound");
-										}.bind(this));
-
-									/*} else {
-										MessageToast.show("Complete los datos obligatorios.");
-										jQuery.sap.delayedCall(3000, this, function () {
-											this.cerrar(this.InputsViewCabeceraTraslado, "", "vista");
-											this.quitarState(this.InputsViewCabeceraTraslado, "", "vista");
-										}.bind(this));
-									}*/
-									
-
-									
-								}
-							}.bind(this)
-
-					
-				});
-					
-				
-			
-			
-			
-			
-			
-			
-			
 		},
 
 		recepcionarComoSupervisor: function () {
@@ -678,9 +622,11 @@ sap.ui.define([
 		},
 
 		resetMasterDetail: function () {
-			this._oStorage.put("navegacion_IngresoMercaderia", "si");
-			this.getOwnerComponent().getRouter().navTo("Recepciones_Master", {
-				estadoIngreso: this.idEstadoIngreso
+			//this._oStorage.put("navegacion_IngresoMercaderia", "si");
+			this.getOwnerComponent().getRouter().navTo("reserva_master_Dos", {
+				estadoReserva: this.idEstadoIngreso,
+				idreserva: this.idIngreso
+
 			});
 		},
 
