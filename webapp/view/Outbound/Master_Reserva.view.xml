@@ -63,7 +63,7 @@
 							<Label text="Almacen:"></Label>
 							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesReserva>ALMACEN}" wrapping="true"></Text>
 						</HBox>
-						<HBox width="100%" height="100%">
+						<HBox width="100%" height="100%"   visible="false">
 							<Label text="Material:"></Label>
 							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesReserva>MATERIAL}" wrapping="true"></Text>
 						</HBox>
