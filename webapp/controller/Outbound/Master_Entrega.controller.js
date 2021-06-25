@@ -114,7 +114,7 @@ sap.ui.define([
 			var oComponent = this.getOwnerComponent();
 			this._route = oComponent.getRouter();
 			var oArgs = oEvent.getParameter("arguments");
-			
+			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 			this.rootViewName = oEvent.getParameter("name");
 			this.texto = "Preparada";
 			this.state = "Warning";
@@ -137,8 +137,27 @@ sap.ui.define([
 			if (oArgs.estadoIngreso == "4") {
 				this.idEstadoIngreso = "1";
 			}
-           
-this.iniciarView("X", this.idEstadoIngreso);
+			
+			            this.getView().byId("oSearchFieldBuscarEntregaId").setValue();
+			//this.iniciarView("X", this.idEstadoIngreso);
+            var sValueNroSAP = "ADGCONSULTIN";
+            var sValueTipo = "PRE";
+          
+			this.busquedaReserva(sValueNroSAP,sValueTipo, "Entrega").then(function (respuestabusquedaReserva) {
+				
+				this.getView().byId("idPageMaster").scrollTo(0, 0, 1000);
+			this.openBusyDialogCargando();
+
+			
+
+			this.bindItemsList(respuestabusquedaReserva.datos);
+				
+				
+				
+			}.bind(this));	
+			
+           /*
+this.iniciarView("X", this.idEstadoIngreso);*/
 		/*	this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 			if (this._oStorage.get("navegacion_IngresoMercaderia") !== null) {
 				this._oStorage.put("navegacion_IngresoMercaderia", null);
@@ -290,7 +309,7 @@ this.iniciarView("X", this.idEstadoIngreso);
 
 		},
 
-		eliminaDuplicado: function (tuArreglo, atributodetuArreglo) {
+		/*eliminaDuplicado: function (tuArreglo, atributodetuArreglo) {
 			var nuevoArreglo = [];
 			var nuevoJson = {};
 
@@ -318,7 +337,7 @@ this.iniciarView("X", this.idEstadoIngreso);
 				nuevoArreglo.push(nuevoJson[e]);
 			}
 			return nuevoArreglo;
-		},
+		},*/
 
 		desLista: function () {
 
@@ -333,8 +352,8 @@ this.iniciarView("X", this.idEstadoIngreso);
 
 		bindItemsList: function (temporales) {
 
-			var toggle = this.getView().byId("oToggleButtonAnularOCId");
-			toggle.setEnabled(true);
+			/*var toggle = this.getView().byId("oToggleButtonAnularOCId");
+			toggle.setEnabled(true);*/
 			var oModeloTemporales = new JSONModel([]);
 			this.getView().setModel(oModeloTemporales, "oModeloTemporalesEntrega");
 
@@ -343,7 +362,7 @@ this.iniciarView("X", this.idEstadoIngreso);
 			}
 
 			if (temporales.length === 0) {
-				toggle.setEnabled(false);
+			
 			}
 
 			oModeloTemporales.setData(temporales);
@@ -400,13 +419,13 @@ this.iniciarView("X", this.idEstadoIngreso);
 			var base = evento;
 			var paths = base.getBindingContext("oModeloTemporalesEntrega").getPath();
 
-			var idIngreso = base.getBindingContext("oModeloTemporalesEntrega").getProperty(paths).ID_RESERVA;
-			var idEstadoIngreso = base.getBindingContext("oModeloTemporalesEntrega").getProperty(paths).ID_ESTADO_INGRESO;
+			var idReserva = base.getBindingContext("oModeloTemporalesEntrega").getProperty(paths).NRORESERVA;
+			var idEstadoIngreso = 1;//base.getBindingContext("oModeloTemporalesEntrega").getProperty(paths).ID_ESTADO_INGRESO;
 
-			//this._oStorage.put("navegacion_IngresoMercaderia", "si");
+			this._oStorage.put("navegacion_IngresoMercaderia", "si");
 			this.getOwnerComponent().getRouter().navTo("Entrega_Detail", {
-				ingreso: idIngreso,
-				estadoIngreso: idEstadoIngreso
+				idReserva: idReserva,
+				ingreso: idEstadoIngreso
 			});
 		}
 

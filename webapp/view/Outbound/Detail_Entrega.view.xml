@@ -36,11 +36,27 @@
 							<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
 								<VBox>
 									<Label class="font-xSmaller" text="Material:" textAlign="Center" width="100%"></Label>
-									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>codMaterial}" textAlign="Center" wrapping="true"></Text>
+									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>Matnr}" textAlign="Center" wrapping="true"></Text>
+									<layoutData>
+										<l:GridData span="XL4 L4 M9 S9"/>
+									</layoutData>
+								</VBox>
+								
+									<VBox>
+									<Label class="font-xSmaller" text="Posición:" width="100%" textAlign="Center"></Label>
+									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>Rspos}" textAlign="Center" wrapping="true"></Text>
 									<layoutData>
 										<l:GridData span="XL4 L4 M3 S3"/>
 									</layoutData>
 								</VBox>
+								
+								
+								
+								
+								
+								
+								
+								
 								<VBox>
 									<Label class="font-xSmaller" text="Centro:" textAlign="Center" width="100%"></Label>
 									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>centro}" textAlign="Center" wrapping="true"></Text>
@@ -55,13 +71,7 @@
 										<l:GridData span="XL5 L5 M3 S3"/>
 									</layoutData>
 								</VBox>
-								<VBox>
-									<Label class="font-xSmaller" text="Posición:" width="100%" textAlign="Center"></Label>
-									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>posicion}" textAlign="Center" wrapping="true"></Text>
-									<layoutData>
-										<l:GridData span="XL4 L4 M3 S3"/>
-									</layoutData>
-								</VBox>
+							
 								<VBox>
 									<Label class="font-xSmaller" text="Cantidad:" textAlign="Center" required="true" width="100%"></Label>
 									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>cantidad}" wrapping="true" textAlign="Center"></Text>

@@ -253,7 +253,7 @@
 				},
 				{
 					"name": "Entrega_Detail",
-					"pattern": "Entrega_Detail/{ingreso}/{estadoIngreso}",
+					"pattern": "Entrega_Detail/{ingreso}/{idReserva}",
 					"target": [
 						"Master_Entrega",
 						"Detail_Entrega"

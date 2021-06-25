@@ -142,7 +142,7 @@ sap.ui.define([
             var sValueNroSAP = "ADGCONSULTIN";
             var sValueTipo = "PEN";
           
-			this.busquedaReserva(sValueNroSAP,sValueTipo).then(function (respuestabusquedaReserva) {
+			this.busquedaReserva(sValueNroSAP,sValueTipo, "Reserva").then(function (respuestabusquedaReserva) {
 				
 				this.getView().byId("idPageMaster").scrollTo(0, 0, 1000);
 			this.openBusyDialogCargando();

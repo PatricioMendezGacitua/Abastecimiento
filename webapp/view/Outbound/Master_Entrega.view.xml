@@ -25,13 +25,13 @@
 				items="{oModeloTemporalesEntrega>/}" noDataText="Sin resultados.">
 				<infoToolbar>
 					<Toolbar active="false">
-						<Label class="fontXXSmall" text="Búsqueda por: Reserva"/>
+						<Label class="fontXXSmall" text="Búsqueda por: Reserva  o Almacén"/>
 					</Toolbar>
 				</infoToolbar>
 				<CustomListItem type="Navigation">
 					<VBox class="sapUiSmallMarginBegin sapUiSmallMarginTop sapUiSmallMarginBottom" width="auto" height="100%">
 						<l:Grid hSpacing="0,1" vSpacing="0,1">
-							<Title class="sapUiTinyMarginTop" text="Reserva N°{oModeloTemporalesEntrega>ID_RESERVA}" level="H4" titleStyle="H4" wrapping="true">
+							<Title class="sapUiTinyMarginTop" text="Reserva N°{oModeloTemporalesEntrega>NRORESERVA}" level="H4" titleStyle="H4" wrapping="true">
 								<layoutData>
 									<l:GridData span="XL7 L7 M7 S8"/>
 								</layoutData>
@@ -54,7 +54,7 @@
 							<Label text="Tipo Despacho:"></Label>
 							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>TIPO_DESPACHO}" wrapping="true"></Text>
 						</HBox>
-						<HBox width="100%" height="100%">
+						<HBox width="100%" height="100%"   visible="false">
 							<Label text="Denominación:"></Label>
 							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>DENOMINACION}" wrapping="true"></Text>
 						</HBox>
@@ -62,11 +62,11 @@
 							<Label text="Centro:"></Label>
 							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>CENTRO}" wrapping="true"></Text>
 						</HBox>
-						<HBox width="100%" height="100%">
+						<HBox width="100%" height="100%"   visible="false">
 							<Label text="Almacen:"></Label>
 							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>ALMACEN}" wrapping="true"></Text>
 						</HBox>
-						<HBox width="100%" height="100%">
+						<HBox width="100%" height="100%"   visible="false">
 							<Label text="Material:"></Label>
 							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>MATERIAL}" wrapping="true"></Text>
 						</HBox>
@@ -81,7 +81,7 @@
 							<Label text="Ejecutado Por:"></Label>
 							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>EJECUTADO}" wrapping="true"></Text>
 						</HBox>
-							<HBox width="100%" height="100%">
+							<HBox width="100%" height="100%"   visible="false">
 							<Label text="Cant. Solicitada:"></Label>
 							<Text class="sapUiTinyMarginBegin" text="{oModeloTemporalesEntrega>CANT_SOL}" wrapping="true"></Text>
 						</HBox>
@@ -99,7 +99,7 @@
 				</CustomListItem>
 			</List>
 		</content>
-		<footer>
+		<!--<footer>
 			<Bar>
 				<contentLeft></contentLeft>
 				<contentMiddle>
@@ -117,6 +117,6 @@
 					<ToggleButton id="oToggleButtonAnularOCId" type="Transparent" icon="sap-icon://delete" pressed="false" press="onToggleAnularOrden"></ToggleButton>
 				</contentRight>
 			</Bar>
-		</footer>
+		</footer>-->
 	</Page>
 </mvc:View>
