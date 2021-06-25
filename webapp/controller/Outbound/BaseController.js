@@ -311,7 +311,7 @@ sap.ui.define([
 										var tipoModelo = (tipo = "Reserva") ? "oModeloTemporalesReservaCore" : "oModeloTemporalesEntregaCore";
 										sap.ui.getCore().setModel(data, tipoModelo);
 										var model = sap.ui.getCore().getModel(tipoModelo).getData();
-										debugger
+										
 										resolve({
 											mensajeError: "",
 											datos: datosF

@@ -44,13 +44,13 @@ sap.ui.define([
 				
 			}
 			];*/
-			
+
 			this.getView().setModel(model, "oModeloDataTemporalDetailEntrega");
 
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 			if (this._oStorage.get("navegacion_IngresoMercaderia") === "si") {
 				this._oStorage.put("navegacion_IngresoMercaderia", "no");
-				debugger
+
 				var model = sap.ui.getCore().getModel("oModeloTemporalesReservaCore").getData();
 				this.openBusyDialogCargando();
 
@@ -674,8 +674,9 @@ sap.ui.define([
 
 		resetMasterDetail: function () {
 			this._oStorage.put("navegacion_IngresoMercaderia", "si");
-			this.getOwnerComponent().getRouter().navTo("Recepciones_Master", {
-				estadoIngreso: this.idEstadoIngreso
+			this.getOwnerComponent().getRouter().navTo("Entrega_master_Dos", {
+				estadoReserva: this.idEstadoIngreso,
+				idreserva: this.idIngreso
 			});
 		},
 
