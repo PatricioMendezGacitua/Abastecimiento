@@ -64,6 +64,36 @@ sap.ui.define([
 			}
 
 		},
+		
+		buscarAutocompletarEntrega: function (oEvent) {
+			
+			var sValue = oEvent.getSource().getValue();
+			var filterFinal = [];
+			if (sValue.trim().length > 0) {
+				var oFilterNombre = new Filter({
+					path: "NRORESERVA",
+					operator: FilterOperator.Contains,
+					value1: sValue,
+					caseSensitive: false
+				});
+				var oFilterApellido = new Filter({
+					path: "ALMACEN",
+					operator: FilterOperator.Contains,
+					value1: sValue,
+					caseSensitive: false
+				});
+				
+				filterFinal = new Filter({
+					filters: [oFilterNombre, oFilterApellido],
+					and: false
+				});
+			}
+
+			var oList = this.byId("idList");
+			var oBinding = oList.getBinding("items");
+		
+			oBinding.filter(filterFinal, "Application");
+			},
 
 		onlyNumber: function (oEvent) {
 			var obj = oEvent.getSource();

@@ -310,6 +310,7 @@ sap.ui.define([
 			});
 		},
 		capturePhoto: function (oEvent) {
+			debugger
 			this.path = oEvent.getSource().getBindingContext("oModeloDataTemporalDetailEntrega").getPath();
 			this.path = this.path.slice(1, this.path.length);
 			var oNav = navigator.camera;

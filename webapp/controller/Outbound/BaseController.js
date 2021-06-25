@@ -298,7 +298,7 @@ sap.ui.define([
 									record.FECHA_A_PRESENTAR = this.convertFechaXSJS(datos[e].Dexdat);
 									record.HORA_A_PRESENTAR = this.getHora(datos[e].Texdat);
 									record.NRORESERVA = datos[e].Rsnum;
-									record.TITULO_ESTADO_INGRESO = (sValueTipo === "PEN") ? "Pendiente" : "Pendiente Reserva";
+									record.TITULO_ESTADO_INGRESO = (sValueTipo === "PEN") ? "Pendiente" : "Pend. Reserva";
 									record.STATE_ESTADO_INGRESO = "Warning"; // (sValueTipo === "PEN") ? "Warning" : "Warning";
 
 									datosFinal.push(record);
