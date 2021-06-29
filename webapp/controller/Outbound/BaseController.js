@@ -375,7 +375,14 @@ sap.ui.define([
 			var retorno = obj.setValue(obj.getValue().replace(/[^-A-Za-z0-9]+/g, '').toUpperCase());
 			return retorno;
 		},
-
+		
+		
+		onUpperCase2: function (oEvent) {
+			var obj = oEvent.getSource();
+			var retorno = obj.setValue(obj.getValue().replace(/[^ -ZA-za-z0-9]+/g, '').toUpperCase());
+			return retorno;
+		},
+		
 		onlyNumber: function (oEvent) {
 			var obj = oEvent.getSource();
 			var retorno = obj.setValue(obj.getValue().replace(/[^0-9]+/g, ''));
