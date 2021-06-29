@@ -287,17 +287,63 @@ sap.ui.define([
 		},
 
 		onReservar: function (oEvent) {
-
+			
 			MessageBox.information('¿Seguro deseas reservar?', {
 				title: "Aviso",
 				actions: ["Si", "No"],
 				styleClass: "",
 				onClose: function (sAction) {
 					if (sAction === "Si") {
+						var idList = this.getView().byId("idtableLPReserva");
+						
+						//var countPos = this.getView().byId("idtableLPReserva").getItems().length;
+						
+						var recorrerPosiciones = function (element, index) {
+							 if (element.length === index) {
+							 	
+							 	
+							 	
+							 	
+							 	
+							 	
+							 }else{
+							 	
+							 	
+							 	
+							 }
+							
+							
+	                    }.bind(this);
+						
+						idList.getItems().forEach(function (elementt, indexx) {
+							debugger
+						var pos1 = elementt.getContent()[0].getContent()[1].getContent();
+						//var check = pos1[7].getItems()[0].getSelected();
+						/*if (check) {
+							posicionesSeleccionadas.push(elementt);
+						}*/
+
+						/*if (idList.getItems().length === indexx + 1) {
+							recorrerPosiciones(posicionesSeleccionadas, 0);
+						}*/
+					}.bind(this));
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
 						//this._oStorage.put("logeoIngresoMerecaderia", "Si");
 						//if (!this.validar(this.InputsViewCabeceraTraslado, "", "vista")) {
 
-						MessageToast.show("Reserva Realizada");
+						/*MessageToast.show("Reserva Realizada");
 						jQuery.sap.delayedCall(3000, this, function () {
 							//t
 							this._route.navTo("reserva_master_Dos", {
@@ -305,8 +351,8 @@ sap.ui.define([
 								idreserva: this.idIngreso
 
 							});
-							//this._route.navTo("outbound");
-						}.bind(this));
+						
+						}.bind(this));*/
 
 						/*} else {
 							MessageToast.show("Complete los datos obligatorios.");

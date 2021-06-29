@@ -123,7 +123,7 @@
 					</CustomListItem>
 				</items>
 			</List>
-			<Carousel class="sapUiContentPadding" loop="true" visible="false">
+			<Carousel id= class="sapUiContentPadding" loop="true" visible="false">
 				<Image src="{img>/products/pic1}" alt="Example picture of speakers"/>
 				<Image src="{img>/products/pic2}" alt="Example picture of USB flash drive"/>
 				<Image src="{img>/products/pic3}" alt="Example picture of spotlight"/>
