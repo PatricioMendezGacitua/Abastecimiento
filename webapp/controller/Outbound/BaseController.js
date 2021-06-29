@@ -1045,6 +1045,29 @@ sap.ui.define([
 				}.bind(this));
 
 		},
+		
+		getCentrosERP: function () {
+			return new Promise(
+				function resolver(resolve) {
+
+					this.getView().getModel("oModelSAPERP").read('/ListaCentroSet', {
+						success: function (oResult) {
+							var datos = oResult.results;
+
+							if (datos.length > 0) {
+								resolve(datos);
+							} else {
+								resolve([]);
+							}
+						}.bind(this),
+						error: function (oError) {
+							resolve([]);
+						}.bind(this)
+					});
+
+				}.bind(this));
+
+		},
 
 		onBackMenu: function () {
 			this._oStorage.put("logeoIngresoMerecaderia", null);
