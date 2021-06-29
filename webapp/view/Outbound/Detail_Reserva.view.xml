@@ -61,7 +61,7 @@
 								</VBox>
 								
 								<VBox>
-									<Label class="font-xSmaller" text="Ubicacion:" textAlign="Center" width="100%"></Label>
+									<Label class="font-xSmaller" text="Ubicación:" textAlign="Center" width="100%"></Label>
 									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailReserva>Lgpbe}" wrapping="true" textAlign="Center"></Text>
 									<layoutData>
 										<l:GridData span="XL4 L4 M4 S4"/>

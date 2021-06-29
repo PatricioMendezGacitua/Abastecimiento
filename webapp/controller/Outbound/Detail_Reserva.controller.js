@@ -23,11 +23,13 @@ sap.ui.define([
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 			if (this._oStorage.get("navegacion_IngresoMercaderia") === "si") {
 				this._oStorage.put("navegacion_IngresoMercaderia", "no");
+					
 				var model = sap.ui.getCore().getModel("oModeloTemporalesReservaCore").getData();
 				this.openBusyDialogCargando();
 
 				this.getView().byId("tituloDetalleSolicitudView").setText("Detalle Reserva N°" + this.idIngreso);
-				this.cargaPosiciones(model, this.idIngreso).then(function (respuestacargaPosiciones) {
+				this.cargaPosiciones(model, this.idIngreso, "Reserva").then(function (respuestacargaPosiciones) {
+				
 					var oModel = new JSONModel(respuestacargaPosiciones);
 
 					this.getView().setModel(oModel, "oModeloDataTemporalDetailReserva");

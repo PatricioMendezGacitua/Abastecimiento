@@ -95,7 +95,7 @@ sap.ui.define([
 
 		},
 
-		cargaPosiciones: function (data, idReserva) {
+		cargaPosiciones: function (data, idReserva, tipo) {
 			return new Promise(
 				function resolver(resolve) {
 					var oModel = [];
@@ -126,12 +126,17 @@ sap.ui.define([
 						}
 						if (data.length === (e + 1)) {
 
-							this.consultaConOrden(arrayUbicaciones, oModel).then(function (respuestaconsultaConOrden) {
-								this.ordenarUbicaciones(respuestaconsultaConOrden, oModel).then(function (respuestaOrdenarUbicaciones) {
-									resolve(respuestaOrdenarUbicaciones);
-								}.bind(this));
-							}.bind(this));
+							if (tipo === "Entrega") {
+								resolve(oModel);
+								
+							} else {
 
+								this.consultaConOrden(arrayUbicaciones, oModel).then(function (respuestaconsultaConOrden) {
+									this.ordenarUbicaciones(respuestaconsultaConOrden, oModel).then(function (respuestaOrdenarUbicaciones) {
+										resolve(respuestaOrdenarUbicaciones);
+									}.bind(this));
+								}.bind(this));
+							}
 						}
 					}
 
@@ -237,7 +242,7 @@ sap.ui.define([
 				}.bind(this));
 		},
 
-		busquedaReserva: function (nroSAP, sValueTipo) {
+		busquedaReserva: function (nroSAP, sValueTipo, tipo) {
 			return new Promise(
 				function resolver(resolve) {
 					var aFil = [];
@@ -293,8 +298,8 @@ sap.ui.define([
 									record.FECHA_A_PRESENTAR = this.convertFechaXSJS(datos[e].Dexdat);
 									record.HORA_A_PRESENTAR = this.getHora(datos[e].Texdat);
 									record.NRORESERVA = datos[e].Rsnum;
-									record.TITULO_ESTADO_INGRESO = (sValueTipo === "PEN") ? "Pendiente" : "";
-									record.STATE_ESTADO_INGRESO = (sValueTipo === "PEN") ? "Warning" : "";
+									record.TITULO_ESTADO_INGRESO = (sValueTipo === "PEN") ? "Pendiente" : "Pend. Reserva";
+									record.STATE_ESTADO_INGRESO = "Warning"; // (sValueTipo === "PEN") ? "Warning" : "Warning";
 
 									datosFinal.push(record);
 
@@ -303,9 +308,10 @@ sap.ui.define([
 										datosF = this.eliminaDuplicado(datosFinal, "NRORESERVA");
 
 										var data = new JSONModel(datos);
-										sap.ui.getCore().setModel(data, "oModeloTemporalesReservaCore");
-										var model = sap.ui.getCore().getModel("oModeloTemporalesReservaCore").getData();
-
+										var tipoModelo = (tipo = "Reserva") ? "oModeloTemporalesReservaCore" : "oModeloTemporalesEntregaCore";
+										sap.ui.getCore().setModel(data, tipoModelo);
+										var model = sap.ui.getCore().getModel(tipoModelo).getData();
+										
 										resolve({
 											mensajeError: "",
 											datos: datosF
@@ -915,7 +921,7 @@ sap.ui.define([
 		openListAlmacenesInbound: function (oEvent) {
 			var obj = oEvent.getSource();
 			var datos = obj.getBindingContext("oModeloDataTemporalDetailReserva").getObject();
-			
+
 			var numeroCentro = datos.Werks;
 			this.seleccionAlmacen = obj.getText();
 			this.openListAlmacenesBase(numeroCentro, obj);
