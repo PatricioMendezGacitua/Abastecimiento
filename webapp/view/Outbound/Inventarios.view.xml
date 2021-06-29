@@ -38,14 +38,14 @@
 			<l:Grid hSpacing="1" vSpacing="0.5" width="100%" class="sapUiSmallMarginTop">
 				<VBox>
 					<Label class="font-smaller" design="Bold" text="Centro:" textAlign="Begin" width="100%"></Label>
-					<Input id="idCentroInventario" editable="false" width="100%"></Input>
+					<Input value="{oModelInventario>/Centro}" editable="false" width="100%"></Input>
 					<layoutData>
 						<l:GridData span="XL6 L6 M6 S6"/>
 					</layoutData>
 				</VBox>
 				<VBox>
 					<Label class="font-smaller" design="Bold" text="Almacén:" textAlign="Begin" width="100%"></Label>
-					<Input id="idAmacenInventario" editable="false" width="100%"></Input>
+					<Input value="{oModelInventario>/Almacen}" editable="false" width="100%"></Input>
 					<layoutData>
 						<l:GridData span="XL6 L6 M6 S6"/>
 					</layoutData>
@@ -79,7 +79,7 @@
 					<ToolbarSpacer/>
 				</Toolbar>
 				<List sticky="HeaderToolbar" id="idtableLPInventario" selectionChange="openPH" updateFinished="countTitleLPInventario" mode="None"
-					items="{oModelInventario>/}">
+					items="{oModelInventario>/Detalle}">
 					<items>
 						<CustomListItem type="Inactive">
 							<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">

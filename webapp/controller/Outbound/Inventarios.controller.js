@@ -100,48 +100,41 @@ sap.ui.define([
 				this.getView().byId("oDatePickerFInv").setEditable(true);
 				this.getView().byId("oInputUsuarioReg").setEditable(true);
 
-				this.getView().byId("idCentroInventario").setValue("7110");
-				this.getView().byId("idAmacenInventario").setValue("1139");
-
-				var arrInventario = [{
-					"Pos": 10,
-					"Material": "103032",
+				var arrInventario = {
+				"Centro": "7110",
+				"Almacen": "1130",
+				"Detalle": [{
+					"Pos": 1,
+					"Material": "101373",
 					"Ubicacion": "1130",
-					"DenMaterial": "Conector Codo macho 6 mm",
-					"Centro": 7110,
-					"Almacen": 1130,
-					"CantEntrega": 5,
+					"DenMaterial": "LAPIZ PASTA BIC ORANGE AZUL",
 					"UM": "C/U",
-					"CtdPicking": 0,
-					"Lote": "",
-					"Fecha_Picking": "25.05.2021"
+					"Lote": ""
 				}, {
-					"Pos": 20,
-					"Material": "115009",
+					"Pos": 2,
+					"Material": "101371",
 					"Ubicacion": "1150",
-					"DenMaterial": "Union Tee 4 mm",
-					"Centro": 7110,
-					"Almacen": 1130,
-					"CantEntrega": 5,
+					"DenMaterial": "LAPIZ PASTA BIC CRISTAL NEGRO",
 					"UM": "C/U",
-					"CtdPicking": 0,
-					"Lote": 15,
-					"Fecha_Picking": "25.05.2021"
+					"Lote": 15
 				}, {
-					"Pos": 30,
-					"Material": "101166",
+					"Pos": 3,
+					"Material": "101372",
 					"Ubicacion": "1160",
-					"DenMaterial": "GOLILLA ACRILONITRILO 23",
-					"Centro": 7110,
-					"Almacen": 1130,
-					"CantEntrega": 7,
+					"DenMaterial": "LAPIZ PASTA BIC CRISTAL ROJO",
 					"UM": "C/U",
-					"CtdPicking": 0,
-					"Lote": "",
-					"Fecha_Picking": "25.05.2021"
-				}];
-
-				arrInventario.forEach(function (element) {
+					"Lote": ""
+				}, {
+					"Pos": 4,
+					"Material": "101375",
+					"Ubicacion": "1160",
+					"DenMaterial": "LAPIZ PASTA BIC ORANGE ROJO",
+					"UM": "C/U",
+					"Lote": ""
+				}]
+				};
+				
+				arrInventario.Detalle.forEach(function (element) {
 					if (element.Lote === "") {
 						element.visibleLote = false;
 					} else {
@@ -163,8 +156,6 @@ sap.ui.define([
 
 		btnReestablecerInventario: function (oEvent) {
 			var oInputDocumentoInventario = this.getView().byId("oInputDocumentoInventarioTraspaso");
-			this.getView().byId("idCentroInventario").setValue();
-			this.getView().byId("idAmacenInventario").setValue();
 			this.getView().byId("oDatePickerFInv").setEditable(false);
 			this.getView().byId("oInputUsuarioReg").setEditable(false);
 			var model = new JSONModel([]);
