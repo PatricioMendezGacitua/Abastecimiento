@@ -112,7 +112,7 @@
 								</VBox>
 								<VBox>
 									<Label class="font-xSmaller" text="Cantidad:" textAlign="Begin" required="false" width="100%"></Label>
-									<StepInput min="0" width="100%" textAlign="Center"/>
+									<Input liveChange="onlyDecimal" width="100%" textAlign="Center" maxLength="100"/>
 									<layoutData>
 										<l:GridData span="XL8 L8 M8 S8"/>
 									</layoutData>
@@ -147,7 +147,7 @@
 			<Toolbar>
 				<ToolbarSpacer/>
 				<Button text="Restablecer" type="Ghost" press="btnReestablecerInventario"></Button>
-				<Button type="Emphasized" text="Inventariar" press="btnAceptarInventario"/>
+				<Button id="oButtonInventariarId" enabled="false" type="Emphasized" text="Inventariar" press="btnAceptarInventario"/>
 			</Toolbar>
 		</footer>
 	</Page>

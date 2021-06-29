@@ -1,16 +1,16 @@
-<mvc:View controllerName="com.gasco.Inbound.controller.Outbound.Detail_Traspaso" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"
+<mvc:View controllerName="com.gasco.Inbound.controller.Outbound.Traspasos" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m"
 	xmlns:html="http://www.w3.org/1999/xhtml" xmlns:l="sap.ui.layout">
 	<html:style type="text/css">
 		div[data-mydata="0"]>div { opacity: 0.3; }
 	</html:style>
-	<Page title="Traspaso" id="oPageTraspasoId">
+	<Page title="Traspasos" id="oPageTraspasoId">
 		<customHeader>
 			<Bar>
 				<contentLeft>
 					<Button type="Transparent" icon="sap-icon://navigation-left-arrow" press="onBackHomeOutbound"></Button>
 				</contentLeft>
 				<contentMiddle>
-					<Text text="TRASPASO"></Text>
+					<Text text="TRASPASOS"></Text>
 				</contentMiddle>
 				<contentRight>
 					<Button icon="sap-icon://vertical-grip" type="Transparent" tooltip="Más Opciones" press="openMoreOption"/>

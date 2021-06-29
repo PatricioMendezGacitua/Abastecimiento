@@ -6,7 +6,7 @@ sap.ui.define([
 			"sap/ndc/BarcodeScanner"
 		], function (BaseController, MessageToast, JSONModel, MessageBox, BarcodeScanner) {
 
-			return BaseController.extend("com.gasco.Inbound.controller.Outbound.Detail_Traspaso", {
+			return BaseController.extend("com.gasco.Inbound.controller.Outbound.Traspasos", {
 
 				onInit: function () {
 					this.getOwnerComponent().getRouter().getRoute("traspaso").attachMatched(this._onRouteMatched, this);

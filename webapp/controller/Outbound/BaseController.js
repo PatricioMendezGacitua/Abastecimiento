@@ -388,6 +388,12 @@ sap.ui.define([
 			var retorno = obj.setValue(obj.getValue().replace(/[^0-9]+/g, ''));
 			return retorno;
 		},
+		
+		onlyDecimal: function (oEvent) {
+			var obj = oEvent.getSource();
+			var retorno = obj.setValue(obj.getValue().replace(/[^, 0-9]+/g, ''));
+			return retorno;
+		},
 
 		formatterEditableZero: function (sValue) {
 			var retorno = true;

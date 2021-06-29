@@ -169,7 +169,7 @@
 					"name": "traspaso",
 					"pattern": "Traspaso",
 					"target": [
-						"Detail_Traspaso"
+						"Traspasos"
 					]
 				},
 				{
@@ -298,9 +298,9 @@
 				"SplitScreen": {
 					"viewName": "Inbound.SplitScreen"
 				},
-				"Detail_Traspaso": {
+				"Traspasos": {
 					"viewType": "XML",
-					"viewName": "Outbound.Detail_Traspaso"
+					"viewName": "Outbound.Traspasos"
 				},
 				"Detail_Traslado": {
 					"viewType": "XML",
