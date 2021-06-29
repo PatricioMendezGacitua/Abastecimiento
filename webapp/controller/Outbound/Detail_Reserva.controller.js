@@ -317,11 +317,16 @@ sap.ui.define([
 						
 						idList.getItems().forEach(function (elementt, indexx) {
 							debugger
-						var pos1 = elementt.getContent()[0].getContent()[1].getContent();
-						//var check = pos1[7].getItems()[0].getSelected();
-						/*if (check) {
-							posicionesSeleccionadas.push(elementt);
-						}*/
+						var cantEnv = elementt.getContent()[0].getItems()[0].getContent()[9].getItems()[1].getValue();
+						
+						if(cantEnv>0){
+							var pos = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Rspos; 
+							var 
+							
+							
+							
+						}
+					
 
 						/*if (idList.getItems().length === indexx + 1) {
 							recorrerPosiciones(posicionesSeleccionadas, 0);
