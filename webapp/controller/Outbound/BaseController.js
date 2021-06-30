@@ -436,6 +436,12 @@ sap.ui.define([
 			var retorno = obj.setValue(obj.getValue().replace(/[^0-9]+/g, ''));
 			return retorno;
 		},
+		
+		onlyDecimal: function (oEvent) {
+			var obj = oEvent.getSource();
+			var retorno = obj.setValue(obj.getValue().replace(/[^, 0-9]+/g, ''));
+			return retorno;
+		},
 
 		formatterEditableZero: function (sValue) {
 			var retorno = true;
@@ -1070,6 +1076,29 @@ sap.ui.define([
 
 					this.getView().getModel("oModeloSAPERP").read('/ListaAlmacenSet', {
 						filters: aFil,
+						success: function (oResult) {
+							var datos = oResult.results;
+
+							if (datos.length > 0) {
+								resolve(datos);
+							} else {
+								resolve([]);
+							}
+						}.bind(this),
+						error: function (oError) {
+							resolve([]);
+						}.bind(this)
+					});
+
+				}.bind(this));
+
+		},
+		
+		getCentrosERP: function () {
+			return new Promise(
+				function resolver(resolve) {
+
+					this.getView().getModel("oModelSAPERP").read('/ListaCentroSet', {
 						success: function (oResult) {
 							var datos = oResult.results;
 

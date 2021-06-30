@@ -673,8 +673,6 @@ sap.ui.define([
 				}.bind(this));
 
 		},
-		
-	
 
 		onBackMenu: function () {
 			this._oStorage.put("logeoIngresoMerecaderia", null);
