@@ -149,7 +149,7 @@ sap.ui.define([
 					var oModel = [];
 					var arrayUbicaciones = [];
 					var order = 1;
-					
+
 					for (var e = 0; e < data.length; e++) {
 
 						if (data[e].Rsnum === idReserva) {
@@ -326,11 +326,11 @@ sap.ui.define([
 						success: function (oResult) {
 							var datos = oResult.results;
 							var estado;
-					if (tipo === "Reserva") {
-						estado = "PB";
-					} else {
-						estado = "EP";
-					}
+							if (tipo === "Reserva") {
+								estado = "PB";
+							} else {
+								estado = "EP";
+							}
 							if (datos.length > 0) {
 								console.log(datos);
 
@@ -436,7 +436,7 @@ sap.ui.define([
 			var retorno = obj.setValue(obj.getValue().replace(/[^0-9]+/g, ''));
 			return retorno;
 		},
-		
+
 		onlyDecimal: function (oEvent) {
 			var obj = oEvent.getSource();
 			var retorno = obj.setValue(obj.getValue().replace(/[^, 0-9]+/g, ''));
@@ -1093,7 +1093,78 @@ sap.ui.define([
 				}.bind(this));
 
 		},
-		
+
+		getMaterialesPorCentroERP: function (numeroCentro) {
+			return new Promise(
+				function resolver(resolve) {
+
+					var aFil = [];
+					var tFilterCentro = new sap.ui.model.Filter({
+						path: "IWerks",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: numeroCentro
+					});
+					aFil.push(tFilterCentro);
+
+					this.getView().getModel("oModelSAPERP").read('/BuscarMaterialSet', {
+						filters: aFil,
+						success: function (oResult) {
+							var datos = oResult.results;
+
+							if (datos.length > 0) {
+								resolve(datos);
+							} else {
+								resolve([]);
+							}
+						}.bind(this),
+						error: function (oError) {
+							resolve([]);
+						}.bind(this)
+					});
+
+				}.bind(this));
+
+		},
+
+		getMaterialesPorCodigoMaterialCentroERP: function (numeroMaterial, numeroCentro) {
+			return new Promise(
+				function resolver(resolve) {
+
+					var aFil = [];
+					var tFilterNumMat = new sap.ui.model.Filter({
+						path: "IMatnr",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: numeroMaterial
+					});
+					aFil.push(tFilterNumMat);
+
+					var tFilterCentro = new sap.ui.model.Filter({
+						path: "IWerks",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: numeroCentro
+					});
+					aFil.push(tFilterCentro);
+
+					this.getView().getModel("oModelSAPERP").read('/BuscarMaterialSet', {
+						filters: aFil,
+						success: function (oResult) {
+							var datos = oResult.results;
+
+							if (datos.length > 0) {
+								resolve(datos);
+							} else {
+								resolve([]);
+							}
+						}.bind(this),
+						error: function (oError) {
+							resolve([]);
+						}.bind(this)
+					});
+
+				}.bind(this));
+
+		},
+
 		getCentrosERP: function () {
 			return new Promise(
 				function resolver(resolve) {
@@ -1705,7 +1776,7 @@ sap.ui.define([
 			return result;
 
 		},
-		getHourERP:function (date) {
+		getHourERP: function (date) {
 
 			var d = new Date(date.ms * 1000);
 			var hora = (d.getHours() == 0) ? 23 : d.getHours() - 1;

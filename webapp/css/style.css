@@ -1,3 +1,8 @@
+.borderMaterial{
+	border: 1px solid #89919a;
+    border-radius: 5px;
+}
+
 .buttonListo{
 	background: #2b7c2b;
     border-color: #2b7c2b;

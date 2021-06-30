@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:ff="sap.f">
-	<Dialog busyIndicatorDelay='0' title="Tus Datos" type='Message' contentWidth="500px" contentHeight="auto" verticalScrolling="true">
+	<Dialog busyIndicatorDelay='0' title="Tus Datos" type='"Standard"' contentWidth="500px" contentHeight="auto" verticalScrolling="true">
 		<customHeader>
 			<Bar>
 				<contentMiddle>

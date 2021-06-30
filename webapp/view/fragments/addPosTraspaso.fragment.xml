@@ -1,69 +1,58 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
-	<Dialog busy='{editInforme>/busy}' busyIndicatorDelay='0' title="Ingresar Posiciones" type='Message' contentWidth="400px">
+	<Dialog busy='{editInforme>/busy}' busyIndicatorDelay='0' title="Ingresar Posición" type='Message' contentWidth="400px">
 		<content>
-			<VBox class="sapUiTinyMargin">
+			<VBox>
 				<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
 					<VBox>
 						<Label class="font-xSmaller" text="Código Material:" required="true"></Label>
-						<Input id="idPosTraspasoCodMatIngresar" class="fontBold" width="100%"></Input>
-						<layoutData>
-							<l:GridData span="XL4 L4 M6 S6"/>
-						</layoutData>
-					</VBox>
-					<VBox>
-						<!--	<Label class="font-xSmaller" text="Posición:" visible="false" width="100%" required="true"></Label>
-									<Input id="idPosTraspasoPosicionIngresar" visible="false" class="fontBold" width="100%" type="Number"></Input>
-									<layoutData>
-										<l:GridData span="XL4 L4 M6 S6"/>
-									</layoutData>
-									-->
-						<Label ></Label>
-						<Button id="idPosTraspasoPosicionIngresar" type="Emphasized" text="Buscar" icon="sap-icon://search" iconFirst="true" press="onBuscarFrag"></Button>
-						<layoutData>
-							<l:GridData span="XL4 L4 M6 S6"/>
-						</layoutData>
-					</VBox>
-				</l:Grid>
-				<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop" id="idVboxFrag" visible="false">
-					<VBox>
-						<Label class="font-xSmaller" text="Denominación Material:" width="100%" required="true"></Label>
-						<Text id="idPosTraspasoDenMatIngresar" class="fontBold" width="100%"></Text>
+						<SearchField id="idPosTraspasoCodMatIngresar" width="100%" placeholder="Búsqueda..." enableSuggestions="true"
+							search=".onSearchAyudaMaterial" suggest=".onSuggestAyudaMaterial"
+							suggestionItems="{ path: 'modelAyudaMateriales>/', sorter: { path: 'Matnr' } }">
+							<SuggestionItem description="{modelAyudaMateriales>Maktx}" text="{modelAyudaMateriales>Matnr}" key="{modelAyudaMateriales>Matnr}"/>
+						</SearchField>
 						<layoutData>
 							<l:GridData span="XL12 L12 M12 S12"/>
 						</layoutData>
 					</VBox>
-					<VBox>
-						<Label class="font-xSmaller" text="Ubicación:" width="100%" required="true"></Label>
-						<VBox justifyContent="Center">
-							<Text id="idPosTraspasoUbicacionIngresar" class="fontBold" width="100%"></Text>
-						</VBox>
-						<layoutData>
-							<l:GridData span="XL4 L4 M4 S4"/>
-						</layoutData>
-					</VBox>
-					<VBox>
-						<Label class="font-xSmaller" text="Almacén:" width="100%" required="true"></Label>
-						<Input id="idPosTraspasoAlmacenIngresar" valueHelpOnly="true" showValueHelp="true" valueHelpRequest=".openListAlmacenesCompleta"
-							class="fontBold" width="100%"></Input>
-						<layoutData>
-							<l:GridData span="XL5 L5 M4 S4"/>
-						</layoutData>
-					</VBox>
-					<VBox>
-						<Label class="font-xSmaller" text="Und. Medida:" width="100%" required="true"></Label>
-						<Text id="idPosTraspasoUnMedidaIngresar" class="fontBold" width="100%"></Text>
-						<layoutData>
-							<l:GridData span="XL4 L4 M4 S4"/>
-						</layoutData>
-					</VBox>
 				</l:Grid>
+				<VBox class="borderMaterial sapUiSmallMarginTop" id="idVboxFrag" visible="false">
+					<l:Grid class="sapUiSmallMargin" hSpacing="0.5" vSpacing="0.5" width="100%">
+						<VBox>
+							<Label class="font-xSmaller" text="Denominación Material:" width="100%" required="true"></Label>
+							<Text id="idPosTraspasoDenMatIngresar" class="fontBold" width="100%" wrapping="true"></Text>
+							<layoutData>
+								<l:GridData span="XL12 L12 M12 S12"/>
+							</layoutData>
+						</VBox>
+						<VBox>
+							<Label class="font-xSmaller" text="Almacén:" width="100%" required="true"></Label>
+							<Input id="idPosTraspasoAlmacenIngresar" valueHelpOnly="true" showValueHelp="true" valueHelpRequest=".openListAlmacenFilter"
+								placeholder="Seleccione un almacén..." class="fontBold" width="100%"></Input>
+							<layoutData>
+								<l:GridData span="XL12 L12 M12 S12"/>
+							</layoutData>
+						</VBox>
+						<VBox>
+							<Label class="font-xSmaller" text="Cantidad:" textAlign="Begin" required="true" width="100%"></Label>
+							<Input id="oInputCantidadTraspasoId" liveChange="onlyDecimal" width="100%" textAlign="Center" maxLength="3"/>
+							<layoutData>
+								<l:GridData span="XL8 L8 M8 S8"/>
+							</layoutData>
+						</VBox>
+						<VBox>
+							<Label class="font-xSmaller" text="Und. Medida:" width="100%" required="true" textAlign="Center"></Label>
+							<Text id="idPosTraspasoUnMedidaIngresar" class="fontBold sapUiTinyMarginTop" textAlign="Center" width="100%" wrapping="true"></Text>
+							<layoutData>
+								<l:GridData span="XL4 L4 M4 S4"/>
+							</layoutData>
+						</VBox>
+					</l:Grid>
+				</VBox>
 			</VBox>
 		</content>
-		<beginButton>
-			<Button id="btIngresarPosTraspaso" type="Emphasized" text="Ingresar" press="onInsertarPosTraspasoAdd"/>
-		</beginButton>
-		<endButton>
+		<buttons>
 			<Button text="Cancelar" press="onInsertarPosTraspasoClose"/>
-		</endButton>
+			<Button id="btIngresarPosTraspaso" enabled="false" type="Emphasized" text="Ingresar" press="onInsertarPosTraspasoAdd"/>
+		</buttons>
 	</Dialog>
 </core:FragmentDefinition>
