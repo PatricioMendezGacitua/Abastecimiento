@@ -95,21 +95,64 @@ sap.ui.define([
 
 		},
 
+		createReservaERP: function (datos) {
+			return new Promise(
+				function resolver(resolve, reject) {
+					debugger
+					this.getView().getModel("oModelSAPERP").create('/GestReservaSet ', datos, {
+						success: function (oResult) {
+
+							/*var respuesta = oResult.navCrearDocMatDocumento.EMblnr + "-" + oResult.navCrearDocMatDocumento.EMjahr;
+
+							if (respuesta.length > 0) {
+								resolve({
+									nroDocumento: respuesta,
+									resolve: true,
+									error: ""
+								});
+							} else {
+								resolve({
+									nroDocumento: "",
+									resolve: false,
+									error: ""
+								});
+							}*/
+							debugger
+
+						}.bind(this),
+						error: function (oError) {
+							var mensaje = "";
+							try {
+								mensaje = JSON.parse(oError.responseText).error.message.value;
+								resolve({
+									nroDocumento: "",
+									error: mensaje,
+									resolve: false
+								});
+							} catch (e) {
+								resolve({
+									nroDocumento: "",
+									error: mensaje,
+									resolve: false
+								});
+							}
+
+						}.bind(this)
+					});
+
+				}.bind(this));
+		},
+
 		cargaPosiciones: function (data, idReserva, tipo) {
 			return new Promise(
 				function resolver(resolve) {
 					var oModel = [];
 					var arrayUbicaciones = [];
 					var order = 1;
+					
 					for (var e = 0; e < data.length; e++) {
 
 						if (data[e].Rsnum === idReserva) {
-
-							/*if (order === 3) {
-								data[e].Lgpbe = "D0801";
-							} else if (order === 2) {
-								data[e].Lgpbe = "E0301";
-							}*/
 
 							(data[e].Charg.length > 0) ? data[e].state = true: data[e].state = false;
 
@@ -128,7 +171,7 @@ sap.ui.define([
 
 							if (tipo === "Entrega") {
 								resolve(oModel);
-								
+
 							} else {
 
 								this.consultaConOrden(arrayUbicaciones, oModel).then(function (respuestaconsultaConOrden) {
@@ -282,6 +325,12 @@ sap.ui.define([
 						filters: aFil,
 						success: function (oResult) {
 							var datos = oResult.results;
+							var estado;
+					if (tipo === "Reserva") {
+						estado = "PB";
+					} else {
+						estado = "EP";
+					}
 							if (datos.length > 0) {
 								console.log(datos);
 
@@ -300,9 +349,9 @@ sap.ui.define([
 									record.NRORESERVA = datos[e].Rsnum;
 									record.TITULO_ESTADO_INGRESO = (sValueTipo === "PEN") ? "Pendiente" : "Pend. Reserva";
 									record.STATE_ESTADO_INGRESO = "Warning"; // (sValueTipo === "PEN") ? "Warning" : "Warning";
-
-									datosFinal.push(record);
-
+									if (datos[e].Estado === estado) {
+										datosFinal.push(record);
+									}
 									if (datos.length === (e + 1)) {
 
 										datosF = this.eliminaDuplicado(datosFinal, "NRORESERVA");
@@ -311,7 +360,7 @@ sap.ui.define([
 										var tipoModelo = (tipo = "Reserva") ? "oModeloTemporalesReservaCore" : "oModeloTemporalesEntregaCore";
 										sap.ui.getCore().setModel(data, tipoModelo);
 										var model = sap.ui.getCore().getModel(tipoModelo).getData();
-										
+
 										resolve({
 											mensajeError: "",
 											datos: datosF
@@ -375,14 +424,13 @@ sap.ui.define([
 			var retorno = obj.setValue(obj.getValue().replace(/[^-A-Za-z0-9]+/g, '').toUpperCase());
 			return retorno;
 		},
-		
-		
+
 		onUpperCase2: function (oEvent) {
 			var obj = oEvent.getSource();
 			var retorno = obj.setValue(obj.getValue().replace(/[^ -ZA-za-z0-9]+/g, '').toUpperCase());
 			return retorno;
 		},
-		
+
 		onlyNumber: function (oEvent) {
 			var obj = oEvent.getSource();
 			var retorno = obj.setValue(obj.getValue().replace(/[^0-9]+/g, ''));
@@ -1625,6 +1673,18 @@ sap.ui.define([
 			var segundos = (d.getSeconds() <= 9) ? "0" + d.getSeconds() : d.getSeconds();
 
 			var result = hora + ":" + minutos + ":" + segundos;
+			return result;
+
+		},
+		getHourERP:function (date) {
+
+			var d = new Date(date.ms * 1000);
+			var hora = (d.getHours() == 0) ? 23 : d.getHours() - 1;
+			hora = (hora <= 9) ? "0" + hora : hora;
+			var minutos = (d.getMinutes() <= 9) ? "0" + d.getMinutes() : d.getMinutes();
+			var segundos = (d.getSeconds() <= 9) ? "0" + d.getSeconds() : d.getSeconds();
+
+			var result = "PT" + hora + "H" + minutos + "M" + segundos + "S";
 			return result;
 
 		},

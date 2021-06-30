@@ -122,7 +122,8 @@
 				"settings": {
 					"defaultOperationMode": "Server",
 					"defaultBindingMode": "OneWay",
-					"defaultCountMode": "Request"
+					"defaultCountMode": "Request",
+					"useBatch": false
 				},
 				"dataSource": "ZSCP_SALIDA_MERCANCIA_SRV",
 				"preload": true
@@ -202,7 +203,7 @@
 						"Master_Reserva"
 					]
 				},
-					{
+				{
 					"name": "reserva_master_Dos",
 					"pattern": "reserva_master/{estadoReserva}/{idreserva}",
 					"target": [
@@ -210,7 +211,6 @@
 						"Master_Reserva"
 					]
 				},
-				
 				{
 					"name": "Entrega_master",
 					"pattern": "Entrega_master/{estadoReserva}",
@@ -219,7 +219,7 @@
 						"Master_Entrega"
 					]
 				},
-					{
+				{
 					"name": "Entrega_master_Dos",
 					"pattern": "Entrega_master/{estadoReserva}/{idreserva}",
 					"target": [
@@ -321,8 +321,7 @@
 				"Master_Reserva": {
 					"viewType": "XML",
 					"viewName": "Outbound.Master_Reserva"
-				}
-				,
+				},
 				"Detail_Entrega": {
 					"viewType": "XML",
 					"viewName": "Outbound.Detail_Entrega"
