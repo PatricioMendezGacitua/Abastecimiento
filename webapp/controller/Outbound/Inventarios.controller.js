@@ -232,6 +232,7 @@ sap.ui.define([
 								var oDatePickerFInv = this.getView().byId("oDatePickerFInv");
 								var oInputUsuarioReg = this.getView().byId("oInputUsuarioReg");
 
+								//ERP
 								var recordERPCab = {};
 								recordERPCab.Ikey = "1";
 								recordERPCab.IGjahr = oInputPeriodo.getValue(); //Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Ejercicio"
@@ -239,26 +240,35 @@ sap.ui.define([
 								recordERPCab.IUsuHana = oInputUsuarioReg.getValue().trim(); //Type="Edm.String" Nullable="false" MaxLength="20" sap:label="Usuario Hana"
 								recordERPCab.IZldat = oDatePickerFInv.getDateValue(); //Type="Edm.DateTime" Nullable="false" Precision="7" sap:label="Fe.recuento"
 								recordERPCab.NavEjeInventarioPos = [];
+								recordERPCab.NavEjeInventarioRet = [];
 
+								//HANA
 								var recordERPCabHana = {};
 								recordERPCabHana.Ikey = "1";
-								recordERPCabHana.IGjahr = oInputPeriodo.getValue(); //Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Ejercicio"
-								recordERPCabHana.IIblnr = oInputDocumentoInventarioTraspaso.getValue().trim(); //Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Doc.inventario"
-								recordERPCabHana.IUsuHana = oInputUsuarioReg.getValue().trim(); //Type="Edm.String" Nullable="false" MaxLength="20" sap:label="Usuario Hana"
-								recordERPCabHana.IZldat = oDatePickerFInv.getDateValue(); //Type="Edm.DateTime" Nullable="false" Precision="7" sap:label="Fe.recuento"
+								recordERPCabHana.IGjahr = oInputPeriodo.getValue();
+								recordERPCabHana.IIblnr = oInputDocumentoInventarioTraspaso.getValue().trim();
+								recordERPCabHana.IUsuHana = oInputUsuarioReg.getValue().trim();
+								recordERPCabHana.IZldat = oDatePickerFInv.getDateValue();
 								recordERPCabHana.NavEjeInventarioPos = [];
 
 								var functionRecorrer = function (item, i) {
 									if (item.length === i) {
-										
+
 										this.inventariarEnERP(recordERPCab).then(function (respuestaIERP) {
 											if (respuestaIERP.resolve) {
 												this.inventariarEnHANA(recordERPCabHana).then(function (respuestaIHANA) {
-													MessageToast.show("Inventario Realizado");
-													jQuery.sap.delayedCall(3000, this, function () {
-														this.btnReestablecerInventario();
+													this.datosCreacion = {
+														NRO_DOCUMENTO_SAP: "",
+														TX: "Aplicación Móvil Abastecimiento > Inventarios"
+													};
+
+													this.registrarLog("Inventario_Realizado", this.datosCreacion).then(function (respuestaRegistrarLog) {
+														MessageToast.show("Inventario Realizado");
+														jQuery.sap.delayedCall(3000, this, function () {
+															this.btnReestablecerInventario();
+														}.bind(this));
+														this.getView().setBusy(false);
 													}.bind(this));
-													this.getView().setBusy(false);
 												}.bind(this));
 											} else {
 												this.getView().setBusy(false);
@@ -273,28 +283,39 @@ sap.ui.define([
 										var obj = item[i].getBindingContext("oModelInventario").getObject();
 										var pos = item[i].getContent()[0].getContent()[4].getItems()[1];
 										this.existePosicionHana(obj.Zeili, recordERPCab.IIblnr, recordERPCab.IGjahr).then(function (existeEnHana) {
-											
+
+											//ERP
 											recordERPDet.Ikey = "1"; //Edm.String" Nullable="false" MaxLength="1"
-											recordERPDet.Zeili = obj.Zeili; //Edm.String" Nullable="false" MaxLength="3" sap:label="Posición"
-											recordERPDet.Matnr = obj.Matnr; //Edm.String" Nullable="false" MaxLength="18" sap:label="Material"
-											recordERPDet.Maktx = obj.Maktx; //Edm.String" Nullable="false" MaxLength="40" sap:label="Txt.brv."
+											recordERPDet.Zeili = obj.Zeili.slice(0, 3); //Edm.String" Nullable="false" MaxLength="3" sap:label="Posición"
+											recordERPDet.Matnr = obj.Matnr.slice(0, 18); //Edm.String" Nullable="false" MaxLength="18" sap:label="Material"
+											recordERPDet.Maktx = obj.Maktx.slice(0, 40); //Edm.String" Nullable="false" MaxLength="40" sap:label="Txt.brv."
 											var cantidad = pos.getValue().replace(/,/g, ".");
 											recordERPDet.Erfmg = cantidad; //Edm.Decimal" Nullable="false" Precision="13" Scale="3" sap:label="Ctd.en UME"
-											recordERPDet.Erfme = obj.Erfme; //Edm.String" Nullable="false" MaxLength="3" sap:label="UM entrada"
-											recordERPDet.Lgpbe = obj.Lgpbe; //Edm.String" Nullable="false" MaxLength="10" sap:label="Ubicación"
-											recordERPDet.Werks = obj.Werks; //Edm.String" Nullable="false" MaxLength="4" sap:label="Centro"
-											recordERPDet.Lgort = obj.Lgort; //Edm.String" Nullable="false" MaxLength="4" sap:label="Almacén"
+											recordERPDet.Erfme = obj.Erfme.slice(0, 3); //Edm.String" Nullable="false" MaxLength="3" sap:label="UM entrada"
+											recordERPDet.Lgpbe = obj.Lgpbe.slice(0, 10); //Edm.String" Nullable="false" MaxLength="10" sap:label="Ubicación"
+											recordERPDet.Werks = obj.Werks.slice(0, 4); //Edm.String" Nullable="false" MaxLength="4" sap:label="Centro"
+											recordERPDet.Lgort = obj.Lgort.slice(0, 4); //Edm.String" Nullable="false" MaxLength="4" sap:label="Almacén"
 											recordERPDet.ZeroCount = pos.getValue() === "0" ? "0" : "X"; //Edm.String" Nullable="false" MaxLength="1" sap:label="Recuento cero"
-											recordERPDet.ITransaccion = existeEnHana;
+											recordERPDet.Transaccion = existeEnHana.slice(0, 20); //Edm.String" Nullable="false" MaxLength="20" sap:label="Transaccion"
 											recordERPCab.NavEjeInventarioPos.push(recordERPDet);
 
-											recordERPDetHana = recordERPDet;
+											//HANA
+											recordERPDetHana.Zeili = obj.Zeili;
+											recordERPDetHana.Matnr = obj.Matnr;
+											recordERPDetHana.Maktx = obj.Maktx;
+											recordERPDetHana.Erfmg = pos.getValue();
+											recordERPDetHana.Erfme = obj.Erfme;
+											recordERPDetHana.Lgpbe = obj.Lgpbe;
+											recordERPDetHana.Werks = obj.Werks;
+											recordERPDetHana.Lgort = obj.Lgort;
+											recordERPDetHana.ZeroCount = pos.getValue() === "0" ? "0" : "X";
+											recordERPDetHana.Transaccion = existeEnHana;
 											recordERPDetHana.Charg = obj.Charg;
 											recordERPCabHana.NavEjeInventarioPos.push(recordERPDetHana);
 
 											i++;
 											functionRecorrer(listInventario, i);
-											
+
 										}.bind(this));
 									}
 								}.bind(this);
@@ -374,7 +395,7 @@ sap.ui.define([
 
 					var tx = "04";
 					var countCond = 0;
-					
+
 					this.getView().getModel("oModeloHanaSalida").read("/Inventario", {
 						filters: [finalFilter],
 						urlParameters: {
@@ -382,7 +403,7 @@ sap.ui.define([
 						},
 						success: function (oResults) {
 
-								var inventario = oResults.results;
+							var inventario = oResults.results;
 							if (inventario.length > 0) {
 								var functionRecorrer = function (item, i) {
 									if (item.length === i) {
@@ -419,13 +440,7 @@ sap.ui.define([
 			return new Promise(
 				function resolver(resolve, reject) {
 
-					resolve({
-						nroDocumento: "",
-						resolve: true,
-						error: ""
-					});
-
-					/*this.getView().getModel("oModelSAPERP").create('/EjeInventarioSet', datos, {
+					this.getView().getModel("oModelSAPERP").create('/EjeInventarioSet', datos, {
 						success: function (oResult) {
 
 							resolve({
@@ -436,6 +451,7 @@ sap.ui.define([
 
 						}.bind(this),
 						error: function (oError) {
+
 							var mensaje = "";
 							try {
 								mensaje = JSON.parse(oError.responseText).error.message.value;
@@ -453,7 +469,7 @@ sap.ui.define([
 							}
 
 						}.bind(this)
-					});*/
+					});
 
 				}.bind(this));
 		},

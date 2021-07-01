@@ -1106,21 +1106,27 @@ sap.ui.define([
 					});
 					aFil.push(tFilterCentro);
 
-					this.getView().getModel("oModelSAPERP").read('/BuscarMaterialSet', {
-						filters: aFil,
-						success: function (oResult) {
-							var datos = oResult.results;
-
-							if (datos.length > 0) {
-								resolve(datos);
-							} else {
+					if (this.numeroCentroSeleccion !== numeroCentro) {
+						this.getView().getModel("oModelSAPERP").read('/BuscarMaterialSet', {
+							filters: aFil,
+							success: function (oResult) {
+								var datos = oResult.results;
+								this.numeroCentroSeleccion = numeroCentro;
+								this.materialesPorCentro = datos;
+								if (datos.length > 0) {
+									resolve(datos);
+								} else {
+									resolve([]);
+								}
+							}.bind(this),
+							error: function (oError) {
+								this.materialesPorCentro = [];
 								resolve([]);
-							}
-						}.bind(this),
-						error: function (oError) {
-							resolve([]);
-						}.bind(this)
-					});
+							}.bind(this)
+						});
+					} else {
+						resolve(this.materialesPorCentro);
+					}
 
 				}.bind(this));
 
@@ -1164,7 +1170,7 @@ sap.ui.define([
 				}.bind(this));
 
 		},
-		
+
 		getLoteMaterialesERP: function (numeroMaterial, numeroCentro) {
 			return new Promise(
 				function resolver(resolve) {
@@ -1630,29 +1636,18 @@ sap.ui.define([
 					this.fecha.setMinutes(0);
 					this.fecha.setSeconds(0);
 
-					if (actividad === "Genera_Ingreso_Temporal") {
-						this.contenido = "La actividad que se acaba de realizar corresponde a la creación del ingreso temporal N°" + datos.ID_AVISO +
+					if (actividad === "Traspaso_Realizado") {
+						this.contenido =
+							"La actividad que se acaba de realizar corresponde a la realización de un traspaso con el número de documento sap " + datos.NRO_DOCUMENTO_SAP +
 							", acción realizada por el usuario " + this.userSCPCod;
-					} else if (actividad === "Reprocesar_Ingreso_Temporal") {
-						this.contenido = "La actividad que se acaba de realizar corresponde a la falla de la recepción del ingreso temporal N°" + datos
-							.ID_AVISO +
+					} else if (actividad === "Inventario_Realizado") {
+						this.contenido = "La actividad que se acaba de realizar corresponde a la realización de un inventario" +
 							", acción realizada por el usuario " + this.userSCPCod;
-					} else if (actividad === "Ingreso_Temportal_En_Proceso") {
-						this.contenido = "La actividad que se acaba de realizar corresponde a la creación en segundo plano del ingreso temporal N°" +
-							datos.ID_AVISO +
-							", acción realizada por el usuario " + this.userSCPCod;
-					} else if (actividad === "Ingreso_Temporal_Recepcionado") {
-						this.contenido = "La actividad que se acaba de realizar corresponde a la recepción exitosa del ingreso temporal N°" + datos.ID_AVISO +
-							", acción realizada por el usuario " + this.userSCPCod;
-					} else if (actividad === "Stock_Cero_Material") {
-						this.contenido = "La actividad que se acaba de realizar corresponde al aviso de quiebre de stock para el número de material" +
-							datos.NUMERO_MATERIAL +
-							" en el ingreso temportal N°" + datos.ID_AVISO + ", acción detectada por el usuario " + this.userSCPCod;
 					}
 
 					this.contenidoLog = {
 						ID_LOG: 0,
-						TX: "Aviso Temporal N°" + datos.ID_AVISO,
+						TX: datos.TX,
 						ID_ACTIVIDAD: actividad,
 						FECHA: this.fecha,
 						HORA: this.hora(),
