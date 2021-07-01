@@ -27,6 +27,10 @@ sap.ui.define([
 				"id": "idPosTraspasoAlmacenIngresar",
 				"required": true,
 				"type": "ip"
+			}, {
+				"id": "oSelectLoteId",
+				"required": false,
+				"type": "sl"
 			}];
 
 			this.InputsViewCabeceraTraslado = [{
@@ -72,35 +76,13 @@ sap.ui.define([
 			oDatePickerFecha.setDateValue(hoy);
 			oDatePickerFecha.setMaxDate(hoy);
 
-			/*if (this._oStorage.get("navegacion_IngresoMercaderia") !== null) {
-						this._oStorage.put("navegacion_IngresoMercaderia", null);
-						this.userSCPCod = this._oStorage.get("user_code_IngresoMercaderia");
-						this.userSCPName = this._oStorage.get("user_name_IngresoMercaderia");
-			
-
-						this.InputsViewCabeceraTraslado = [{
-							"id": "oInputCentroCTraspaso",
-							"required": true,
-							"type": "ip"
-						},
-						{
-							"id": "oInputAlmacenCTraspaso",
-							"required": true,
-							"type": "ip"
-						},
-						{
-							"id": "oDatePickerFC",
-							"required": true,
-							"type": "dt"
-						}, {
-							"id": "oTextAreaObservacion",
-							"required": false,
-							"type": "ip"
-						}];
-			
-					} else {
-						this.onBackMenu();
-					}*/
+			if (this._oStorage.get("navegacion_IngresoMercaderia") !== null) {
+				this._oStorage.put("navegacion_IngresoMercaderia", null);
+				this.userSCPCod = this._oStorage.get("user_code_IngresoMercaderia");
+				this.userSCPName = this._oStorage.get("user_name_IngresoMercaderia");
+			} else {
+				this.onBackMenu();
+			}
 
 		},
 
@@ -211,28 +193,76 @@ sap.ui.define([
 		},
 
 		onInsertarPosTraspasoAdd: function (oEvent) {
-			if (!this.validar(this.objectFragment, "", "")) {
-				this.valuePos = this.valuePos + 10;
-				var oVboxLote = sap.ui.getCore().byId("oVboxLoteId");
-				//this.openBusyDialog();
-				var arrPosTraspaso = {
-					"codMaterial": sap.ui.getCore().byId("idPosTraspasoCodMatIngresar").getValue(),
-					"pos": this.valuePos,
-					"denMaterial": this.denMaterial,
-					"uni_medida": this.unidad,
-					"almacen": sap.ui.getCore().byId("idPosTraspasoAlmacenIngresar").getValue(),
-					"cantidad": sap.ui.getCore().byId("oInputCantidadTraspasoId").getValue(),
-					"visibleLote": oVboxLote.getVisible(),
-					"lote": ""
-				};
+			debugger
+			var oVboxLote = sap.ui.getCore().byId("oVboxLoteId");
+			var lote = sap.ui.getCore().byId("oSelectLoteId");
+			this.objectFragment[2].required = false;
+			var codMaterial = sap.ui.getCore().byId("idPosTraspasoCodMatIngresar").getValue();
+			var almacen = sap.ui.getCore().byId("idPosTraspasoAlmacenIngresar").getValue();
+			var mensaje = "La combinación material y almacén ya se encuentra creada.";
 
-				var model = this.getView().getModel("oModelPosTraslado");
-				model.getData().push(arrPosTraspaso);
-				model.refresh();
+			if (oVboxLote.getVisible()) {
+				this.objectFragment[2].required = true;
+				mensaje = "La combinación material,almacén y lote ya se encuentra creada.";
+			}
 
-				sap.ui.getCore().byId("idVboxFrag").setVisible(false);
+			if (!this.validarT(this.objectFragment, "", "")) {
 
-				this.onInsertarPosTraspasoClose();
+				var functionFinal = function () {
+					this.valuePos = this.valuePos + 10;
+					//this.openBusyDialog();
+					var arrPosTraspaso = {
+						"codMaterial": codMaterial,
+						"pos": this.valuePos,
+						"denMaterial": this.denMaterial,
+						"uni_medida": this.unidad,
+						"almacen": almacen,
+						"cantidad": sap.ui.getCore().byId("oInputCantidadTraspasoId").getValue(),
+						"visibleLote": oVboxLote.getVisible(),
+						"lote": ""
+					};
+
+					if (oVboxLote.getVisible()) {
+						arrPosTraspaso.lote = lote.getSelectedKey();
+					}
+
+					var model = this.getView().getModel("oModelPosTraslado");
+					model.getData().push(arrPosTraspaso);
+					model.refresh();
+
+					sap.ui.getCore().byId("idVboxFrag").setVisible(false);
+
+					this.onInsertarPosTraspasoClose();
+
+				}.bind(this);
+				var oModelPosTraslado = this.getView().getModel("oModelPosTraslado").getData();
+
+				if (oModelPosTraslado.length === 0) {
+					functionFinal();
+				} else {
+					var coutnCon = 0;
+					oModelPosTraslado.forEach(function (element, index) {
+
+						if (oVboxLote.getVisible()) {
+							if (element.codMaterial === codMaterial && element.almacen === almacen && element.lote === lote.getSelectedKey()) {
+								coutnCon++;
+							}
+						} else {
+							if (element.codMaterial === codMaterial && element.almacen === almacen) {
+								coutnCon++;
+							}
+						}
+
+						if (oModelPosTraslado.length === (index + 1)) {
+							if (coutnCon === 0) {
+								functionFinal();
+							} else {
+								MessageToast.show(mensaje);
+							}
+						}
+					}.bind(this));
+
+				}
 
 			} else {
 				MessageToast.show("Complete los datos obligatorios.");
@@ -255,7 +285,7 @@ sap.ui.define([
 					if (sAction === "Si") {
 						this._oStorage.put("logeoIngresoMerecaderia", "Si");
 
-						this.cerrar(this.InputsViewCabeceraTraslado, "", "vista");
+						this.cerrarT(this.InputsViewCabeceraTraslado, "", "vista");
 
 						this._route.navTo("Menu");
 					}
@@ -380,27 +410,30 @@ sap.ui.define([
 			}
 			//this.buttonAsignarAlmacen.setText(this.seleccionAlmacen);
 		},
-		validar: function (fields, accion, v) {
+
+		validarT: function (fields, accion, v) {
 			var error = false;
 			for (var i = 0; i < fields.length; i++) {
 				var input = (v === "vista") ? this.getView().byId(fields[i].id + accion) : sap.ui.getCore().byId(fields[i].id + accion);
-				if (fields[i].type === "ip") {
-					var value = input.getValue();
-					if (value === "" || value.trim().length === 0) {
-						input.setValueState("Error");
-						error = true;
-					}
-				} else if (fields[i].type === "dt") {
-					var value = input.getDateValue();
-					if (value === null) {
-						input.setValueState("Error");
-						error = true;
-					}
-				} else {
-					var value = input.getSelectedKey();
-					if (value === null || value.length === 0) {
-						input.setValueState("Error");
-						error = true;
+				if (fields[i].required) {
+					if (fields[i].type === "ip") {
+						var value = input.getValue();
+						if (value === "" || value.trim().length === 0) {
+							input.setValueState("Error");
+							error = true;
+						}
+					} else if (fields[i].type === "dt") {
+						var value = input.getDateValue();
+						if (value === null) {
+							input.setValueState("Error");
+							error = true;
+						}
+					} else {
+						var value = input.getSelectedKey();
+						if (value === null || value.length === 0) {
+							input.setValueState("Error");
+							error = true;
+						}
 					}
 				}
 
@@ -408,7 +441,7 @@ sap.ui.define([
 			return error;
 		},
 
-		cerrar: function (fields, accion, v) {
+		cerrarT: function (fields, accion, v) {
 			var error = false;
 			for (var i = 0; i < fields.length; i++) {
 				var input;
@@ -429,6 +462,7 @@ sap.ui.define([
 			}
 			return error;
 		},
+
 		cerrarVista: function (fields, accion) {
 			var error = false;
 			for (var i = 0; i < fields.length; i++) {
@@ -471,6 +505,9 @@ sap.ui.define([
 		},
 
 		onSearchAyudaMaterial: function (oEvent) {
+			var oSelectLote = sap.ui.getCore().byId("oSelectLoteId");
+			var oModelLotes = new JSONModel([]);
+			oSelectLote.setModel(oModelLotes, "oModelLotes");
 			var vboxFrag = sap.ui.getCore().byId("idVboxFrag");
 			vboxFrag.setVisible(false);
 			var oItem = oEvent.getParameter("suggestionItem");
@@ -481,12 +518,14 @@ sap.ui.define([
 			posTraspasoDenMatIngresar.setText();
 			posTraspasoUnMedidaIngresar.setText();
 
+			var oVboxLote = sap.ui.getCore().byId("oVboxLoteId");
+			oVboxLote.setVisible(false);
+
 			var numeroCentro = this.getView().byId("oInputCentroCTraspaso");
 			this.flagIngresoPos = false;
 			if (oItem) {
 				this._oViewAddPosTraspasoDialog.setBusy(true);
 				this.getMaterialesPorCodigoMaterialCentroERP(oItem.getKey(), numeroCentro.getValue()).then(function (resultado) {
-					this._oViewAddPosTraspasoDialog.setBusy(false);
 					console.log(resultado);
 					if (resultado.length > 0) {
 						this.denMaterial = resultado[0].Maktx;
@@ -496,6 +535,19 @@ sap.ui.define([
 						this.flagIngresoPos = true;
 						vboxFrag.setVisible(true);
 						btIngresarPosTraspaso.setEnabled(true);
+
+						if (resultado[0].Xchpf === "X") {
+							oVboxLote.setVisible(true);
+							oSelectLote.setBusy(true);
+							this.getLoteMaterialesERP(oItem.getKey(), numeroCentro.getValue()).then(function (resultadoLote) {
+								oModelLotes.setData(resultadoLote);
+								oModelLotes.refresh();
+								oSelectLote.setBusy(false);
+							}.bind(this));
+						} else {
+							this._oViewAddPosTraspasoDialog.setBusy(false);
+						}
+
 					} else {
 						MessageToast.show("No se encontraron resultados para la búsqueda realizada.");
 					}
@@ -580,39 +632,31 @@ sap.ui.define([
 						this._oStorage.put("logeoIngresoMerecaderia", "Si");
 						var oList = this.getView().byId("idtableLPTraspaso");
 						var cantidadItems = oList.getItems().length;
-						if (!this.validar(this.InputsViewCabeceraTraslado, "", "vista")) {
+						if (!this.validarT(this.InputsViewCabeceraTraslado, "", "vista")) {
 							if (cantidadItems > 0) {
 
 								this.getView().setBusy(true);
-								var listInventario = this.getView().byId("idtableLPInventario").getItems();
+								var listInventario = this.getView().byId("idtableLPTraspaso").getItems();
 
-								var oInputDocumentoInventarioTraspaso = this.getView().byId("oInputDocumentoInventarioTraspaso");
-								var oInputPeriodo = this.getView().byId("oInputPeriodo");
-								var oDatePickerFInv = this.getView().byId("oDatePickerFInv");
-								var oInputUsuarioReg = this.getView().byId("oInputUsuarioReg");
+								var oDatePickerFCTraspaso = this.getView().byId("oDatePickerFCTraspaso");
+								var oTextAreaObservacion = this.getView().byId("oTextAreaObservacion");
+								var oInputCentroCTraspaso = this.getView().byId("oInputCentroCTraspaso");
 
 								var recordERPCab = {};
 								recordERPCab.Ikey = "1";
-								recordERPCab.IGjahr = oInputPeriodo.getValue(); //Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Ejercicio"
-								recordERPCab.IIblnr = oInputDocumentoInventarioTraspaso.getValue().trim(); //Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Doc.inventario"
-								recordERPCab.IUsuHana = oInputUsuarioReg.getValue().trim(); //Type="Edm.String" Nullable="false" MaxLength="20" sap:label="Usuario Hana"
-								recordERPCab.IZldat = oDatePickerFInv.getDateValue(); //Type="Edm.DateTime" Nullable="false" Precision="7" sap:label="Fe.recuento"
-								recordERPCab.NavEjeInventarioPos = [];
-
+								recordERPCab.NavEjeTraspasoPos = [];
+								recordERPCab.NavEjeTraspasoDoc = {};
+								
 								var recordERPCabHana = {};
 								recordERPCabHana.Ikey = "1";
-								recordERPCabHana.IGjahr = oInputPeriodo.getValue(); //Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Ejercicio"
-								recordERPCabHana.IIblnr = oInputDocumentoInventarioTraspaso.getValue().trim(); //Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Doc.inventario"
-								recordERPCabHana.IUsuHana = oInputUsuarioReg.getValue().trim(); //Type="Edm.String" Nullable="false" MaxLength="20" sap:label="Usuario Hana"
-								recordERPCabHana.IZldat = oDatePickerFInv.getDateValue(); //Type="Edm.DateTime" Nullable="false" Precision="7" sap:label="Fe.recuento"
-								recordERPCabHana.NavEjeInventarioPos = [];
+								recordERPCabHana.NavEjeTraspasoPos = [];
 
 								var functionRecorrer = function (item, i) {
 									if (item.length === i) {
 
-										this.inventariarEnERP(recordERPCab).then(function (respuestaIERP) {
+										this.traspasarEnERP(recordERPCab).then(function (respuestaIERP) {
 											if (respuestaIERP.resolve) {
-												this.inventariarEnHANA(recordERPCabHana).then(function (respuestaIHANA) {
+												this.traspasarEnHANA(recordERPCabHana).then(function (respuestaIHANA) {
 													MessageToast.show("Traspaso Realizado");
 													jQuery.sap.delayedCall(3000, this, function () {
 														this.btnReestablecerTraspaso();
@@ -627,34 +671,29 @@ sap.ui.define([
 									} else {
 
 										var recordERPDet = {};
-										var recordERPDetHana = {};
 
-										var obj = item[i].getBindingContext("oModelInventario").getObject();
-										var pos = item[i].getContent()[0].getContent()[4].getItems()[1];
-										this.existePosicionHana(obj.Zeili, recordERPCab.IIblnr, recordERPCab.IGjahr).then(function (existeEnHana) {
+										var obj = item[i].getBindingContext("oModelPosTraslado").getObject();
 
-											recordERPDet.Ikey = "1"; //Edm.String" Nullable="false" MaxLength="1"
-											recordERPDet.Zeili = obj.Zeili; //Edm.String" Nullable="false" MaxLength="3" sap:label="Posición"
-											recordERPDet.Matnr = obj.Matnr; //Edm.String" Nullable="false" MaxLength="18" sap:label="Material"
-											recordERPDet.Maktx = obj.Maktx; //Edm.String" Nullable="false" MaxLength="40" sap:label="Txt.brv."
-											var cantidad = pos.getValue().replace(/,/g, ".");
-											recordERPDet.Erfmg = cantidad; //Edm.Decimal" Nullable="false" Precision="13" Scale="3" sap:label="Ctd.en UME"
-											recordERPDet.Erfme = obj.Erfme; //Edm.String" Nullable="false" MaxLength="3" sap:label="UM entrada"
-											recordERPDet.Lgpbe = obj.Lgpbe; //Edm.String" Nullable="false" MaxLength="10" sap:label="Ubicación"
-											recordERPDet.Werks = obj.Werks; //Edm.String" Nullable="false" MaxLength="4" sap:label="Centro"
-											recordERPDet.Lgort = obj.Lgort; //Edm.String" Nullable="false" MaxLength="4" sap:label="Almacén"
-											recordERPDet.ZeroCount = pos.getValue() === "0" ? "0" : "X"; //Edm.String" Nullable="false" MaxLength="1" sap:label="Recuento cero"
-											recordERPDet.ITransaccion = existeEnHana;
-											recordERPCab.NavEjeInventarioPos.push(recordERPDet);
-
-											recordERPDetHana = recordERPDet;
-											recordERPDetHana.Charg = obj.Charg;
-											recordERPCabHana.NavEjeInventarioPos.push(recordERPDetHana);
-
-											i++;
-											functionRecorrer(listInventario, i);
-
-										}.bind(this));
+										recordERPDet.Ikey = "1"; //Edm.String" Nullable="false" MaxLength="1"
+										recordERPDet.Budat = oDatePickerFCTraspaso.getDateValue(); //Edm.DateTime" Nullable="false" Precision="7" sap:label="Fecha contab."
+										recordERPDet.Bldat = oDatePickerFCTraspaso.getDateValue(); //Edm.DateTime" Nullable="false" Precision="7" sap:label="Fecha documento"
+										recordERPDet.Bktxt = oTextAreaObservacion.getValue().trim().slice(0, 25); //Edm.String" Nullable="false" MaxLength="25" sap:label="Txt.cab.doc."
+										recordERPDet.Xblnr = ""; //Edm.String" Nullable="false" MaxLength="16" sap:label="Referencia"
+										recordERPDet.Werks = oInputCentroCTraspaso.getValue(); //Edm.String" Nullable="false" MaxLength="4" sap:label="Centro"
+										recordERPDet.Lgort = obj.almacen; //Edm.String" Nullable="false" MaxLength="4" sap:label="Almacén"
+										recordERPDet.Sgtxt = obj.denMaterial; //Edm.String" Nullable="false" MaxLength="50" sap:label="Texto"
+										recordERPDet.Matnr = obj.codMaterial; //Edm.String" Nullable="false" MaxLength="18" sap:label="Material"
+										recordERPDet.Menge = obj.cantidad; //Edm.Decimal" Nullable="false" Precision="13" Scale="3" sap:label="Cantidad"
+										recordERPDet.Meins = obj.uni_medida; //Edm.String" Nullable="false" MaxLength="3"sap:label="UM base"
+										recordERPDet.Lgpbe = ""; //Edm.String" Nullable="false" MaxLength="10" sap:label="Ubicación"
+										recordERPDet.Charg = obj.lote; //Edm.String" Nullable="false" MaxLength="10" sap:label="Lote"
+										recordERPCab.NavEjeTraspasoPos.push(recordERPDet);
+										
+										recordERPCabHana = recordERPCab;
+										recordERPCabHana.nroPos = obj.pos;
+										recordERPCabHana.NavEjeTraspasoPos.push(recordERPDet);
+										i++;
+										functionRecorrer(listInventario, i);
 									}
 								}.bind(this);
 
@@ -666,7 +705,7 @@ sap.ui.define([
 						} else {
 							MessageToast.show("Complete los datos obligatorios.");
 							jQuery.sap.delayedCall(3000, this, function () {
-								this.cerrar(this.InputsViewCabeceraTraslado, "", "vista");
+								this.cerrarT(this.InputsViewCabeceraTraslado, "", "vista");
 								this.quitarState(this.InputsViewCabeceraTraslado, "", "vista");
 							}.bind(this));
 						}
@@ -674,6 +713,81 @@ sap.ui.define([
 				}.bind(this)
 
 			});
+		},
+
+		traspasarEnERP: function (datos) {
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					resolve({
+						nroDocumento: "",
+						resolve: true,
+						error: ""
+					});
+
+					/*this.getView().getModel("oModelSAPERP").create('/EjeTraspasoSet', datos, {
+						success: function (oResult) {
+
+							resolve({
+								nroDocumento: "",
+								resolve: true,
+								error: ""
+							});
+
+						}.bind(this),
+						error: function (oError) {
+							var mensaje = "";
+							try {
+								mensaje = JSON.parse(oError.responseText).error.message.value;
+								resolve({
+									nroDocumento: "",
+									error: mensaje,
+									resolve: false
+								});
+							} catch (e) {
+								resolve({
+									nroDocumento: "",
+									error: mensaje,
+									resolve: false
+								});
+							}
+
+						}.bind(this)
+					});*/
+
+				}.bind(this));
+		},
+
+		traspasarEnHANA: function (json) {
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					var fecha = new Date();
+					fecha.setHours(0);
+					fecha.setMinutes(0);
+					fecha.setSeconds(0);
+					json.IZldat = this.convertFechaXSJS(new Date(json.IZldat));
+					json.FechaTraspaso = this.convertFechaXSJS(new Date(fecha));
+					json.horaTraspaso = this.horaXSJS();
+					json.almacenCabecera = this.getView().byId("oInputAlmacenCTraspaso").getValue();
+					json.userSCPCodTraspaso = this.userSCPCod;
+
+					var url = "/HANA/EGRESO_MERCADERIA/services.xsjs?accion=traspasar";
+
+					$.ajax({
+						url: url,
+						method: "POST",
+						data: JSON.stringify(json),
+						success: function (oResult) {
+							var respuesta = oResult;
+							resolve(respuesta);
+						}.bind(this),
+						error: function (oError) {
+							resolve([]);
+						}.bind(this)
+					});
+
+				}.bind(this));
 		}
 
 	});

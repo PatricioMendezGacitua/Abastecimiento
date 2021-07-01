@@ -1164,6 +1164,45 @@ sap.ui.define([
 				}.bind(this));
 
 		},
+		
+		getLoteMaterialesERP: function (numeroMaterial, numeroCentro) {
+			return new Promise(
+				function resolver(resolve) {
+
+					var aFil = [];
+					var tFilterNumMat = new sap.ui.model.Filter({
+						path: "IMatnr",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: numeroMaterial
+					});
+					aFil.push(tFilterNumMat);
+
+					var tFilterCentro = new sap.ui.model.Filter({
+						path: "IWerks",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: numeroCentro
+					});
+					aFil.push(tFilterCentro);
+
+					this.getView().getModel("oModelSAPERP").read('/ListaLoteSet', {
+						filters: aFil,
+						success: function (oResult) {
+							var datos = oResult.results;
+
+							if (datos.length > 0) {
+								resolve(datos);
+							} else {
+								resolve([]);
+							}
+						}.bind(this),
+						error: function (oError) {
+							resolve([]);
+						}.bind(this)
+					});
+
+				}.bind(this));
+
+		},
 
 		getCentrosERP: function () {
 			return new Promise(
