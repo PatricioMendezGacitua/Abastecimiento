@@ -94,31 +94,122 @@ sap.ui.define([
 				}.bind(this));
 
 		},
+		
+		inventariarEnHANA: function (json) {
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					var fecha = new Date();
+					fecha.setHours(0);
+					fecha.setMinutes(0);
+					fecha.setSeconds(0);
+					json.IZldat = this.convertFechaXSJS(new Date(json.IZldat));
+					json.FechaInventario = this.convertFechaXSJS(new Date(fecha));
+					json.horaInventario = this.horaXSJS();
+					json.UserSCPCodInventario = this.userSCPCod;
+
+					var url = "/HANA/EGRESO_MERCADERIA/services.xsjs?accion=inventariar";
+
+					$.ajax({
+						url: url,
+						method: "POST",
+						data: JSON.stringify(json),
+						success: function (oResult) {
+							var respuesta = oResult;
+							resolve(respuesta);
+						}.bind(this),
+						error: function (oError) {
+							resolve([]);
+						}.bind(this)
+					});
+
+				}.bind(this));
+		},
+
+		cargaHana: function (arrPos, documento, tipo) {
+			return new Promise(
+				function resolver(resolve, reject) {
+					var fecha = new Date();
+					fecha.setHours(0);
+					fecha.setMinutes(0);
+					fecha.setSeconds(0);
+					var datos = {};
+					datos.data = arrPos;
+					datos.documento = documento;
+					datos.tipo = tipo;
+					datos.FechaInventario = this.convertFechaXSJS(new Date(fecha));
+					datos.horaInventario = this.horaXSJS();
+
+					var url = "/HANA/EGRESO_MERCADERIA/services.xsjs?accion=cargaHana";
+
+					$.ajax({
+						url: url,
+						method: "POST",
+						data: JSON.stringify(datos),
+						success: function (oResult) {
+							var respuesta = oResult;
+							if (respuesta === "OK") {
+								debugger
+								resolve(true);
+							} else {
+								console.log(respuesta)
+								debugger
+								resolve(false);
+							}
+							resolve(respuesta);
+						}.bind(this),
+						error: function (oError) {
+							debugger
+							resolve(false);
+						}.bind(this)
+					});
+
+				}.bind(this));
+		},
 
 		createReservaERP: function (datos) {
 			return new Promise(
 				function resolver(resolve, reject) {
-					debugger
+					console.log(datos);
+                  
 					this.getView().getModel("oModelSAPERP").create('/GestReservaSet ', datos, {
 						success: function (oResult) {
 
-							/*var respuesta = oResult.navCrearDocMatDocumento.EMblnr + "-" + oResult.navCrearDocMatDocumento.EMjahr;
+                            var type = oResult.NavGestReservaDoc.results[0].Type;
+                            var message = oResult.NavGestReservaDoc.results[0].Message;
+                            console.log(oResult.NavGestReservaDoc.results[0]);
+                            if(type === "E"){
+                            	
+                            	resolve({
+									nroDocumento: "",
+									resolve: false,
+									error: message
+								});
+                            	
+                            	
+                            	
+                            	
+                            }else{
+                            
+                            
+                            
+                            
+							var respuesta = oResult.NavGestReservaDoc.results[0].Mblnr + "-" + oResult.NavGestReservaDoc.results[0].Mjahr;
 
-							if (respuesta.length > 0) {
+							/*if (respuesta.length > 0) {*/
 								resolve({
 									nroDocumento: respuesta,
 									resolve: true,
 									error: ""
 								});
-							} else {
+							/*} else {
 								resolve({
 									nroDocumento: "",
 									resolve: false,
 									error: ""
 								});
 							}*/
-							debugger
-
+                            }
 						}.bind(this),
 						error: function (oError) {
 							var mensaje = "";
@@ -153,19 +244,19 @@ sap.ui.define([
 					for (var e = 0; e < data.length; e++) {
 
 						if (data[e].Rsnum === idReserva) {
+						/*	if (estado === data[e].Estado) {*/
+								(data[e].Charg.length > 0) ? data[e].state = true: data[e].state = false;
 
-							(data[e].Charg.length > 0) ? data[e].state = true: data[e].state = false;
-
-							data[e].CantSolicitada = Number(data[e].CantSolicitada);
-							data[e].CantPreparada = Number(data[e].CantPreparada);
-							data[e].minData = 0;
-							data[e].maxData = data[e].CantSolicitada - data[e].CantPreparada;
-							data[e].value = 0;
-							(data[e].Lgpbe.length > 0) ? arrayUbicaciones.push(data[e].Lgpbe): "";
-							data[e].order = order;
-							order++;
-							oModel.push(data[e]);
-
+								data[e].CantSolicitada = Number(data[e].CantSolicitada);
+								data[e].CantPreparada = Number(data[e].CantPreparada);
+								data[e].minData = 0;
+								data[e].maxData = data[e].CantSolicitada - data[e].CantPreparada;
+								data[e].value = 0;
+								(data[e].Lgpbe.length > 0) ? arrayUbicaciones.push(data[e].Lgpbe): "";
+								data[e].order = order;
+								order++;
+								oModel.push(data[e]);
+							
 						}
 						if (data.length === (e + 1)) {
 
@@ -349,9 +440,10 @@ sap.ui.define([
 									record.NRORESERVA = datos[e].Rsnum;
 									record.TITULO_ESTADO_INGRESO = (sValueTipo === "PEN") ? "Pendiente" : "Pend. Reserva";
 									record.STATE_ESTADO_INGRESO = "Warning"; // (sValueTipo === "PEN") ? "Warning" : "Warning";
-									if (datos[e].Estado === estado) {
+									datosFinal.push(record);
+									/*if (datos[e].Estado === estado) {
 										datosFinal.push(record);
-									}
+									}*/
 									if (datos.length === (e + 1)) {
 
 										datosF = this.eliminaDuplicado(datosFinal, "NRORESERVA");

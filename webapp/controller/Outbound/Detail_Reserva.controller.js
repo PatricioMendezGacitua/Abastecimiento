@@ -18,18 +18,17 @@ sap.ui.define([
 			var oArgs = oEvent.getParameter("arguments");
 			this.idIngreso = oArgs.idReserva;
 			this.idEstadoIngreso = oArgs.ingreso;
-			
 
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 			if (this._oStorage.get("navegacion_IngresoMercaderia") === "si") {
 				this._oStorage.put("navegacion_IngresoMercaderia", "no");
-					
+
 				var model = sap.ui.getCore().getModel("oModeloTemporalesReservaCore").getData();
 				this.openBusyDialogCargando();
 
 				this.getView().byId("tituloDetalleSolicitudView").setText("Detalle Reserva N°" + this.idIngreso);
 				this.cargaPosiciones(model, this.idIngreso, "Reserva").then(function (respuestacargaPosiciones) {
-				
+
 					var oModel = new JSONModel(respuestacargaPosiciones);
 
 					this.getView().setModel(oModel, "oModeloDataTemporalDetailReserva");
@@ -39,8 +38,6 @@ sap.ui.define([
 			} else {
 				this.resetMasterDetail();
 			}
-
-			
 
 		},
 
@@ -287,105 +284,130 @@ sap.ui.define([
 		},
 
 		onReservar: function (oEvent) {
-			
+
 			MessageBox.information('¿Seguro deseas reservar?', {
 				title: "Aviso",
 				actions: ["Si", "No"],
 				styleClass: "",
 				onClose: function (sAction) {
 					if (sAction === "Si") {
+						this.openBusyDialogCargando();
 						var idList = this.getView().byId("idtableLPReserva");
-						
+
 						//var countPos = this.getView().byId("idtableLPReserva").getItems().length;
-						
+
 						var recorrerPosiciones = function (element, index) {
-							 if (element.length === index) {
-							 	
-							 	
-							 	
-							 	
-							 	
-							 	
-							 }else{
-							 	
-							 	
-							 	
-							 }
-							
-							
-	                    }.bind(this);
+							if (element.length === index) {
+
+							} else {
+
+							}
+
+						}.bind(this);
 						var generaReserva = {};
 						generaReserva.NavGestReservaPos = [];
-						generaReserva.NavGestReservaDoc=[];
+						generaReserva.NavGestReservaDoc = [];
 						idList.getItems().forEach(function (elementt, indexx) {
-							
-						var cantEnv = elementt.getContent()[0].getItems()[0].getContent()[9].getItems()[1].getValue();
-						
-						
-						if(cantEnv>0){
-							
-							generaReserva.Ikey = "1";
-							generaReserva.IAccion = "P";
-							
-							var recordNavPos = {};
-							recordNavPos.Ikey = "1";
-							recordNavPos.Rsnum = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Rsnum;
-							recordNavPos.Rspos = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Rspos;
-							recordNavPos.TipoDespacho = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().TipoDespacho;
-							recordNavPos.Bdter = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Bdter;
-							recordNavPos.Matnr = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Matnr;
-							recordNavPos.Maktx = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Maktx;
-							recordNavPos.Estado = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Estado;
-							recordNavPos.Uexnam = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Uexnam;
-							recordNavPos.Dexdat = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Dexdat;
-							recordNavPos.Texdat = this.getHourERP(elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Texdat);//"PT01H10M01S";
-							recordNavPos.CantSolicitada = parseFloat(elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().CantSolicitada).toFixed(2);
-							recordNavPos.CantEnviada = parseFloat(elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().CantEnviada).toFixed(2);
-							recordNavPos.CantEnviar = parseFloat(cantEnv).toFixed(2);
-							recordNavPos.CantPreparada = parseFloat(elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().CantPreparada).toFixed(2);
-							recordNavPos.Meins = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Meins;
-							recordNavPos.Ekgrp = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Ekgrp;
-							recordNavPos.Bodeguero = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Bodeguero;
-							recordNavPos.Supervisor = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Supervisor;
-							recordNavPos.Creador = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Creador;
-							recordNavPos.Werks = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Werks;
-							recordNavPos.Lgort = elementt.getContent()[0].getItems()[0].getContent()[5].getItems()[1].getText();
-							recordNavPos.Charg = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Charg;
-							recordNavPos.Lgpbe = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Lgpbe;
-							recordNavPos.Integracion = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Integracion;
-							recordNavPos.ItemText = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().ItemText;
 
-							generaReserva.NavGestReservaPos.push(recordNavPos);
-							
-							
-							
-							
-						}
-					
+							var cantEnv = elementt.getContent()[0].getItems()[0].getContent()[9].getItems()[1].getValue();
 
-						if (idList.getItems().length === indexx + 1) {
-							this.createReservaERP(generaReserva).then(function (respuestaReservaERP) {
+							if (cantEnv > 0) {
+
+								generaReserva.Ikey = "1";
+								var estado= elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Estado;
 								
+								(estado==="EP")?generaReserva.IAccion = "C":generaReserva.IAccion = "P";
 								
+							
+
+								var recordNavPos = {};
+								recordNavPos.Ikey = "1";
+								recordNavPos.Rsnum = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Rsnum;
+								recordNavPos.Rspos = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Rspos;
+								recordNavPos.TipoDespacho = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().TipoDespacho;
+								recordNavPos.Bdter = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Bdter;
+								recordNavPos.Matnr = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Matnr;
+								recordNavPos.Maktx = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Maktx;
+								recordNavPos.Estado = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Estado;
+								recordNavPos.Uexnam = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Uexnam;
+								recordNavPos.Dexdat = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Dexdat;
+								recordNavPos.Texdat = this.getHourERP(elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Texdat); //"PT01H10M01S";
+								recordNavPos.CantSolicitada = parseFloat(elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().CantSolicitada)
+									.toFixed(2);
+								recordNavPos.CantEnviada = parseFloat(elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().CantEnviada)
+									.toFixed(2);
+								recordNavPos.CantEnviar = parseFloat(cantEnv).toFixed(2);
+								recordNavPos.CantPreparada = parseFloat(elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().CantPreparada)
+									.toFixed(2);
+								recordNavPos.Meins = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Meins;
+								recordNavPos.Ekgrp = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Ekgrp;
+								recordNavPos.Bodeguero = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Bodeguero;
+								recordNavPos.Supervisor = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Supervisor;
+								recordNavPos.Creador = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Creador;
+								recordNavPos.Werks = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Werks;
+								recordNavPos.Lgort = elementt.getContent()[0].getItems()[0].getContent()[5].getItems()[1].getText();
+								recordNavPos.Charg = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Charg;
+								recordNavPos.Lgpbe = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Lgpbe;
+								recordNavPos.Integracion = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Integracion;
+								recordNavPos.ItemText = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().ItemText;
+
+								generaReserva.NavGestReservaPos.push(recordNavPos);
+
+							}
+
+							if (idList.getItems().length === indexx + 1) {
 								
-								
-								
-							}.bind(this));
-						}
-					}.bind(this));
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
-						
+							
+								this.createReservaERP(generaReserva).then(function (respuestaReservaERP) {
+									
+							
+									if (respuestaReservaERP.resolve) {
+										this.cargaHana(generaReserva.NavGestReservaPos, respuestaReservaERP.nroDocumento, "Reserva").then(function (
+											respuestacargaHana) {
+												
+												this.nroDocumento = respuestaReservaERP.nroDocumento;
+												
+												
+												
+											/*if (respuestacargaHana) {
+
+											} else {
+
+											}*/
+
+											MessageBox.success(" N°de reserva" + this.idIngreso +
+												" fue gestionada con éxito. \n  \n El documento SAP asociado es el N°" +
+												this.nroDocumento + ".", {
+													title: "Aviso",
+													onClose: function (sAction) {
+														this.BusyDialogCargando.close();
+														this.resetMasterDetail();
+													}.bind(this)
+												});
+
+										}.bind(this));
+									} else {
+										MessageBox.information(
+											"No fue posible efectuar la reserva par el numero " + this.idIngreso + ", intenta más tarde o comunícate con el área encargada.", {
+												title: "Aviso",
+                                                details: " Detalle del error: " + respuestaReservaERP.error,
+												contentWidth: "500px",
+												styleClass: "sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer",
+												actions: ["OK"],
+												onClose: function (oAction) {
+													//this.registrarUsoIngreso().then(function () {
+													this.BusyDialogCargando.close();
+													this.resetMasterDetail();
+													//}.bind(this));
+												}.bind(this)
+											});
+
+									}
+
+								}.bind(this));
+							}
+						}.bind(this));
+
 						//this._oStorage.put("logeoIngresoMerecaderia", "Si");
 						//if (!this.validar(this.InputsViewCabeceraTraslado, "", "vista")) {
 
