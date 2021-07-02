@@ -23,7 +23,7 @@ sap.ui.define([
 	consultaUsuario) {
 	"use strict";
 	return Controller.extend("com.gasco.Inbound.controller.Inbound.BaseController", {
-
+ 
 		openMoreOption: function (oEvent) {
 
 			var oButton = oEvent.getSource();
