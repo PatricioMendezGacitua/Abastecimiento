@@ -3,14 +3,14 @@
 	<html:style type="text/css">
 		div[data-mydata="0"]>div { opacity: 0.3; }
 	</html:style>
-	<Page title="Inventario" id="oPageTrasladoId">
+	<Page title="Inventario" id="oPageInventariosId">
 		<customHeader>
 			<Bar>
 				<contentLeft>
 					<Button type="Transparent" icon="sap-icon://navigation-left-arrow" press="onBackHomeOutbound"></Button>
 				</contentLeft>
 				<contentMiddle>
-					<Text text="INVENTARIOS"></Text>
+					<Text text="Inventarios"></Text>
 				</contentMiddle>
 				<contentRight>
 					<Button icon="sap-icon://vertical-grip" type="Transparent" tooltip="Más Opciones" press="openMoreOption"/>

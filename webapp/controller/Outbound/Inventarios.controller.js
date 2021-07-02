@@ -184,6 +184,7 @@ sap.ui.define([
 		},
 
 		btnReestablecerInventario: function (oEvent) {
+			this.getView().byId("oPageInventariosId").scrollTo(0, 0);
 			var oButtonBuscar = this.getView().byId("oButtonBuscarId");
 			oButtonBuscar.setEnabled(true);
 
@@ -214,7 +215,7 @@ sap.ui.define([
 		},
 
 		btnAceptarInventario: function (oEvent) {
-			var vista = this.getView().byId("oPageTrasladoId");
+			var vista = this.getView().byId("oPageInventariosId");
 			MessageBox.information('¿Seguro deseas finalizar el inventario?', {
 				title: "Aviso",
 				actions: ["Si", "No"],

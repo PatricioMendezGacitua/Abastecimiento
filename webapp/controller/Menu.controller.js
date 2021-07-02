@@ -103,6 +103,12 @@ sap.ui.define([
 				}.bind(this)
 			});
 			
+			this.getView().byId("gBodegaDiarioId").addEventDelegate({
+				ontap: function () {
+					this.navToGestionBodega();
+				}.bind(this)
+			});
+			
 			//#endregion 
 			
 			
@@ -136,6 +142,11 @@ sap.ui.define([
 		navToInventario: function () {
 			this._oStorage.put("navegacion_IngresoMercaderia", "si");
 			this._route.navTo("inventario");
+		},
+		
+		navToGestionBodega: function () {
+			this._oStorage.put("navegacion_IngresoMercaderia", "si");
+			this._route.navTo("gestion_bodega");
 		},
 
 		navToReserva: function () {

@@ -1,0 +1,97 @@
+<mvc:View controllerName="com.gasco.Inbound.controller.Outbound.GestionBodega" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:l="sap.ui.layout">
+	<html:style type="text/css">
+		div[data-mydata="0"]>div { opacity: 0.3; }
+	</html:style>
+	<Page title="Gestión Bodega" id="oPageGestionBodegaId">
+		<customHeader>
+			<Bar>
+				<contentLeft>
+					<Button type="Transparent" icon="sap-icon://navigation-left-arrow" press="onBackHomeOutbound"></Button>
+				</contentLeft>
+				<contentMiddle>
+					<Text text="Gestión Bodega"></Text>
+				</contentMiddle>
+				<contentRight>
+					<Button icon="sap-icon://vertical-grip" type="Transparent" tooltip="Más Opciones" press="openMoreOption"/>
+				</contentRight>
+			</Bar>
+		</customHeader>
+		<content>
+			<ObjectHeader title="Tarea Bodega Diaria" class="sapUiResponsivePadding--header" responsive="true" backgroundDesign="Solid">
+				<statuses>
+					<ObjectStatus text="{oModelGestionBodega>/ESTADO_TEXT}" state="{oModelGestionBodega>/ESTADO_STATE}" inverted="true"/>
+				</statuses>
+				<ObjectAttribute title="N°" text=" {oModelGestionBodega>/ID_TAREA}"/>
+				<ObjectAttribute title="Fecha" text=" {oModelGestionBodega>/FECHA_CREACION}"/>
+			</ObjectHeader>
+			<l:Grid id="idGridPosGestionBodega" hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiSmallyMarginTop">
+				<List sticky="HeaderToolbar" id="idtableLPGestionBodega" selectionChange="openPH" updateFinished="countTitleLPGestionBodega" mode="None"
+					items="{oModelGestionBodega>/POSICIONES}">
+					<headerToolbar>
+						<Toolbar>
+					<Title id="oTitleIdLGestionBodega" text="Posiciones (0)" visible="true"></Title>
+					<ToolbarSpacer/>
+					<Button press="actualizarPantalla" icon="sap-icon://synchronize" type="Transparent"></Button>
+				</Toolbar>
+					</headerToolbar>
+					<items>
+						<CustomListItem type="Inactive">
+							<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
+								<VBox>
+									<Label class="font-xSmaller" text="Material:" textAlign="Begin"></Label>
+									<Text class="fontBold" width="100%" text="{oModelGestionBodega>CODIGO_MATERIAL}" wrapping="true"></Text>
+									<layoutData>
+										<l:GridData span="XL4 L4 M4 S4"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<Label class="font-xSmaller" text="Ubicación" textAlign="Center" width="100%"></Label>
+									<Text class="fontBold" width="100%" text="{oModelGestionBodega>UBICACION}" wrapping="true" textAlign="Center"></Text>
+									<layoutData>
+										<l:GridData span="XL4 L4 M4 S4"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<Label class="font-xSmaller" text="Posición:" textAlign="Center" width="100%"></Label>
+									<Text class="fontBold" width="100%" text="{oModelGestionBodega>POSICION}" wrapping="true" textAlign="Center"></Text>
+									<layoutData>
+										<l:GridData span="XL4 L4 M4 S4"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<Label class="font-xSmaller" text="Denominación Material:" textAlign="Begin" width="100%"></Label>
+									<Text class="fontBold" width="100%" text="{oModelGestionBodega>DESCRIPCION}" textAlign="Begin" wrapping="true"></Text>
+									<layoutData>
+										<l:GridData span="XL12 L12 M12 S12"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<Label class="font-xSmaller" text="Cantidad:" textAlign="Begin" required="false" width="100%"></Label>
+									<Input liveChange="onlyDecimal" type="Tel" value="{oModelGestionBodega>STOCK_FISICO}" width="100%" textAlign="Center" maxLength="100"/>
+									<layoutData>
+										<l:GridData span="XL8 L8 M8 S8"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<Label class="font-xSmaller" text="Und. Medida:" textAlign="Center" width="100%"></Label>
+									<Text class="fontBold sapUiTinyMarginTop" width="100%" text="{oModelGestionBodega>UNIDAD_DE_MEDIDA}" wrapping="true" textAlign="Center"></Text>
+									<layoutData>
+										<l:GridData span="XL4 L4 M4 S4"/>
+									</layoutData>
+								</VBox>
+							</l:Grid>
+						</CustomListItem>
+					</items>
+				</List>
+			</l:Grid>
+		</content>
+		<footer>
+			<Toolbar>
+				<ToolbarSpacer/>
+				<Button id="oButtonResGestionBodegaId" text="Restablecer" enabled="false" type="Ghost" press="btnReestablecerGestionBodega"></Button>
+				<Button id="oButtonIGestionBodegaId" enabled="false" type="Emphasized" text="Finalizar" press="btnAceptarGestionBodega"/>
+			</Toolbar>
+		</footer>
+	</Page>
+</mvc:View>

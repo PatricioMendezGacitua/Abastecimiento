@@ -531,7 +531,7 @@ sap.ui.define([
 
 		onlyDecimal: function (oEvent) {
 			var obj = oEvent.getSource();
-			var retorno = obj.setValue(obj.getValue().replace(/[^, 0-9]+/g, ''));
+			var retorno = obj.setValue(obj.getValue().replace(/[^,0-9]+/g, ''));
 			return retorno;
 		},
 
@@ -1734,6 +1734,9 @@ sap.ui.define([
 							", acción realizada por el usuario " + this.userSCPCod;
 					} else if (actividad === "Inventario_Realizado") {
 						this.contenido = "La actividad que se acaba de realizar corresponde a la realización de un inventario" +
+							", acción realizada por el usuario " + this.userSCPCod;
+					} else if (actividad === "Tarea_Finalizada") {
+						this.contenido = "La actividad que se acaba de realizar corresponde a la finalización de la tarea N°" + datos.ID_TAREA +
 							", acción realizada por el usuario " + this.userSCPCod;
 					}
 

@@ -587,6 +587,7 @@ sap.ui.define([
 		},
 
 		btnReestablecerTraspaso: function () {
+			this.getView().byId("oPageTraspasoId").scrollTo(0, 0);
 			var oInputCentroCTraspaso = this.getView().byId("oInputCentroCTraspaso");
 			var oInputAlmacenCTraspaso = this.getView().byId("oInputAlmacenCTraspaso");
 			var oDatePickerFCTraspaso = this.getView().byId("oDatePickerFCTraspaso");

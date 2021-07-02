@@ -10,7 +10,7 @@
 					<Button type="Transparent" icon="sap-icon://navigation-left-arrow" press="onBackHome"></Button>
 				</contentLeft>
 				<contentMiddle>
-					<Text text="Inbound"></Text>
+					<Text text="Ingresos"></Text>
 				</contentMiddle>
 				<contentRight>
 					<Button icon="sap-icon://vertical-grip" type="Transparent" tooltip="Más Opciones" press="openMoreOption"/>

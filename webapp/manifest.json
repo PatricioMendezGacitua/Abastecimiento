@@ -188,6 +188,13 @@
 					]
 				},
 				{
+					"name": "gestion_bodega",
+					"pattern": "GestionBodega",
+					"target": [
+						"GestionBodega"
+					]
+				},
+				{
 					"name": "Recepciones_Master",
 					"pattern": "Recepciones_Master/{estadoIngreso}",
 					"target": [
@@ -309,6 +316,10 @@
 				"Inventarios": {
 					"viewType": "XML",
 					"viewName": "Outbound.Inventarios"
+				},
+				"GestionBodega": {
+					"viewType": "XML",
+					"viewName": "Outbound.GestionBodega"
 				},
 				"Detail_Reserva": {
 					"viewType": "XML",
