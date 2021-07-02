@@ -58,6 +58,49 @@
 							</layoutData>
 						</VBox>
 						<VBox>
+							<l:Grid hSpacing="0" vSpacing="0" width="100%">
+								<VBox>
+									<layoutData>
+										<l:GridData span="XL1 L1 M1 S1"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<VBox id="oVBoxImagenGuiaDespacho" visible="false" class="borderMaterial" height="30px">
+										<Image id="oImageEvidenciaGuiaDespachoId" width="100%" height="100%">
+											<detailBox>
+												<LightBox>
+													<LightBoxItem id="oLightBoxItemEvidenciaGuiaDespachoId"></LightBoxItem>
+												</LightBox>
+											</detailBox>
+											<layoutData>
+												<FlexItemData growFactor="1" shrinkFactor="0"/>
+											</layoutData>
+										</Image>
+									</VBox>
+									<layoutData>
+										<l:GridData span="XL3 L3 M3 S3"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<layoutData>
+										<l:GridData span="XL1 L1 M1 S1"/>
+									</layoutData>
+								</VBox>
+								<HBox height="30px" width="100%" justifyContent="End" alignItems="Center">
+									<core:Icon src="sap-icon://add-photo" size="20px" press="capturePhoto" color="#0854a0"></core:Icon>
+									<Link class="sapUiTinyMarginBegin" text="Evidencia guía despacho" press="capturePhoto"></Link>
+									<layoutData>
+										<l:GridData span="XL7 L7 M7 S7"/>
+									</layoutData>
+								</HBox>
+							</l:Grid>
+							<layoutData>
+								<l:GridData span="XL12 L12 M12 S12"/>
+							</layoutData>
+						</VBox>
+					</l:Grid>
+					<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
+						<VBox>
 							<Label class="font-smaller" text=" Observación" design="Bold" required="false"></Label>
 							<TextArea id="oTextAreaObservacion" width="100%" maxLength="400" rows="5"></TextArea>
 							<layoutData>

@@ -65,6 +65,31 @@ sap.ui.define([
 
 		},
 
+		capturePhoto: function () {
+			var oNav = navigator.camera;
+			oNav.getPicture(this.onPhotoDataSuccess.bind(this), this.onFail, {
+				quality: 25,
+				destinationType: oNav.DestinationType.DATA_URL
+			});
+
+		},
+
+		onPhotoDataSuccess: function (imageData) {
+			var imagen = "data:image/png;base64," + imageData;
+			var image = this.getView().byId("oImageEvidenciaGuiaDespachoId");
+			var image2 = this.getView().byId("oLightBoxItemEvidenciaGuiaDespachoId");
+
+			var oVBoxImagenGuiaDespacho = this.getView().byId("oVBoxImagenGuiaDespacho");
+			oVBoxImagenGuiaDespacho.setVisible(true);
+			oVBoxImagenGuiaDespacho.setHeight("62px");
+			image.setSrc(imagen);
+			image2.setImageSrc(imagen);
+		},
+
+		onFail: function () {
+
+		},
+
 		onPressBuscar: function () {
 			this.lotesSeleccionados = [];
 			var inputNroOC = this.getView().byId("oInputOC");
@@ -649,6 +674,9 @@ sap.ui.define([
 			scrollObj.animate({
 				scrollTop: 0
 			}, 1000);
+			var oVBoxImagenGuiaDespacho = this.getView().byId("oVBoxImagenGuiaDespacho");
+			oVBoxImagenGuiaDespacho.setVisible(false);
+			oVBoxImagenGuiaDespacho.setHeight("30px");
 
 			this.getView().byId("oTitleIdLPHI").setText("Posiciones (0)");
 			this._wizard.previousStep();
