@@ -362,23 +362,15 @@ sap.ui.define([
 									
 							
 									if (respuestaReservaERP.resolve) {
-										this.cargaHana(generaReserva.NavGestReservaPos, respuestaReservaERP.nroDocumento, "Reserva").then(function (
+										
+										this.cargaHana(respuestaReservaERP.datosPosiciones , "Reserva").then(function (
 											respuestacargaHana) {
 												
-												this.nroDocumento = respuestaReservaERP.nroDocumento;
-												
-												
-												
-											/*if (respuestacargaHana) {
-
-											} else {
-
-											}*/
-
-											MessageBox.success(" N°de reserva" + this.idIngreso +
-												" fue gestionada con éxito. \n  \n El documento SAP asociado es el N°" +
-												this.nroDocumento + ".", {
+											
+								
+											MessageBox.information("Gestion Reserva N° " + this.idIngreso, {
 													title: "Aviso",
+													details:respuestaReservaERP.detailMensaje,          
 													onClose: function (sAction) {
 														this.BusyDialogCargando.close();
 														this.resetMasterDetail();
@@ -388,7 +380,7 @@ sap.ui.define([
 										}.bind(this));
 									} else {
 										MessageBox.information(
-											"No fue posible efectuar la reserva par el numero " + this.idIngreso + ", intenta más tarde o comunícate con el área encargada.", {
+											"No fue posible efectuar la reserva para el numero " + this.idIngreso + ", intenta más tarde o comunícate con el área encargada.", {
 												title: "Aviso",
                                                 details: " Detalle del error: " + respuestaReservaERP.error,
 												contentWidth: "500px",

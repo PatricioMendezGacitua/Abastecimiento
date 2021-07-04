@@ -94,7 +94,7 @@ sap.ui.define([
 				}.bind(this));
 
 		},
-		
+
 		inventariarEnHANA: function (json) {
 			return new Promise(
 				function resolver(resolve, reject) {
@@ -125,8 +125,8 @@ sap.ui.define([
 
 				}.bind(this));
 		},
-
-		cargaHana: function (arrPos, documento, tipo) {
+		// funcion para cargar en hana 
+		cargaHana: function (arrPos, tipo) {
 			return new Promise(
 				function resolver(resolve, reject) {
 					var fecha = new Date();
@@ -135,7 +135,7 @@ sap.ui.define([
 					fecha.setSeconds(0);
 					var datos = {};
 					datos.data = arrPos;
-					datos.documento = documento;
+					
 					datos.tipo = tipo;
 					datos.FechaInventario = this.convertFechaXSJS(new Date(fecha));
 					datos.horaInventario = this.horaXSJS();
@@ -149,81 +149,103 @@ sap.ui.define([
 						success: function (oResult) {
 							var respuesta = oResult;
 							if (respuesta === "OK") {
-								debugger
+								
 								resolve(true);
 							} else {
 								console.log(respuesta)
-								debugger
+								
 								resolve(false);
 							}
 							resolve(respuesta);
 						}.bind(this),
 						error: function (oError) {
-							debugger
+						
 							resolve(false);
 						}.bind(this)
 					});
 
 				}.bind(this));
 		},
+		cargaDetalle: function (datos, reserva,dataPos) {
+			return new Promise(
+				function resolver(resolve, reject) {
 
+					var str = "";
+					str += "<ul>";
+
+					var functionRecorrer = function recorrer(item, i) {
+						if (i === item.length) {
+							str += "</ul>";
+							str += "<p><strong>NRO DOCUMENTO SAP:" + item[0].Mblnr + "-" + item[0].Mjahr + " </strong>";
+							resolve({
+								resolve: true,
+								detail: str,
+								datosPosicion: dataPos
+
+							});
+						} else {
+							if (item[i].Type === "I") {
+								str += "<li>Para la posición: " + item[i].Rspos + " " + item[i].Message + ". </li>";
+								dataPos[i].Resultado= true;
+								dataPos[i].DocSAP= item[i].Mblnr + "-" + item[i].Mjahr ;
+
+							} else {
+								str += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message + ". </li>";
+								dataPos[i].Resultado= false;
+								dataPos[i].DocSAP= " -  ";
+							}
+							i++;
+							functionRecorrer(item, i);
+
+						}
+
+					}.bind(this);
+
+					functionRecorrer(datos, 0);
+
+				}.bind(this));
+		},
 		createReservaERP: function (datos) {
 			return new Promise(
 				function resolver(resolve, reject) {
 					console.log(datos);
-                  
+
 					this.getView().getModel("oModelSAPERP").create('/GestReservaSet ', datos, {
 						success: function (oResult) {
+							console.log(oResult);
 
-                            var type = oResult.NavGestReservaDoc.results[0].Type;
-                            var message = oResult.NavGestReservaDoc.results[0].Message;
-                            console.log(oResult.NavGestReservaDoc.results[0]);
-                            if(type === "E"){
-                            	
-                            	resolve({
-									nroDocumento: "",
-									resolve: false,
-									error: message
-								});
-                            	
-                            	
-                            	
-                            	
-                            }else{
-                            
-                            
-                            
-                            
-							var respuesta = oResult.NavGestReservaDoc.results[0].Mblnr + "-" + oResult.NavGestReservaDoc.results[0].Mjahr;
+							var data = oResult.NavGestReservaDoc.results;
+							var dataPos = oResult.NavGestReservaPos.results;
 
-							/*if (respuesta.length > 0) {*/
-								resolve({
-									nroDocumento: respuesta,
-									resolve: true,
-									error: ""
-								});
-							/*} else {
-								resolve({
-									nroDocumento: "",
-									resolve: false,
-									error: ""
-								});
-							}*/
-                            }
+							if (data.length > 0) {
+								var reserva = data[0].Rsnum;
+								this.cargaDetalle(data, reserva,dataPos).then(function (respuestaCargaDetalle) {
+
+									resolve({
+
+										detailMensaje: respuestaCargaDetalle.detail,
+										datosPosiciones: respuestaCargaDetalle.datosPosicion,
+										resolve: true,
+										error: ""
+									});
+
+								}.bind(this));
+							}
+
 						}.bind(this),
 						error: function (oError) {
 							var mensaje = "";
 							try {
 								mensaje = JSON.parse(oError.responseText).error.message.value;
 								resolve({
-									nroDocumento: "",
+									
 									error: mensaje,
 									resolve: false
 								});
 							} catch (e) {
 								resolve({
-									nroDocumento: "",
-									error: mensaje,
+									
+									error: e.message,
 									resolve: false
 								});
 							}
@@ -244,19 +266,19 @@ sap.ui.define([
 					for (var e = 0; e < data.length; e++) {
 
 						if (data[e].Rsnum === idReserva) {
-						/*	if (estado === data[e].Estado) {*/
-								(data[e].Charg.length > 0) ? data[e].state = true: data[e].state = false;
+							/*	if (estado === data[e].Estado) {*/
+							(data[e].Charg.length > 0) ? data[e].state = true: data[e].state = false;
 
-								data[e].CantSolicitada = Number(data[e].CantSolicitada);
-								data[e].CantPreparada = Number(data[e].CantPreparada);
-								data[e].minData = 0;
-								data[e].maxData = data[e].CantSolicitada - data[e].CantPreparada;
-								data[e].value = 0;
-								(data[e].Lgpbe.length > 0) ? arrayUbicaciones.push(data[e].Lgpbe): "";
-								data[e].order = order;
-								order++;
-								oModel.push(data[e]);
-							
+							data[e].CantSolicitada = Number(data[e].CantSolicitada);
+							data[e].CantPreparada = Number(data[e].CantPreparada);
+							data[e].minData = 0;
+							data[e].maxData = data[e].CantSolicitada - data[e].CantPreparada;
+							data[e].value = 0;
+							(data[e].Lgpbe.length > 0) ? arrayUbicaciones.push(data[e].Lgpbe): "";
+							data[e].order = order;
+							order++;
+							oModel.push(data[e]);
+
 						}
 						if (data.length === (e + 1)) {
 
