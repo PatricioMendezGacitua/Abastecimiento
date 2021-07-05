@@ -4,7 +4,7 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
 	"sap/ndc/BarcodeScanner",
-	"com/gasco/Inbound/model/apiBibliotecaDigital"
+	"com/gasco/Inbound/model/apiBibliotecaDigital_Inbound"
 ], function (BaseController, MessageToast, JSONModel, MessageBox, BarcodeScanner, apiBibliotecaDigital) {
 
 	return BaseController.extend("com.gasco.Inbound.controller.Inbound.Ingresos", {
