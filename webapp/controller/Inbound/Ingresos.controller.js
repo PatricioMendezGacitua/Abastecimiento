@@ -91,100 +91,114 @@ sap.ui.define([
 		},
 
 		onPressBuscar: function () {
+			debugger;
 			this.lotesSeleccionados = [];
 			var inputNroOC = this.getView().byId("oInputOC");
 			var oButtonBuscar = this.getView().byId("oButtonBuscarId");
+
+			var oModeloPosicionesIngresoMercaderia = new JSONModel([]);
+			this.getView().setModel(oModeloPosicionesIngresoMercaderia, "oModeloPosicionesIngresoMercaderia");
+			var posiciones = [];
+
+			var functionFinal = function () {
+
+				if (posiciones.length > 100) {
+					posiciones.setSizeLimit(posiciones.length);
+				}
+
+				this.getView().byId("oTitleIdLPHI").setText("Posiciones (" + posiciones.length + ")");
+				oModeloPosicionesIngresoMercaderia.setData(posiciones);
+				oModeloPosicionesIngresoMercaderia.refresh();
+				this.getView().setBusy(false);
+
+				if (!this.restablecer) {
+					this.restablecer = true;
+					this._wizard.nextStep();
+				}
+
+				this.getView().byId("CabeceraStep").setValidated(false);
+			}.bind(this);
+
+			var fuctionProcesar = function (dt) {
+				console.log(respuestaBusquedaOrdenDeCompra);
+				if (dt.length > 0) {
+					this.getView().byId("oButtonComplete").setVisible(true);
+					this.posicionEnMemoria = null;
+
+					dt.sort(
+						function (a, b) {
+							if (a.Ebelp > b.Ebelp)
+								return 1;
+							else if (a.Ebelp < b.Ebelp)
+								return -1;
+
+							return 0;
+						});
+
+					dt.forEach(function (element, index) {
+
+						element.Cantidad = element.Cantidad.replace(/ /g, "");
+						element.CantidadPen = element.CantidadPen.replace(/ /g, "");
+						element.StockLabst = element.StockLabst.replace(/ /g, "");
+
+						if (element.Charg.length === 0) {
+							posiciones.push(element);
+						} else {
+
+							if (this.nroPosicionEnMemoria !== element.Ebelp) {
+								this.nroPosicionEnMemoria = element.Ebelp;
+								this.posicionEnMemoria = element;
+								this.posicionEnMemoria.lotes = [];
+								this.posicionEnMemoria.lotes.push({
+									lote: element.Charg
+								});
+								posiciones.push(this.posicionEnMemoria);
+							} else {
+
+								this.posicionEnMemoria.lotes.push({
+									lote: element.Charg
+								});
+
+							}
+
+						}
+
+						if (dt.length === index + 1) {
+							functionFinal();
+						}
+
+					}.bind(this));
+
+				} else {
+					MessageToast.show("Documento sin posiciones para recepcionar");
+					oButtonBuscar.setEnabled(true);
+					functionFinal();
+				}
+			}.bind(this);
+
+			var respuestaBusquedaOrdenDeCompra = "";
 
 			if (inputNroOC.getValue().trim().length > 0) {
 				this.getView().setBusy(true);
 				oButtonBuscar.setEnabled(false);
 				inputNroOC.setEditable(false);
-				this.busquedaOrdenDeCompra("NRO_OC", inputNroOC.getValue().trim()).then(function (respuestaBusquedaOC) {
-					var respuestaBusquedaOrdenDeCompra = respuestaBusquedaOC.datos;
-
-					var oModeloPosicionesIngresoMercaderia = new JSONModel([]);
-					this.getView().setModel(oModeloPosicionesIngresoMercaderia, "oModeloPosicionesIngresoMercaderia");
-					var posiciones = [];
-					var functionFinal = function () {
-						if (posiciones.length > 100) {
-							posiciones.setSizeLimit(posiciones.length);
-						}
-
-						this.getView().byId("oTitleIdLPHI").setText("Posiciones (" + posiciones.length + ")");
-						oModeloPosicionesIngresoMercaderia.setData(posiciones);
-						oModeloPosicionesIngresoMercaderia.refresh();
-						this.getView().setBusy(false);
-
-						if (!this.restablecer) {
-							this.restablecer = true;
-							this._wizard.nextStep();
-						}
-
-						this.getView().byId("CabeceraStep").setValidated(false);
-					}.bind(this);
-
-					if (respuestaBusquedaOC.mensajeError.length === 0) {
-
-						if (respuestaBusquedaOrdenDeCompra.length > 0) {
-							this.getView().byId("oButtonComplete").setVisible(true);
-							this.posicionEnMemoria = null;
-
-							respuestaBusquedaOrdenDeCompra.sort(
-								function (a, b) {
-									if (a.Ebelp > b.Ebelp)
-										return 1;
-									else if (a.Ebelp < b.Ebelp)
-										return -1;
-
-									return 0;
-								});
-
-							respuestaBusquedaOrdenDeCompra.forEach(function (element, index) {
-
-								element.Cantidad = element.Cantidad.replace(/ /g, "");
-								element.CantidadPen = element.CantidadPen.replace(/ /g, "");
-								element.StockLabst = element.StockLabst.replace(/ /g, "");
-
-								if (element.Charg.length === 0) {
-									posiciones.push(element);
-								} else {
-
-									if (this.nroPosicionEnMemoria !== element.Ebelp) {
-										this.nroPosicionEnMemoria = element.Ebelp;
-										this.posicionEnMemoria = element;
-										this.posicionEnMemoria.lotes = [];
-										this.posicionEnMemoria.lotes.push({
-											lote: element.Charg
-										});
-										posiciones.push(this.posicionEnMemoria);
-									} else {
-
-										this.posicionEnMemoria.lotes.push({
-											lote: element.Charg
-										});
-
-									}
-
-								}
-
-								if (respuestaBusquedaOrdenDeCompra.length === index + 1) {
-									functionFinal();
-								}
-
-							}.bind(this));
-
+				if (this.lecturaQR === true && this.idQRHana !== null) {
+					this.busquedaOrdenDeCompraHana(inputNroOC.getValue().trim()).then(function (respuestaBusquedaOCHana) {
+						respuestaBusquedaOrdenDeCompra = respuestaBusquedaOCHana.datos;
+						fuctionProcesar(respuestaBusquedaOrdenDeCompra);
+					}.bind(this));
+				} else {
+					this.busquedaOrdenDeCompra("NRO_OC", inputNroOC.getValue().trim()).then(function (respuestaBusquedaOC) {
+						respuestaBusquedaOrdenDeCompra = respuestaBusquedaOC.datos;
+						if (respuestaBusquedaOC.mensajeError.length === 0) {
+							fuctionProcesar(respuestaBusquedaOrdenDeCompra);
 						} else {
-							MessageToast.show("Documento sin posiciones para recepcionar");
+							MessageToast.show(respuestaBusquedaOC.mensajeError);
 							oButtonBuscar.setEnabled(true);
-							functionFinal();
+							fuctionProcesar(respuestaBusquedaOrdenDeCompra);
 						}
-
-					} else {
-						MessageToast.show(respuestaBusquedaOC.mensajeError);
-						oButtonBuscar.setEnabled(true);
-						functionFinal();
-					}
-				}.bind(this));
+					}.bind(this));
+				}
 			} else {
 				inputNroOC.setValueState("Error");
 				MessageToast.show("Ingrese una Orden de compra valida");
@@ -195,10 +209,50 @@ sap.ui.define([
 
 		},
 
+		busquedaOrdenDeCompraHana: function (oc) {
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					var url = "/HANA/INGRESO_MERCADERIA/services.xsjs?accion=consultaQROC";
+
+					var json = {
+						ORDEN_DE_COMPRA: oc,
+						ID_QR: this.idQRHana
+					};
+
+					$.ajax({
+						url: url,
+						method: "POST",
+						data: JSON.stringify(json),
+						success: function (oResult) {
+							var respuesta = oResult;
+							resolve({
+								datos: respuesta,
+								resolve: true
+							});
+							resolve(respuesta);
+						}.bind(this),
+						error: function (oError) {
+							resolve({
+								datos: [],
+								resolve: false
+							});
+						}.bind(this)
+					});
+
+				}.bind(this));
+		},
+
 		onPressLecturaQR: function (oEvent) {
+
+			this.lecturaQR = false;
+			this.idQRHana = null;
+
 			sap.ndc.BarcodeScanner.scan(
 				function (mResult) {
 					var valor = "";
+					var json = "";
+
 					if (mResult.format === "QR_CODE") {
 						var value = mResult.text;
 
@@ -207,10 +261,12 @@ sap.ui.define([
 							var ultimoCaracter = value.slice(value.length - 1);
 
 							if (primerCaracter === "{" && ultimoCaracter === "}") {
-								valor = JSON.parse(value);
-								if (valor.CABECERA !== undefined) {
-									if (valor.CABECERA.ORDEN_DE_COMPRA !== undefined) {
-										valor = valor.CABECERA.ORDEN_DE_COMPRA;
+								json = JSON.parse(value);
+								if (json.ID_QR !== undefined) {
+									if (json.ORDEN_DE_COMPRA !== undefined) {
+										this.lecturaQR = true;
+										valor = json.ORDEN_DE_COMPRA;
+										this.idQRHana = json.ID_QR;
 										this.cerrarDialogoMenuBusqueda();
 										this.getView().byId("oInputOC").setValue(valor);
 										this.getView().byId("oButtonBuscarId").focus();
@@ -389,180 +445,182 @@ sap.ui.define([
 			var contenedor = this.getView().byId("oPageId");
 			this.validar(this.InputsView, "", contenedor).then(function (respuestaValidar) {
 				if (!respuestaValidar) {
+					var oVboxGD = this.getView().byId("oVBoxImagenGuiaDespacho");
+					if (oVboxGD.getVisible()) {
+						MessageBox.information('¿Seguro que deseas recepcionar el trabajo realizado?', {
+							title: "Aviso",
+							actions: ["Si", "No"],
+							styleClass: "",
+							onClose: function (sAction) {
+								if (sAction === "Si") {
 
-					MessageBox.information('¿Seguro que deseas recepcionar el trabajo realizado?', {
-						title: "Aviso",
-						actions: ["Si", "No"],
-						styleClass: "",
-						onClose: function (sAction) {
-							if (sAction === "Si") {
+									this.openBusyDialogCargando();
+									//Consulta si existe ot, sino la crea y retorna el id de la ot
+									var ot = this.getView().byId("oInputOC").getValue();
+									this.consultaOC(ot).then(function (respuestaOC) {
+										if (respuestaOC.resolve) {
+											var idOC = respuestaOC.idOc;
+											var guiDespacho = this.getView().byId("oInputGuiaDespacho").getValue();
+											this.consultaOCGuia(idOC, guiDespacho).then(function (respuestaOCGuia) {
+												if (respuestaOCGuia) {
+													var fechaConta = this.getView().byId("oDatePickerFC").getDateValue();
+													var patente = this.getView().byId("oInputPatente").getValue();
+													var fechaGuia = this.getView().byId("oDatePickerFD").getDateValue();
+													var observacion = this.getView().byId("oTextAreaObservacion").getValue();
 
-								this.openBusyDialogCargando();
-								//Consulta si existe ot, sino la crea y retorna el id de la ot
-								var ot = this.getView().byId("oInputOC").getValue();
+													var fecha = new Date();
+													fecha.setHours(0);
+													fecha.setMinutes(0);
+													fecha.setSeconds(0);
 
-								this.consultaOC(ot).then(function (respuestaOC) {
-									if (respuestaOC.resolve) {
-										var idOC = respuestaOC.idOc;
-										var guiDespacho = this.getView().byId("oInputGuiaDespacho").getValue();
-										this.consultaOCGuia(idOC, guiDespacho).then(function (respuestaOCGuia) {
-											if (respuestaOCGuia) {
-												var fechaConta = this.getView().byId("oDatePickerFC").getDateValue();
-												var patente = this.getView().byId("oInputPatente").getValue();
-												var fechaGuia = this.getView().byId("oDatePickerFD").getDateValue();
-												var observacion = this.getView().byId("oTextAreaObservacion").getValue();
+													var dataIngreso = {
+														ID_INGRESO: 0,
+														ID_OC: idOC,
+														ID_ESTADO_INGRESO: 1,
+														FECHA_CONTABILIZACION: fechaConta,
+														GUIA_DESPACHO: guiDespacho,
+														FECHA_GUIA_DESPACHO: fechaGuia,
+														PATENTE: patente,
+														OBSERVACION: observacion,
+														FECHA_INBOUND: fecha,
+														HORA_INBOUND: this.hora(),
+														USER_SCP_COD_INBOUND: this.userSCPCod,
+														FECHA_RECEPCION: null,
+														HORA_RECEPCION: null,
+														NUMERO_INGRESO_ERP: null,
+														USER_SCP_COD_RECEPCION: null
+													};
+													var creacionConError = 0;
 
-												var fecha = new Date();
-												fecha.setHours(0);
-												fecha.setMinutes(0);
-												fecha.setSeconds(0);
+													this.createIngresoXSODATA(dataIngreso).then(function (respuestaIngreso) {
+														if (respuestaIngreso.resolve) {
+															var idIngreso = respuestaIngreso.idIngreso;
 
-												var dataIngreso = {
-													ID_INGRESO: 0,
-													ID_OC: idOC,
-													ID_ESTADO_INGRESO: 1,
-													FECHA_CONTABILIZACION: fechaConta,
-													GUIA_DESPACHO: guiDespacho,
-													FECHA_GUIA_DESPACHO: fechaGuia,
-													PATENTE: patente,
-													OBSERVACION: observacion,
-													FECHA_INBOUND: fecha,
-													HORA_INBOUND: this.hora(),
-													USER_SCP_COD_INBOUND: this.userSCPCod,
-													FECHA_RECEPCION: null,
-													HORA_RECEPCION: null,
-													NUMERO_INGRESO_ERP: null,
-													USER_SCP_COD_RECEPCION: null
-												};
-												var creacionConError = 0;
+															var idList = this.getView().byId("idtableLPHI");
 
-												this.createIngresoXSODATA(dataIngreso).then(function (respuestaIngreso) {
-													if (respuestaIngreso.resolve) {
-														var idIngreso = respuestaIngreso.idIngreso;
+															var recorrerPosiciones = function (element, index) {
+																if (element.length === index) {
+																	if (creacionConError === 0) {
 
-														var idList = this.getView().byId("idtableLPHI");
+																		this.datosCreacion = {
+																			ID_AVISO: idIngreso,
+																			NUMERO_MATERIAL: ""
+																		};
 
-														var recorrerPosiciones = function (element, index) {
-															if (element.length === index) {
-																if (creacionConError === 0) {
-
-																	this.datosCreacion = {
-																		ID_AVISO: idIngreso,
-																		NUMERO_MATERIAL: ""
-																	};
-
-																	this.registrarLog("Genera_Ingreso_Temporal", this.datosCreacion).then(function (respuestaRegistrarLog) {
+																		this.registrarLog("Genera_Ingreso_Temporal", this.datosCreacion).then(function (respuestaRegistrarLog) {
+																			this.BusyDialogCargando.close();
+																			this.preocesoGenerarOCConExito(idIngreso);
+																		}.bind(this));
+																	} else {
 																		this.BusyDialogCargando.close();
-																		this.preocesoGenerarOCConExito(idIngreso);
-																	}.bind(this));
+																		this.errorAlGenerarOC();
+																	}
 																} else {
-																	this.BusyDialogCargando.close();
-																	this.errorAlGenerarOC();
-																}
-															} else {
 
-																var pos0 = element[index].getContent()[0].getItems()[0].getContent();
-																var pos1 = element[index].getContent()[0].getItems()[1].getContent();
+																	var pos0 = element[index].getContent()[0].getItems()[0].getContent();
+																	var pos1 = element[index].getContent()[0].getItems()[1].getContent();
 
-																var cantPen = pos1[4].getItems()[1].getText();
-																//var cantPenNum = Number(pos1[4].getItems()[1].getText().replace(/\./g, ""));
-																if (cantPen !== "0") {
-																	var codMaterial = pos0[0].getItems()[1].getText();
-																	var stockMaterial = pos0[1].getItems()[1].getText();
-																	var position = pos0[2].getItems()[1].getText();
-																	var denomination = pos0[3].getItems()[1].getText();
+																	var cantPen = pos1[4].getItems()[1].getText();
+																	//var cantPenNum = Number(pos1[4].getItems()[1].getText().replace(/\./g, ""));
+																	if (cantPen !== "0") {
+																		var codMaterial = pos0[0].getItems()[1].getText();
+																		var stockMaterial = pos0[1].getItems()[1].getText();
+																		var position = pos0[2].getItems()[1].getText();
+																		var denomination = pos0[3].getItems()[1].getText();
 
-																	var ubicacion = pos1[0].getItems()[1].getItems()[0].getText();
-																	var centro = pos1[1].getItems()[1].getItems()[0].getText();
-																	var almacen = pos1[2].getItems()[1].getText();
-																	var cantTotal = pos1[3].getItems()[1].getText();
-																	var unidadMedida = pos1[5].getItems()[1].getText();
-																	var step = pos1[6].getItems()[1].getValue().toString();
-																	//var check = pos1[7].getItems()[0].getSelected();
+																		var ubicacion = pos1[0].getItems()[1].getItems()[0].getText();
+																		var centro = pos1[1].getItems()[1].getItems()[0].getText();
+																		var almacen = pos1[2].getItems()[1].getText();
+																		var cantTotal = pos1[3].getItems()[1].getText();
+																		var unidadMedida = pos1[5].getItems()[1].getText();
+																		var step = pos1[6].getItems()[1].getValue().toString();
+																		//var check = pos1[7].getItems()[0].getSelected();
 
-																	var loteo = null;
-																	var idTipoPosicion = 1;
-																	var vBoxLote = pos1[8];
+																		var loteo = null;
+																		var idTipoPosicion = 1;
+																		var vBoxLote = pos1[8];
 
-																	if (vBoxLote.getVisible()) {
-																		loteo = vBoxLote.getItems()[1].getSelectedKey();
-																		idTipoPosicion = 2;
-																	}
-																	var stockZero = pos1[9].getItems()[1].getText();
-																	var codigoSAPProveedor = pos1[10].getItems()[1].getText();
-																	var esSeriado = pos1[11].getItems()[1].getText();
-
-																	if (esSeriado.length > 0) {
-																		idTipoPosicion = 3;
-																	}
-
-																	if (almacen === "Asignar") {
-																		almacen = "";
-																	}
-
-																	var dataPosiciones = {
-																		ID_POSICION: 0,
-																		ID_INGRESO: idIngreso,
-																		ID_ESTADO_POSICION: 1,
-																		NUMERO_POSICION: position,
-																		CODIGO_MATERIAL: codMaterial,
-																		DESCRIPCION_MATERIAL: denomination,
-																		CANTIDAD_MATERIAL_TOTAL: cantTotal,
-																		CANTIDAD_MATERIAL_PENDIENTE: cantPen,
-																		CANTIDAD_MATERIAL_INGRESADO: step,
-																		UNIDAD_DE_MEDIDA_MATERIAL: unidadMedida,
-																		NUMERO_UBICACION: ubicacion,
-																		NUMERO_LOTE: loteo,
-																		CENTRO: centro,
-																		ALMACEN: almacen,
-																		ID_TIPO_POSICION: idTipoPosicion,
-																		STOCK_MATERIAL: stockZero,
-																		CODIGO_SAP_PROVEEDOR: codigoSAPProveedor
-																	};
-
-																	this.createPosicionIngresoXSODATA(dataPosiciones).then(function (respuestaPosicionIngreso) {
-																		if (respuestaPosicionIngreso) {
-																			index++;
-																			recorrerPosiciones(element, index);
-																		} else {
-																			creacionConError++;
-																			index++;
-																			recorrerPosiciones(element, index);
+																		if (vBoxLote.getVisible()) {
+																			loteo = vBoxLote.getItems()[1].getSelectedKey();
+																			idTipoPosicion = 2;
 																		}
-																	}.bind(this));
-																} else {
-																	index++;
-																	recorrerPosiciones(element, index);
+																		var stockZero = pos1[9].getItems()[1].getText();
+																		var codigoSAPProveedor = pos1[10].getItems()[1].getText();
+																		var esSeriado = pos1[11].getItems()[1].getText();
+
+																		if (esSeriado.length > 0) {
+																			idTipoPosicion = 3;
+																		}
+
+																		if (almacen === "Asignar") {
+																			almacen = "";
+																		}
+
+																		var dataPosiciones = {
+																			ID_POSICION: 0,
+																			ID_INGRESO: idIngreso,
+																			ID_ESTADO_POSICION: 1,
+																			NUMERO_POSICION: position,
+																			CODIGO_MATERIAL: codMaterial,
+																			DESCRIPCION_MATERIAL: denomination,
+																			CANTIDAD_MATERIAL_TOTAL: cantTotal,
+																			CANTIDAD_MATERIAL_PENDIENTE: cantPen,
+																			CANTIDAD_MATERIAL_INGRESADO: step,
+																			UNIDAD_DE_MEDIDA_MATERIAL: unidadMedida,
+																			NUMERO_UBICACION: ubicacion,
+																			NUMERO_LOTE: loteo,
+																			CENTRO: centro,
+																			ALMACEN: almacen,
+																			ID_TIPO_POSICION: idTipoPosicion,
+																			STOCK_MATERIAL: stockZero,
+																			CODIGO_SAP_PROVEEDOR: codigoSAPProveedor
+																		};
+
+																		this.createPosicionIngresoXSODATA(dataPosiciones).then(function (respuestaPosicionIngreso) {
+																			if (respuestaPosicionIngreso) {
+																				index++;
+																				recorrerPosiciones(element, index);
+																			} else {
+																				creacionConError++;
+																				index++;
+																				recorrerPosiciones(element, index);
+																			}
+																		}.bind(this));
+																	} else {
+																		index++;
+																		recorrerPosiciones(element, index);
+																	}
+
 																}
+															}.bind(this);
+															recorrerPosiciones(idList.getItems(), 0);
+														} else {
+															this.BusyDialogCargando.close();
+															this.errorAlGenerarOC();
+														}
+													}.bind(this));
+												} else {
+													this.BusyDialogCargando.close();
+													MessageToast.show("En nuestro sistema ya registra un ingreso para la Orden de Compra " + ot +
+														" y la Guía de Despacho " +
+														guiDespacho + ".", {
+															duration: 8000,
+															width: "25rem"
+														});
+												}
+											}.bind(this));
 
-															}
-														}.bind(this);
-														recorrerPosiciones(idList.getItems(), 0);
-													} else {
-														this.BusyDialogCargando.close();
-														this.errorAlGenerarOC();
-													}
-												}.bind(this));
-											} else {
-												this.BusyDialogCargando.close();
-												MessageToast.show("En nuestro sistema ya registra un ingreso para la Orden de Compra " + ot +
-													" y la Guía de Despacho " +
-													guiDespacho + ".", {
-														duration: 8000,
-														width: "25rem"
-													});
-											}
-										}.bind(this));
-
-									} else {
-										this.BusyDialogCargando.close();
-										this.errorAlGenerarOC();
-									}
-								}.bind(this));
-
-							}
-						}.bind(this)
-					});
+										} else {
+											this.BusyDialogCargando.close();
+											this.errorAlGenerarOC();
+										}
+									}.bind(this));
+								}
+							}.bind(this)
+						});
+					} else {
+						MessageToast.show("Para continuar, toma una evidencia de la guía de despacho.");
+					}
 				} else {
 					this._wizard.goToStep(this.getView().byId("CabeceraStep"));
 					MessageToast.show("Completa los campos obligatorios para continuar.");
@@ -740,16 +798,21 @@ sap.ui.define([
 			var obj = oEvent.getSource();
 			var value = obj.getValue();
 			var valor = value;
+			var json = "";
+			this.lecturaQR = false;
+			this.idQRHana = null;
 
 			if (value.length > 5) {
 				var primerCaracter = value.slice(0, 1);
 				var ultimoCaracter = value.slice(value.length - 1);
 
 				if (primerCaracter === "{" && ultimoCaracter === "}") {
-					valor = JSON.parse(value);
-					if (valor.CABECERA !== undefined) {
-						if (valor.CABECERA.ORDEN_DE_COMPRA !== undefined) {
-							valor = valor.CABECERA.ORDEN_DE_COMPRA;
+					json = JSON.parse(value);
+					if (json.ID_QR !== undefined) {
+						if (json.ORDEN_DE_COMPRA !== undefined) {
+							this.lecturaQR = true;
+							valor = json.ORDEN_DE_COMPRA;
+							this.idQRHana = json.ID_QR;
 						}
 					}
 				}

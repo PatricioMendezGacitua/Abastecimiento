@@ -13,6 +13,8 @@ sap.ui.define([
 		},
 
 		_onRouteMatched: function () {
+
+			this.crearMessageView();
 			var oComponent = this.getOwnerComponent();
 			this._route = oComponent.getRouter();
 
@@ -57,6 +59,67 @@ sap.ui.define([
 				this.onBackMenu();
 			}
 
+		},
+
+		mostrarResultadosCreacionSAP: function () {
+			var oModelResultado = new JSONModel(this.arregloResultado);
+			this.oMessageView.setModel(oModelResultado);
+			this.oMessageView.navigateBack();
+			this.oDialog.open();
+		},
+
+		crearMessageView: function () {
+			var that = this;
+			var oMessageTemplate = new sap.m.MessageItem({
+				type: '{type}',
+				title: '{title}',
+				description: '{description}',
+				subtitle: '{subtitle}',
+				counter: '{counter}',
+				markupDescription: '{markupDescription}',
+				groupName: '{group}'
+			});
+			this.oMessageView = new sap.m.MessageView({
+				showDetailsPageHeader: false,
+				groupItems: true,
+				itemSelect: function () {
+					oBackButton.setVisible(true);
+				},
+				items: {
+					path: "/",
+					template: oMessageTemplate
+				}
+			});
+			var oBackButton = new sap.m.Button({
+				icon: sap.ui.core.IconPool.getIconURI("nav-back"),
+				visible: false,
+				press: function () {
+					that.oMessageView.navigateBack();
+					this.setVisible(false);
+				}
+			});
+			this.oDialog = new sap.m.Dialog({
+				resizable: true,
+				content: this.oMessageView,
+				state: 'Information',
+				beginButton: new sap.m.Button({
+					press: function () {
+						this.getParent().close();
+					},
+					text: "Close"
+				}),
+				customHeader: new sap.m.Bar({
+					contentMiddle: [
+						new sap.m.Text({
+							text: "Resultado"
+						})
+					],
+					contentLeft: [oBackButton]
+				}),
+				contentHeight: "300px",
+				contentWidth: "500px",
+				verticalScrolling: false
+			});
 		},
 
 		alSeleccionarFechaInv: function (oEvent) {
@@ -255,22 +318,27 @@ sap.ui.define([
 								var functionRecorrer = function (item, i) {
 									if (item.length === i) {
 
-										this.inventariarEnERP(recordERPCab).then(function (respuestaIERP) {
+										this.inventariarEnERP(recordERPCab, recordERPCabHana).then(function (respuestaIERP) {
 											if (respuestaIERP.resolve) {
-												this.inventariarEnHANA(recordERPCabHana).then(function (respuestaIHANA) {
-													this.datosCreacion = {
-														NRO_DOCUMENTO_SAP: "",
-														TX: "Aplicación Móvil Abastecimiento > Inventarios"
-													};
+												if (this.countErrores < recordERPCabHana.NavEjeInventarioPos.length) {
+													this.inventariarEnHANA(recordERPCabHana).then(function (respuestaIHANA) {
+														this.datosCreacion = {
+															NRO_DOCUMENTO_SAP: "",
+															TX: "Aplicación Móvil Abastecimiento > Inventarios"
+														};
 
-													this.registrarLog("Inventario_Realizado", this.datosCreacion).then(function (respuestaRegistrarLog) {
-														MessageToast.show("Inventario Realizado");
-														jQuery.sap.delayedCall(3000, this, function () {
-															this.btnReestablecerInventario();
+														this.registrarLog("Inventario_Realizado", this.datosCreacion).then(function (respuestaRegistrarLog) {
+															MessageToast.show("Inventario Realizado");
+															jQuery.sap.delayedCall(3000, this, function () {
+																this.btnReestablecerInventario();
+															}.bind(this));
+															this.getView().setBusy(false);
 														}.bind(this));
-														this.getView().setBusy(false);
 													}.bind(this));
-												}.bind(this));
+												} else {
+													this.getView().setBusy(false);
+													MessageToast.show("No fue posible inventariar el documento, intente más tarde.");
+												}
 											} else {
 												this.getView().setBusy(false);
 												MessageToast.show("No fue posible inventariar el documento, intente más tarde.");
@@ -296,22 +364,41 @@ sap.ui.define([
 											recordERPDet.Lgpbe = obj.Lgpbe.slice(0, 10); //Edm.String" Nullable="false" MaxLength="10" sap:label="Ubicación"
 											recordERPDet.Werks = obj.Werks.slice(0, 4); //Edm.String" Nullable="false" MaxLength="4" sap:label="Centro"
 											recordERPDet.Lgort = obj.Lgort.slice(0, 4); //Edm.String" Nullable="false" MaxLength="4" sap:label="Almacén"
-											recordERPDet.ZeroCount = pos.getValue() === "0" ? "0" : "X"; //Edm.String" Nullable="false" MaxLength="1" sap:label="Recuento cero"
 											recordERPDet.Transaccion = existeEnHana.slice(0, 20); //Edm.String" Nullable="false" MaxLength="20" sap:label="Transaccion"
+
+											var zeroCount = "X";
+
+											if (existeEnHana === "05") {
+												if (pos.getValue() === "0" || pos.getValue() === "") {
+													zeroCount = "0";
+													recordERPDet.Erfmg = "0";
+												}
+											} else if (existeEnHana === "04") {
+												if (pos.getValue() === "0") {
+													zeroCount = "0";
+													recordERPDet.Erfmg = "0";
+												} else if (pos.getValue() === "") {
+													zeroCount = "";
+												}
+											}
+
+											recordERPDet.ZeroCount = zeroCount; //Edm.String" Nullable="false" MaxLength="1" sap:label="Recuento cero"
+
 											recordERPCab.NavEjeInventarioPos.push(recordERPDet);
 
 											//HANA
 											recordERPDetHana.Zeili = obj.Zeili;
 											recordERPDetHana.Matnr = obj.Matnr;
 											recordERPDetHana.Maktx = obj.Maktx;
-											recordERPDetHana.Erfmg = pos.getValue();
+											recordERPDetHana.Erfmg = recordERPDet.Erfmg;
 											recordERPDetHana.Erfme = obj.Erfme;
 											recordERPDetHana.Lgpbe = obj.Lgpbe;
 											recordERPDetHana.Werks = obj.Werks;
 											recordERPDetHana.Lgort = obj.Lgort;
-											recordERPDetHana.ZeroCount = pos.getValue() === "0" ? "0" : "X";
+											recordERPDetHana.ZeroCount = zeroCount;
 											recordERPDetHana.Transaccion = existeEnHana;
 											recordERPDetHana.Charg = obj.Charg;
+											recordERPDetHana.error = false;
 											recordERPCabHana.NavEjeInventarioPos.push(recordERPDetHana);
 
 											i++;
@@ -345,7 +432,6 @@ sap.ui.define([
 		inventariarEnHANA: function (json) {
 			return new Promise(
 				function resolver(resolve, reject) {
-
 					var fecha = new Date();
 					fecha.setHours(0);
 					fecha.setMinutes(0);
@@ -354,21 +440,31 @@ sap.ui.define([
 					json.FechaInventario = this.convertFechaXSJS(new Date(fecha));
 					json.horaInventario = this.horaXSJS();
 					json.UserSCPCodInventario = this.userSCPCod;
+					var newPos = [];
 
-					var url = "/HANA/EGRESO_MERCADERIA/services.xsjs?accion=inventariar";
+					json.NavEjeInventarioPos.forEach(function (element, index) {
+						if (!element.error) {
+							newPos.push(element);
+						}
 
-					$.ajax({
-						url: url,
-						method: "POST",
-						data: JSON.stringify(json),
-						success: function (oResult) {
-							var respuesta = oResult;
-							resolve(respuesta);
-						}.bind(this),
-						error: function (oError) {
-							resolve([]);
-						}.bind(this)
-					});
+						if (json.NavEjeInventarioPos.length === (index + 1)) {
+							json.NavEjeInventarioPos = newPos;
+							var url = "/HANA/EGRESO_MERCADERIA/services.xsjs?accion=inventariar";
+
+							$.ajax({
+								url: url,
+								method: "POST",
+								data: JSON.stringify(json),
+								success: function (oResult) {
+									var respuesta = oResult;
+									resolve(respuesta);
+								}.bind(this),
+								error: function (oError) {
+									resolve([]);
+								}.bind(this)
+							});
+						}
+					}.bind(this));
 
 				}.bind(this));
 		},
@@ -437,18 +533,58 @@ sap.ui.define([
 				}.bind(this));
 		},
 
-		inventariarEnERP: function (datos) {
+		inventariarEnERP: function (datos, datosParaHana) {
 			return new Promise(
 				function resolver(resolve, reject) {
-
+					debugger;
 					this.getView().getModel("oModelSAPERP").create('/EjeInventarioSet', datos, {
 						success: function (oResult) {
+							var datosRotorno = oResult.NavEjeInventarioRet.results;
 
-							resolve({
-								nroDocumento: "",
-								resolve: true,
-								error: ""
-							});
+							this.arregloResultado = [];
+							this.countErrores = 0;
+
+							var functionRecorrer = function (item, i) {
+								if (item.length === i) {
+									this.mostrarResultadosCreacionSAP();
+									resolve({
+										nroDocumento: "",
+										resolve: true,
+										error: ""
+									});
+								} else {
+									var a;
+									var type = 'Success';
+									var title = "El inventario de la posición " + item[i].Zeili + " fue realizado correctamente.";
+									var descripcion = "";
+
+									if (item[i].Type === "E") {
+										this.countErrores++;
+										type = 'Error';
+										title = "El inventario de la posición " + item[i].Zeili + " no fue realizado.";
+										descripcion = item[i].Message;
+
+										datosParaHana.NavEjeInventarioPos.forEach(function (element, index) {
+											if (element.Zeili === item[i].Zeili) {
+												element.error = true;
+											}
+										}.bind(this));
+
+									}
+
+									a = {
+										type: type,
+										title: title,
+										description: descripcion,
+										group: "Posiciones documento inventario " + datos.IIblnr
+									};
+									this.arregloResultado.push(a);
+
+									i++;
+									functionRecorrer(datosRotorno, i);
+								}
+							}.bind(this);
+							functionRecorrer(datosRotorno, 0);
 
 						}.bind(this),
 						error: function (oError) {

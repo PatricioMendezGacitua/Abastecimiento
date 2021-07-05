@@ -112,7 +112,7 @@
 								</VBox>
 								<VBox>
 									<Label class="font-xSmaller" text="Cantidad:" textAlign="Begin" required="false" width="100%"></Label>
-									<Input liveChange="onlyDecimal" width="100%" textAlign="Center" maxLength="100"/>
+									<Input liveChange="onlyDecimal" width="100%" textAlign="Center" maxLength="3"/>
 									<layoutData>
 										<l:GridData span="XL8 L8 M8 S8"/>
 									</layoutData>
