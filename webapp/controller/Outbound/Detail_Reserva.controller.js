@@ -286,11 +286,11 @@ sap.ui.define([
 		onReservar: function (oEvent) {
 			var idList = this.getView().byId("idtableLPReserva");
 			var flagError = true;
-			this.docSAP = "";
+			this.docSAP = " - ";
 			idList.getItems().forEach(function (elementt, indexx) {
-				var cantEnv = elementt.getContent()[0].getItems()[0].getContent()[9].getItems()[1].getValue();
-				var idAlmacen = elementt.getContent()[0].getItems()[0].getContent()[5].getItems()[1].getText();
-				var flagAlmacen = elementt.getContent()[0].getItems()[0].getContent()[10].getItems()[0].getSelected();
+				var cantEnv = elementt.getContent()[0].getItems()[0].getContent()[10].getItems()[1].getValue();
+				var idAlmacen = elementt.getContent()[0].getItems()[0].getContent()[6].getItems()[1].getText();
+				var flagAlmacen = elementt.getContent()[0].getItems()[0].getContent()[11].getItems()[0].getSelected();
 				if (flagAlmacen) {
 
 					if (cantEnv === 0 || idAlmacen.length === 0) {
@@ -301,6 +301,14 @@ sap.ui.define([
 
 						indexx = idList.getItems().length;
 					}
+
+				} else {
+					flagError = false;
+					MessageToast.show("No se ha seleccionado ninguna posición.", {
+						duration: 6000
+					});
+
+					indexx = idList.getItems().length;
 
 				}
 
@@ -322,9 +330,9 @@ sap.ui.define([
 								var generaReserva = {};
 								generaReserva.NavGestReservaPos = [];
 								generaReserva.NavGestReservaDoc = [];
-								var cantEnv = elementt.getContent()[0].getItems()[0].getContent()[9].getItems()[1].getValue();
+								var cantEnv = elementt.getContent()[0].getItems()[0].getContent()[10].getItems()[1].getValue();
 								if (cantEnv > 0) {
-
+									this.flagDocSap = false;
 									generaReserva.Ikey = "1";
 									var estado = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Estado;
 
@@ -355,7 +363,7 @@ sap.ui.define([
 									recordNavPos.Supervisor = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Supervisor;
 									recordNavPos.Creador = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Creador;
 									recordNavPos.Werks = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Werks;
-									recordNavPos.Lgort = elementt.getContent()[0].getItems()[0].getContent()[5].getItems()[1].getText();
+									recordNavPos.Lgort = elementt.getContent()[0].getItems()[0].getContent()[6].getItems()[1].getText();
 									recordNavPos.Charg = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Charg;
 									recordNavPos.Lgpbe = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Lgpbe;
 									recordNavPos.Integracion = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Integracion;
@@ -364,24 +372,23 @@ sap.ui.define([
 									generaReserva.NavGestReservaPos.push(recordNavPos);
 
 									this.createReservaERP(generaReserva, "Reserva").then(function (respuestaReservaERP) {
-										
+
 										if (idList.getItems().length === indexx + 1) {
-											
-												this.str += "</ul>";
-												this.str += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong>";
 
-												MessageBox.information("Gestion Reserva N° " + this.idIngreso, {
-													title: "Aviso",
-													details: this.str,
-													onClose: function (sAction) {
-														this.BusyDialogCargando.close();
-														this.resetMasterDetail();
-													}.bind(this)
-												});
+											this.str += "</ul>";
+											this.str += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong>";
 
+											MessageBox.information("Gestion Reserva N° " + this.idIngreso, {
+												title: "Aviso",
+												details: this.str,
+												onClose: function (sAction) {
+													this.BusyDialogCargando.close();
+													this.resetMasterDetail();
+												}.bind(this)
+											});
 
 										}
-										
+
 									}.bind(this));
 
 								}

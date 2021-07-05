@@ -167,6 +167,7 @@ sap.ui.define([
 				}.bind(this));
 		},
 		cargaDetalle: function (datos, reserva, dataPos) {
+			
 			return new Promise(
 				function resolver(resolve, reject) {
 
@@ -180,6 +181,10 @@ sap.ui.define([
 					} else {
 
 						var functionRecorrer = function recorrer(item, i) {
+							
+							
+							
+							
 							if (i === item.length) {
 
 								
@@ -194,8 +199,16 @@ sap.ui.define([
 								if (item[i].Type === "I") {
 									this.str += "<li>Para la posición: " + item[i].Rspos + " " + item[i].Message + ". </li>";
 									dataPos[i].Resultado = true;
-									dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
-									this.docSAP = item[i].Mblnr + "-" + item[i].Mjahr;
+									
+									if(dataPos[i].Estado==="EP"){
+										
+								    	dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
+								    	this.docSAP = dataPos[i].DocSAP;
+										
+									}else{
+										dataPos[i].DocSAP = " El estado de la posición es en Preparación Bodega y no genera Nro. SAP";
+									}
+									
 
 								} else {
 									this.str += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message + ". </li>";
@@ -209,7 +222,7 @@ sap.ui.define([
 							}
 
 						}.bind(this);
-
+                        //eliminar reserva posicion 00000
 						functionRecorrer(datos, 0);
 					}
 				}.bind(this));
@@ -229,7 +242,7 @@ sap.ui.define([
 							console.log(oResult);
 							var data = oResult.NavGestReservaDoc.results;
 							var dataPos = oResult.NavGestReservaPos.results;
-
+                             
 							if (data.length > 0) {
 
 								this.cargaDetalle(data, reserva, dataPos).then(function (respuestaCargaDetalle) {
@@ -319,6 +332,7 @@ sap.ui.define([
 							data[e].maxData = data[e].CantSolicitada - data[e].CantPreparada;
 							data[e].value = 0;
 							data[e].ckSelected = false;
+						    data[e].estadoPosicion= (data[e].Estado==="PB")?"Preparación Bodega": "En Preparación";
 							(data[e].Lgpbe.length > 0) ? arrayUbicaciones.push(data[e].Lgpbe): "";
 							data[e].order = order;
 							order++;
