@@ -540,7 +540,7 @@ sap.ui.define([
 														var urlDocumentService = respSetImagen;
 
 														var url = urlDocumentService;
-														dataIngreso.LINK_GUIA_DESPACHO = url;
+														dataIngreso.LINK_GUIA_DESPACHO = encodeURI(url);
 
 														this.createIngresoXSODATA(dataIngreso).then(function (respuestaIngreso) {
 															if (respuestaIngreso.resolve) {

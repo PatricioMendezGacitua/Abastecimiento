@@ -213,7 +213,9 @@ sap.ui.define([
 				oDatePickerFDRecepcion.setDateValue(this.fechaRevert(data.FECHA_GUIA_DESPACHO));
 				oTextAreaObservacionRecepcion.setValue(data.OBSERVACION);
 
-				var url = data.LINK_GUIA_DESPACHO;
+				var url = encodeURI(data.LINK_GUIA_DESPACHO);
+				
+				this.linkGuiaDespacho = url === "" ? null : url;
 				oImageEvidenciaGuiaDespacho.setSrc();
 				oLightBoxItemEvidenciaGuiaDespacho.setImageSrc();
 
@@ -418,7 +420,8 @@ sap.ui.define([
 				FECHA_INBOUND: null,
 				HORA_INBOUND: null,
 				NUMERO_INGRESO_ERP: null,
-				USER_SCP_COD_INBOUND: null
+				USER_SCP_COD_INBOUND: null,
+				LINK_GUIA_DESPACHO: this.linkGuiaDespacho
 			};
 
 			var creacionConError = 0;
