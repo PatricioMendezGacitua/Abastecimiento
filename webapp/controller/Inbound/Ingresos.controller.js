@@ -3,8 +3,9 @@ sap.ui.define([
 	"sap/m/MessageToast",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
-	"sap/ndc/BarcodeScanner"
-], function (BaseController, MessageToast, JSONModel, MessageBox, BarcodeScanner) {
+	"sap/ndc/BarcodeScanner",
+	"com/gasco/Inbound/model/apiBibliotecaDigital"
+], function (BaseController, MessageToast, JSONModel, MessageBox, BarcodeScanner, apiBibliotecaDigital) {
 
 	return BaseController.extend("com.gasco.Inbound.controller.Inbound.Ingresos", {
 
@@ -84,6 +85,12 @@ sap.ui.define([
 			oVBoxImagenGuiaDespacho.setHeight("62px");
 			image.setSrc(imagen);
 			image2.setImageSrc(imagen);
+
+			var scrollObj = $("#" + this._wizard.getId() + "-step-container");
+			scrollObj.animate({
+				scrollTop: 0
+			}, 1000);
+
 		},
 
 		onFail: function () {
@@ -91,7 +98,7 @@ sap.ui.define([
 		},
 
 		onPressBuscar: function () {
-			debugger;
+
 			this.lotesSeleccionados = [];
 			var inputNroOC = this.getView().byId("oInputOC");
 			var oButtonBuscar = this.getView().byId("oButtonBuscarId");
@@ -101,22 +108,24 @@ sap.ui.define([
 			var posiciones = [];
 
 			var functionFinal = function () {
+				this.busquedaLotesPorMateriales(posiciones).then(function (respuesta) {
+					posiciones = respuesta;
+					if (posiciones.length > 100) {
+						posiciones.setSizeLimit(posiciones.length);
+					}
 
-				if (posiciones.length > 100) {
-					posiciones.setSizeLimit(posiciones.length);
-				}
+					this.getView().byId("oTitleIdLPHI").setText("Posiciones (" + posiciones.length + ")");
+					oModeloPosicionesIngresoMercaderia.setData(posiciones);
+					oModeloPosicionesIngresoMercaderia.refresh();
+					this.getView().setBusy(false);
 
-				this.getView().byId("oTitleIdLPHI").setText("Posiciones (" + posiciones.length + ")");
-				oModeloPosicionesIngresoMercaderia.setData(posiciones);
-				oModeloPosicionesIngresoMercaderia.refresh();
-				this.getView().setBusy(false);
+					if (!this.restablecer) {
+						this.restablecer = true;
+						this._wizard.nextStep();
+					}
 
-				if (!this.restablecer) {
-					this.restablecer = true;
-					this._wizard.nextStep();
-				}
-
-				this.getView().byId("CabeceraStep").setValidated(false);
+					this.getView().byId("CabeceraStep").setValidated(false);
+				}.bind(this));
 			}.bind(this);
 
 			var fuctionProcesar = function (dt) {
@@ -150,13 +159,13 @@ sap.ui.define([
 								this.posicionEnMemoria = element;
 								this.posicionEnMemoria.lotes = [];
 								this.posicionEnMemoria.lotes.push({
-									lote: element.Charg
+									Charg: element.Charg
 								});
 								posiciones.push(this.posicionEnMemoria);
 							} else {
 
 								this.posicionEnMemoria.lotes.push({
-									lote: element.Charg
+									Charg: element.Charg
 								});
 
 							}
@@ -239,6 +248,31 @@ sap.ui.define([
 							});
 						}.bind(this)
 					});
+
+				}.bind(this));
+		},
+
+		busquedaLotesPorMateriales: function (datos) {
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					var functionRecorrer = function (item, i) {
+						if (item.length === i) {
+							resolve(datos);
+						} else {
+							this.getLoteMaterialesERP(item[i].Matnr, item[i].Werks).then(function (resultadoLote) {
+								item[i].lotes = resultadoLote;
+								i++;
+								functionRecorrer(datos, i);
+							}.bind(this));
+						}
+					}.bind(this);
+
+					if (this.lecturaQR) {
+						functionRecorrer(datos, 0);
+					} else {
+						resolve(datos);
+					}
 
 				}.bind(this));
 		},
@@ -413,7 +447,7 @@ sap.ui.define([
 				var countErrorLote = 0;
 				if (this.lotesSeleccionados.length > 0) {
 					this.lotesSeleccionados.forEach(function (element, index) {
-						if (seleccion.getSelectedKey() === element.lote) {
+						if (seleccion.getSelectedKey() === element.Charg) {
 							countErrorLote++;
 						}
 
@@ -424,7 +458,7 @@ sap.ui.define([
 								this.onSelectChange();
 							} else {
 								this.lotesSeleccionados.push({
-									lote: seleccion.getSelectedKey(),
+									Charg: seleccion.getSelectedKey(),
 									pos: pos
 								});
 								this.onSelectChange();
@@ -433,7 +467,7 @@ sap.ui.define([
 					}.bind(this));
 				} else {
 					this.lotesSeleccionados.push({
-						lote: seleccion.getSelectedKey(),
+						Charg: seleccion.getSelectedKey(),
 						pos: pos
 					});
 					this.onSelectChange();
@@ -446,6 +480,7 @@ sap.ui.define([
 			this.validar(this.InputsView, "", contenedor).then(function (respuestaValidar) {
 				if (!respuestaValidar) {
 					var oVboxGD = this.getView().byId("oVBoxImagenGuiaDespacho");
+					var oImageGD = this.getView().byId("oImageEvidenciaGuiaDespachoId");
 					if (oVboxGD.getVisible()) {
 						MessageBox.information('¿Seguro que deseas recepcionar el trabajo realizado?', {
 							title: "Aviso",
@@ -488,117 +523,134 @@ sap.ui.define([
 														FECHA_RECEPCION: null,
 														HORA_RECEPCION: null,
 														NUMERO_INGRESO_ERP: null,
-														USER_SCP_COD_RECEPCION: null
+														USER_SCP_COD_RECEPCION: null,
+														LINK_GUIA_DESPACHO: null
 													};
 													var creacionConError = 0;
 
-													this.createIngresoXSODATA(dataIngreso).then(function (respuestaIngreso) {
-														if (respuestaIngreso.resolve) {
-															var idIngreso = respuestaIngreso.idIngreso;
+													var jsonData = {
+														BASE64: oImageGD.getSrc(),
+														PERIODO: new Date(fechaConta).getFullYear().toString(),
+														ORDEN_COMPRA: ot,
+														CODIGO_MATERIAL: "",
+														GUIA_DESPACHO: guiDespacho
+													};
 
-															var idList = this.getView().byId("idtableLPHI");
+													this.setImagenSing(jsonData).then(function (respSetImagen) {
+														var urlDocumentService = respSetImagen;
 
-															var recorrerPosiciones = function (element, index) {
-																if (element.length === index) {
-																	if (creacionConError === 0) {
+														var url = urlDocumentService;
+														dataIngreso.LINK_GUIA_DESPACHO = url;
 
-																		this.datosCreacion = {
-																			ID_AVISO: idIngreso,
-																			NUMERO_MATERIAL: ""
-																		};
+														this.createIngresoXSODATA(dataIngreso).then(function (respuestaIngreso) {
+															if (respuestaIngreso.resolve) {
+																var idIngreso = respuestaIngreso.idIngreso;
 
-																		this.registrarLog("Genera_Ingreso_Temporal", this.datosCreacion).then(function (respuestaRegistrarLog) {
+																var idList = this.getView().byId("idtableLPHI");
+
+																var recorrerPosiciones = function (element, index) {
+																	if (element.length === index) {
+																		if (creacionConError === 0) {
+
+																			this.datosCreacion = {
+																				ID_AVISO: idIngreso,
+																				NUMERO_MATERIAL: ""
+																			};
+
+																			this.registrarLog("Genera_Ingreso_Temporal", this.datosCreacion).then(function (respuestaRegistrarLog) {
+																				this.BusyDialogCargando.close();
+																				this.preocesoGenerarOCConExito(idIngreso);
+																			}.bind(this));
+																		} else {
 																			this.BusyDialogCargando.close();
-																			this.preocesoGenerarOCConExito(idIngreso);
-																		}.bind(this));
+																			this.errorAlGenerarOC();
+																		}
 																	} else {
-																		this.BusyDialogCargando.close();
-																		this.errorAlGenerarOC();
-																	}
-																} else {
 
-																	var pos0 = element[index].getContent()[0].getItems()[0].getContent();
-																	var pos1 = element[index].getContent()[0].getItems()[1].getContent();
+																		var pos0 = element[index].getContent()[0].getItems()[0].getContent();
+																		var pos1 = element[index].getContent()[0].getItems()[1].getContent();
 
-																	var cantPen = pos1[4].getItems()[1].getText();
-																	//var cantPenNum = Number(pos1[4].getItems()[1].getText().replace(/\./g, ""));
-																	if (cantPen !== "0") {
-																		var codMaterial = pos0[0].getItems()[1].getText();
-																		var stockMaterial = pos0[1].getItems()[1].getText();
-																		var position = pos0[2].getItems()[1].getText();
-																		var denomination = pos0[3].getItems()[1].getText();
+																		var cantPen = pos1[4].getItems()[1].getText();
+																		//var cantPenNum = Number(pos1[4].getItems()[1].getText().replace(/\./g, ""));
+																		if (cantPen !== "0") {
+																			var codMaterial = pos0[0].getItems()[1].getText();
+																			var stockMaterial = pos0[1].getItems()[1].getText();
+																			var position = pos0[2].getItems()[1].getText();
+																			var denomination = pos0[3].getItems()[1].getText();
 
-																		var ubicacion = pos1[0].getItems()[1].getItems()[0].getText();
-																		var centro = pos1[1].getItems()[1].getItems()[0].getText();
-																		var almacen = pos1[2].getItems()[1].getText();
-																		var cantTotal = pos1[3].getItems()[1].getText();
-																		var unidadMedida = pos1[5].getItems()[1].getText();
-																		var step = pos1[6].getItems()[1].getValue().toString();
-																		//var check = pos1[7].getItems()[0].getSelected();
+																			var ubicacion = pos1[0].getItems()[1].getItems()[0].getText();
+																			var centro = pos1[1].getItems()[1].getItems()[0].getText();
+																			var almacen = pos1[2].getItems()[1].getText();
+																			var cantTotal = pos1[3].getItems()[1].getText();
+																			var unidadMedida = pos1[5].getItems()[1].getText();
+																			var step = pos1[6].getItems()[1].getValue().toString();
+																			//var check = pos1[7].getItems()[0].getSelected();
 
-																		var loteo = null;
-																		var idTipoPosicion = 1;
-																		var vBoxLote = pos1[8];
+																			var loteo = null;
+																			var idTipoPosicion = 1;
+																			var vBoxLote = pos1[8];
 
-																		if (vBoxLote.getVisible()) {
-																			loteo = vBoxLote.getItems()[1].getSelectedKey();
-																			idTipoPosicion = 2;
-																		}
-																		var stockZero = pos1[9].getItems()[1].getText();
-																		var codigoSAPProveedor = pos1[10].getItems()[1].getText();
-																		var esSeriado = pos1[11].getItems()[1].getText();
-
-																		if (esSeriado.length > 0) {
-																			idTipoPosicion = 3;
-																		}
-
-																		if (almacen === "Asignar") {
-																			almacen = "";
-																		}
-
-																		var dataPosiciones = {
-																			ID_POSICION: 0,
-																			ID_INGRESO: idIngreso,
-																			ID_ESTADO_POSICION: 1,
-																			NUMERO_POSICION: position,
-																			CODIGO_MATERIAL: codMaterial,
-																			DESCRIPCION_MATERIAL: denomination,
-																			CANTIDAD_MATERIAL_TOTAL: cantTotal,
-																			CANTIDAD_MATERIAL_PENDIENTE: cantPen,
-																			CANTIDAD_MATERIAL_INGRESADO: step,
-																			UNIDAD_DE_MEDIDA_MATERIAL: unidadMedida,
-																			NUMERO_UBICACION: ubicacion,
-																			NUMERO_LOTE: loteo,
-																			CENTRO: centro,
-																			ALMACEN: almacen,
-																			ID_TIPO_POSICION: idTipoPosicion,
-																			STOCK_MATERIAL: stockZero,
-																			CODIGO_SAP_PROVEEDOR: codigoSAPProveedor
-																		};
-
-																		this.createPosicionIngresoXSODATA(dataPosiciones).then(function (respuestaPosicionIngreso) {
-																			if (respuestaPosicionIngreso) {
-																				index++;
-																				recorrerPosiciones(element, index);
-																			} else {
-																				creacionConError++;
-																				index++;
-																				recorrerPosiciones(element, index);
+																			if (vBoxLote.getVisible()) {
+																				loteo = vBoxLote.getItems()[1].getSelectedKey();
+																				idTipoPosicion = 2;
 																			}
-																		}.bind(this));
-																	} else {
-																		index++;
-																		recorrerPosiciones(element, index);
-																	}
+																			var stockZero = pos1[9].getItems()[1].getText();
+																			var codigoSAPProveedor = pos1[10].getItems()[1].getText();
+																			var esSeriado = pos1[11].getItems()[1].getText();
 
-																}
-															}.bind(this);
-															recorrerPosiciones(idList.getItems(), 0);
-														} else {
-															this.BusyDialogCargando.close();
-															this.errorAlGenerarOC();
-														}
+																			if (esSeriado.length > 0) {
+																				idTipoPosicion = 3;
+																			}
+
+																			if (almacen === "Asignar") {
+																				almacen = "";
+																			}
+
+																			var dataPosiciones = {
+																				ID_POSICION: 0,
+																				ID_INGRESO: idIngreso,
+																				ID_ESTADO_POSICION: 1,
+																				NUMERO_POSICION: position,
+																				CODIGO_MATERIAL: codMaterial,
+																				DESCRIPCION_MATERIAL: denomination,
+																				CANTIDAD_MATERIAL_TOTAL: cantTotal,
+																				CANTIDAD_MATERIAL_PENDIENTE: cantPen,
+																				CANTIDAD_MATERIAL_INGRESADO: step,
+																				UNIDAD_DE_MEDIDA_MATERIAL: unidadMedida,
+																				NUMERO_UBICACION: ubicacion,
+																				NUMERO_LOTE: loteo,
+																				CENTRO: centro,
+																				ALMACEN: almacen,
+																				ID_TIPO_POSICION: idTipoPosicion,
+																				STOCK_MATERIAL: stockZero,
+																				CODIGO_SAP_PROVEEDOR: codigoSAPProveedor
+																			};
+
+																			this.createPosicionIngresoXSODATA(dataPosiciones).then(function (respuestaPosicionIngreso) {
+																				if (respuestaPosicionIngreso) {
+																					index++;
+																					recorrerPosiciones(element, index);
+																				} else {
+																					creacionConError++;
+																					index++;
+																					recorrerPosiciones(element, index);
+																				}
+																			}.bind(this));
+																		} else {
+																			index++;
+																			recorrerPosiciones(element, index);
+																		}
+
+																	}
+																}.bind(this);
+																recorrerPosiciones(idList.getItems(), 0);
+															} else {
+																this.BusyDialogCargando.close();
+																this.errorAlGenerarOC();
+															}
+														}.bind(this));
 													}.bind(this));
+
 												} else {
 													this.BusyDialogCargando.close();
 													MessageToast.show("En nuestro sistema ya registra un ingreso para la Orden de Compra " + ot +
@@ -630,6 +682,38 @@ sap.ui.define([
 					}.bind(this));
 				}
 			}.bind(this));
+		},
+
+		setImagenSing: function (datos) {
+			return new Promise(
+				function resolver(resolve, reject) {
+					if (datos.BASE64 !== undefined) {
+						if (datos.BASE64.length > 0) {
+
+							datos.NOMBRE_USUARIO = this.userSCPName;
+							apiBibliotecaDigital.consultaIds(datos).then(function (retorno) {
+								var idApp = retorno[0];
+								var idPro = retorno[1];
+								var metadataManual = retorno[2];
+
+								if (idApp !== null && idPro !== null) {
+									debugger;
+									apiBibliotecaDigital.cargarArchivo(idApp, idPro, datos, metadataManual).then(function (res) {
+										var url = res.url;
+										resolve(url);
+									}.bind(this));
+								} else {
+									resolve(null);
+								}
+							}.bind(this));
+
+						} else {
+							resolve(null);
+						}
+					} else {
+						resolve(null);
+					}
+				}.bind(this));
 		},
 
 		errorAlGenerarOC: function () {
@@ -727,6 +811,8 @@ sap.ui.define([
 		},
 
 		onPressRestablecer: function () {
+			this.lecturaQR = false;
+			this.idQRHana = null;
 			var scrollObj = $("#" + this._wizard.getId() + "-step-container");
 
 			scrollObj.animate({

@@ -134,13 +134,15 @@ sap.ui.define([
 			//oInputOCRecepcion.setEnabled(cond);
 			oDatePickerFCRecepcion.setEnabled(cond);
 			oInputPatenteRecepcion.setEnabled(cond);
-			oInputGuiaDespachoRecepcion.setEnabled(cond);
-			oDatePickerFDRecepcion.setEnabled(cond);
+			//oInputGuiaDespachoRecepcion.setEnabled(cond);
+			//oDatePickerFDRecepcion.setEnabled(cond);
 			oTextAreaObservacionRecepcion.setEnabled(cond);
 			oVBoxRecepcion.setEnabled(cond);
 		},
 
 		iniciarView: function (idEstadoIngreso) {
+			var oVBoxImagenGuiaDespachoDR = this.getView().byId("oVBoxImagenGuiaDespachoDR");
+			oVBoxImagenGuiaDespachoDR.setVisible(false);
 			this.openBusyDialogCargando();
 			this.temporalesPorUsuarioConectado(this.userSCPCod, this.idIngreso, this.idEstadoIngreso, true).then(function (
 				respuestaTemporalesPorUsuarioConectado) {
@@ -178,6 +180,9 @@ sap.ui.define([
 				var oButtonRecepcionar = this.getView().byId("oButtonRecepcionarId");
 				oButtonRecepcionar.setEnabled(false);
 
+				var oImageEvidenciaGuiaDespacho = this.getView().byId("oImageEvidenciaGuiaDespachoDRId");
+				var oLightBoxItemEvidenciaGuiaDespacho = this.getView().byId("oLightBoxItemEvidenciaGuiaDespachoDRId");
+
 				var arrPicker = [{
 					id: "oDatePickerFDRecepcion",
 					type: "date"
@@ -207,6 +212,32 @@ sap.ui.define([
 				oInputGuiaDespachoRecepcion.setValue(data.GUIA_DESPACHO);
 				oDatePickerFDRecepcion.setDateValue(this.fechaRevert(data.FECHA_GUIA_DESPACHO));
 				oTextAreaObservacionRecepcion.setValue(data.OBSERVACION);
+
+				var url = data.LINK_GUIA_DESPACHO;
+				oImageEvidenciaGuiaDespacho.setSrc();
+				oLightBoxItemEvidenciaGuiaDespacho.setImageSrc();
+
+				if (url !== null) {
+					if (url.length > 0) {
+
+						var ObjectUrl = url;
+						var MIMETYPE = "image/png";
+						var NOMBRE = "Imagen";
+
+						var array = [{
+							URL: ObjectUrl,
+							MIMETYPE: MIMETYPE,
+							NOMBRE: NOMBRE
+						}];
+
+						this.functionCallBase64oDescarga(array, "Visualizar").then(function (imagen) {
+							oVBoxImagenGuiaDespachoDR.setVisible(true);
+							oImageEvidenciaGuiaDespacho.setSrc(imagen[0].url);
+							oLightBoxItemEvidenciaGuiaDespacho.setImageSrc(imagen[0].url);
+						}.bind(this));
+
+					}
+				}
 
 				var countSeriado = 0;
 				data.POSICIONES.forEach(function (element, index) {

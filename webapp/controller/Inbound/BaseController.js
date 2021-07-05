@@ -1,3 +1,7 @@
+/*global history */
+/* global JSZip:true */
+/* global saveAs:true */
+/* global JSZipUtils:true*/
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/ui/core/routing/History",
@@ -45,6 +49,45 @@ sap.ui.define([
 			var obj = oEvent.getSource();
 			var retorno = obj.setValue(obj.getValue().replace(/[^-A-Za-z0-9]+/g, '').toUpperCase());
 			return retorno;
+		},
+
+		getLoteMaterialesERP: function (numeroMaterial, numeroCentro) {
+			return new Promise(
+				function resolver(resolve) {
+
+					var aFil = [];
+					var tFilterNumMat = new sap.ui.model.Filter({
+						path: "IMatnr",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: numeroMaterial
+					});
+					aFil.push(tFilterNumMat);
+
+					var tFilterCentro = new sap.ui.model.Filter({
+						path: "IWerks",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: numeroCentro
+					});
+					aFil.push(tFilterCentro);
+
+					this.getView().getModel("oModelSAPERP").read('/ListaLoteSet', {
+						filters: aFil,
+						success: function (oResult) {
+							var datos = oResult.results;
+
+							if (datos.length > 0) {
+								resolve(datos);
+							} else {
+								resolve([]);
+							}
+						}.bind(this),
+						error: function (oError) {
+							resolve([]);
+						}.bind(this)
+					});
+
+				}.bind(this));
+
 		},
 
 		formatterEditableZero: function (sValue) {
@@ -1284,6 +1327,228 @@ sap.ui.define([
 
 				}.bind(this));
 
+		},
+		
+		getMymeTypeDoc: function (extension) {
+			return new Promise(
+				function resolver(resolve) {
+
+					var json = {
+						EXTENSION: "." + extension
+					};
+
+					var url = "/HANA/GESTOR_DOCUMENTAL/services.xsjs?cmd=mymeType";
+
+					$.ajax({
+						url: url,
+						method: "POST",
+						data: JSON.stringify(json),
+						success: function (oResult) {
+							resolve(oResult);
+						}.bind(this),
+						error: function (oError) {
+							resolve({
+								"MYMETYPE": ""
+							});
+						}.bind(this)
+					});
+
+				}.bind(this));
+
+		},
+
+		adjuntoSharepoint: function (url) {
+			var https = "https://";
+			var l = "gascoglp.sharepoint.com/";
+			var linkSharePoint = https + l;
+			var cond = false;
+
+			if (url !== null) {
+				if (url.indexOf(linkSharePoint) > -1) {
+					cond = true;
+				}
+			} else {
+				cond = true;
+			}
+
+			return cond;
+		},
+
+		functionCallBase64oDescarga: function (object, accion) {
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					var arrUrls = object;
+					var cantUrls = object.length;
+					var zip = new JSZip();
+					var url = "/HANA/GESTOR_DOCUMENTAL/XSJS/servicesTubo.xsjs?cmd=getFile";
+					var ojsonModel = new sap.ui.model.json.JSONModel();
+					ojsonModel.attachRequestCompleted(function (oEvents) {
+						var respuesta = oEvents.getSource().getData();
+						if (respuesta === false) {
+							MessageToast.show('No se pudo conectar con el repositorio de documentos');
+							return;
+						} else {
+							this.sToken = respuesta;
+						}
+
+					}.bind(this));
+					ojsonModel.loadData(url, null, false);
+					this.onSeturl(arrUrls, 0, cantUrls, accion).then(function (arrIms) {
+
+						if (accion === "Descarga") {
+							this.onSeturlData(arrIms, 0, arrIms.length, zip).then(function (respZip) {
+
+								respZip.generateAsync({
+										type: "blob"
+									})
+									.then(function (content) {
+										// see FileSaver.js
+										saveAs(content, "ListaArchivos.zip");
+									});
+								resolve();
+							}.bind(this));
+						} else {
+							resolve(arrIms);
+						}
+
+					}.bind(this));
+
+				}.bind(this));
+		},
+
+		onSeturl: function (array, j, total, accion) {
+			var arrBlob = [];
+			var stoken = this.sToken;
+			return new Promise(function (resolve, reject) {
+				var recursiva = function (arr, i, lengths) {
+					if (i === lengths) {
+						resolve(arrBlob);
+					} else {
+
+						var sUrl = arr[i].URL;
+						if (sUrl !== null) {
+							var filename = sUrl.replace(/.*\//g, "");
+
+							var encodeUrl = decodeURI(sUrl);
+							var sValue = encodeUrl.replace("https://gascoglp.sharepoint.com/", "");
+
+							var sValueUrl = "https://gascoglp.sharepoint.com/sites/GDG/_api/web/GetFileByServerRelativeUrl('/";
+							var vAux = sValue.split("/");
+							var sIndex = vAux.length - 1;
+							var sTitle = vAux[sIndex];
+							var mTipo = arr[i].MIMETYPE;
+							var url = sValueUrl + decodeURI(sValue) + "')/openbinarystream";
+							var xhr = new window.XMLHttpRequest();
+							xhr.open("GET", url, true);
+							xhr.setRequestHeader("authorization", "Bearer " + stoken);
+
+							xhr.responseType = 'arraybuffer';
+							xhr.addEventListener('load', function () {
+								if (xhr.status === 200) {
+									var sampleBytes = new Uint8Array(xhr.response);
+									saveByteArray(sampleBytes, sTitle, mTipo);
+								} else {
+									var record = {};
+									record.name = "contenido_no_disponible";
+									record.url = this.returnContenidoNoDisponible();
+									arrBlob.push(record);
+									i++;
+									recursiva(arr, i, lengths);
+								}
+							}.bind(this))
+							xhr.send();
+							var saveByteArray = (function () {
+								var a = document.createElement("a");
+								document.body.appendChild(a);
+								a.style = "display: none";
+								return function (data, name, tipo) {
+
+									if (accion === "Descarga") {
+										tipo = "octet/stream";
+									}
+
+									var blob = new Blob([data], {
+										type: tipo
+									});
+									var record = {};
+									var url2;
+									record.name = filename;
+
+									if (accion === "Descarga") {
+										url2 = window.URL.createObjectURL(blob);
+										record.url = url2;
+										arrBlob.push(record);
+										i++;
+										recursiva(arr, i, lengths);
+									} else {
+										var reader = new FileReader();
+										reader.readAsDataURL(blob);
+										reader.onloadend = function () {
+											var base64String = reader.result;
+											record.url = base64String;
+
+											arrBlob.push(record);
+											i++;
+											recursiva(arr, i, lengths);
+										};
+
+									}
+								}.bind(this);
+							}().bind(this));
+						} else {
+							var record = {};
+							record.name = "contenido_no_disponible";
+							record.url = this.returnContenidoNoDisponible();
+							arrBlob.push(record);
+							i++;
+							recursiva(arr, i, lengths);
+						}
+					}
+				}.bind(this);
+
+				recursiva(array, j, total);
+
+			}.bind(this));
+		},
+
+		urlToPromise: function (url) {
+			return new Promise(function (resolve, reject) {
+				JSZipUtils.getBinaryContent(url, function (err, data) {
+					if (err) {
+						reject(err);
+					} else {
+						resolve(data);
+					}
+				});
+			});
+		},
+
+		onSeturlData: function (array, j, total, zip) {
+
+			return new Promise(function (resolve, reject) {
+				var recursiva = function (arr, i, lengths, sZip) {
+					if (i === lengths) {
+
+						resolve(sZip);
+					} else {
+						/*this.urlToPromise(arr[i].url).then(function (resp) {
+
+							sZip.file(arr[i].name, resp, {
+								binary: true
+							});*/
+						window.location.assign(arr[i].url);
+						i++;
+						recursiva(arr, i, lengths, sZip);
+
+						//}.bind(this));
+
+					}
+				}.bind(this);
+
+				recursiva(array, j, total, zip);
+
+			}.bind(this));
 		}
 
 	});

@@ -225,7 +225,7 @@
 										<VBox visible="{path:'oModeloPosicionesIngresoMercaderia>Charg', formatter: '.visibleLoteo'}">
 											<Label class="font-xSmaller" text="Lote:" textAlign="Left" width="100%"></Label>
 											<Select items="{oModeloPosicionesIngresoMercaderia>lotes/}" forceSelection="false" width="100%" change="alSeleccionarUnLote">
-												<core:Item text="{oModeloPosicionesIngresoMercaderia>lote}" key="{oModeloPosicionesIngresoMercaderia>lote}"></core:Item>
+												<core:Item text="{oModeloPosicionesIngresoMercaderia>Charg}" key="{oModeloPosicionesIngresoMercaderia>Charg}"></core:Item>
 											</Select>
 											<layoutData>
 												<l:GridData span="XL12 L12 M12 S12"/>

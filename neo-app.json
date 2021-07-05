@@ -1,94 +1,99 @@
 {
-  "welcomeFile": "/webapp/index.html",
-  "routes": [
-    {
-      "path": "/services/userapi",
-      "target": {
-        "type": "service",
-        "name": "userapi"
-      }
-    },
-    {
-      "path": "/resources",
-      "target": {
-        "type": "service",
-        "name": "sapui5",
-        "entryPath": "/resources",
-        "version": "1.87.4"
-      },
-      "description": "SAPUI5 Resources"
-    },
-    {
-      "path": "/test-resources",
-      "target": {
-        "type": "service",
-        "name": "sapui5",
-        "entryPath": "/test-resources",
-        "version": "1.87.4"
-      },
-      "description": "SAPUI5 Resources"
-    },
-    {
-      "path": "/webapp/resources",
-      "target": {
-        "type": "service",
-        "name": "sapui5",
-        "entryPath": "/resources",
-        "version": "1.87.4"
-      },
-      "description": "SAPUI5 Resources"
-    },
-    {
-      "path": "/webapp/test-resources",
-      "target": {
-        "type": "service",
-        "name": "sapui5",
-        "entryPath": "/test-resources",
-        "version": "1.87.4"
-      },
-      "description": "SAPUI5 Test Resources"
-    },
-    {
-      "path": "/HANA",
-      "target": {
-        "type": "destination",
-        "name": "HANA"
-      },
-      "description": "HANA"
-    },
-    {
-      "path": "/GestDoc",
-      "target": {
-        "type": "destination",
-        "name": "GEST_DOCUMENTAL",
-        "entryPath": "/"
-      },
-      "description": "SAPUI5 Test Resources"
-    },
-    {
-      "path": "/GW_ODP",
-      "target": {
-        "type": "destination",
-        "name": "GW_ODP_TOKEN"
-      },
-      "description": "GW_ODP"
-    },
-    {
-      "path": "/mobileservices",
-      "target": {
-        "type": "destination",
-        "name": "mobileservices"
-      },
-      "description": "SAP Mobile Services"
-    },
-    {
-      "path": "/apiusuario",
-      "target": {
-        "type": "destination",
-        "name": "USER_API_IM"
-      },
-      "description": "App para USER_API"
-    }
-  ],
-  "sendWelcomeFileRedirect": true
+	"welcomeFile": "/webapp/index.html",
+	"routes": [{
+		"path": "/services/userapi",
+		"target": {
+			"type": "service",
+			"name": "userapi"
+		}
+	}, {
+		"path": "/resources",
+		"target": {
+			"type": "service",
+			"name": "sapui5",
+			"entryPath": "/resources",
+			"version": "1.87.4"
+		},
+		"description": "SAPUI5 Resources"
+	}, {
+		"path": "/test-resources",
+		"target": {
+			"type": "service",
+			"name": "sapui5",
+			"entryPath": "/test-resources",
+			"version": "1.87.4"
+		},
+		"description": "SAPUI5 Resources"
+	}, {
+		"path": "/webapp/resources",
+		"target": {
+			"type": "service",
+			"name": "sapui5",
+			"entryPath": "/resources",
+			"version": "1.87.4"
+		},
+		"description": "SAPUI5 Resources"
+	}, {
+		"path": "/webapp/test-resources",
+		"target": {
+			"type": "service",
+			"name": "sapui5",
+			"entryPath": "/test-resources",
+			"version": "1.87.4"
+		},
+		"description": "SAPUI5 Test Resources"
+	}, {
+		"path": "/HANA",
+		"target": {
+			"type": "destination",
+			"name": "HANA"
+		},
+		"description": "HANA"
+	}, {
+		"path": "/GestDoc",
+		"target": {
+			"type": "destination",
+			"name": "GEST_DOCUMENTAL",
+			"entryPath": "/"
+		},
+		"description": "SAPUI5 Test Resources"
+	}, {
+		"path": "/GestDocumental",
+		"target": {
+			"type": "destination",
+			"name": "GEST_DOCUMENTAL_CLONING",
+			"entryPath": "/"
+		},
+		"description": "SAPUI5 Test Resources"
+	}, {
+		"path": "/GW_ODP",
+		"target": {
+			"type": "destination",
+			"name": "GW_ODP_TOKEN"
+		},
+		"description": "GW_ODP"
+	}, {
+		"path": "/mobileservices",
+		"target": {
+			"type": "destination",
+			"name": "mobileservices"
+		},
+		"description": "SAP Mobile Services"
+	}, {
+		"path": "/apiusuario",
+		"target": {
+			"type": "destination",
+			"name": "USER_API_IM"
+		},
+		"description": "App para USER_API"
+	}, {
+		"path": "/Sharepoint",
+		"target": {
+			"type": "destination",
+			"name": "Sharepoint",
+			"entryPath": ""
+		},
+		"description": "Sharepoint"
+	}],
+	"sendWelcomeFileRedirect": true
 }

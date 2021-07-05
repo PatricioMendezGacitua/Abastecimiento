@@ -46,17 +46,57 @@
 							</layoutData>
 						</VBox>
 						<VBox>
-							<Label text=" Guía Despacho" required="true" design="Bold" width="100%"></Label>
-							<Input id="oInputGuiaDespachoRecepcion" width="100%" liveChange="onUpperCase" maxLength="16"></Input>
+							<Label text=" Guía Despacho" design="Bold" width="100%"></Label>
+							<Input id="oInputGuiaDespachoRecepcion" enabled="false" width="100%" liveChange="onUpperCase" maxLength="16"></Input>
 							<layoutData>
 								<l:GridData span="XL6 L6 M6 S6"/>
 							</layoutData>
 						</VBox>
 						<VBox>
-							<Label text=" Fecha Guía Despacho" design="Bold" required="true" width="100%"></Label>
-							<DatePicker id="oDatePickerFDRecepcion" width="100%" placeholder="Seleccione..." displayFormat="dd/MM/YYYY"></DatePicker>
+							<Label text=" Fecha Guía Despacho" design="Bold" width="100%"></Label>
+							<DatePicker id="oDatePickerFDRecepcion" enabled="false" width="100%" placeholder="Seleccione..." displayFormat="dd/MM/YYYY"></DatePicker>
 							<layoutData>
 								<l:GridData span="XL6 L6 M6 S6"/>
+							</layoutData>
+						</VBox>
+						<VBox id="oVBoxImagenGuiaDespachoDR" visible="false">
+							<l:Grid hSpacing="0.5" vSpacing="0" width="100%">
+								<VBox>
+									<Label text=" Evidencia Guía Despacho" design="Bold" width="100%"></Label>
+									<layoutData>
+										<l:GridData span="XL12 L12 M12 S12"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<layoutData>
+										<l:GridData span="XL1 L1 M1 S1"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<VBox class="borderMaterial" height="78px">
+										<Image id="oImageEvidenciaGuiaDespachoDRId" width="100%" height="100%">
+											<detailBox>
+												<LightBox>
+													<LightBoxItem id="oLightBoxItemEvidenciaGuiaDespachoDRId"></LightBoxItem>
+												</LightBox>
+											</detailBox>
+											<layoutData>
+												<FlexItemData growFactor="1" shrinkFactor="0"/>
+											</layoutData>
+										</Image>
+									</VBox>
+									<layoutData>
+										<l:GridData span="XL4 L4 M4 S4"/>
+									</layoutData>
+								</VBox>
+								<VBox>
+									<layoutData>
+										<l:GridData span="XL1 L1 M1 S1"/>
+									</layoutData>
+								</VBox>
+							</l:Grid>
+							<layoutData>
+								<l:GridData span="XL12 L12 M12 S12"/>
 							</layoutData>
 						</VBox>
 						<VBox>

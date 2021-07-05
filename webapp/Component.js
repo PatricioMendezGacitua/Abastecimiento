@@ -1,8 +1,11 @@
 sap.ui.define([
 	"sap/ui/core/UIComponent",
 	"sap/ui/Device",
-	"com/gasco/Inbound/model/models"
-], function (UIComponent, Device, models) {
+	"com/gasco/Inbound/model/models",
+	"com/gasco/Inbound/js/FileSaver",
+	"com/gasco/Inbound/js/jszip",
+	"com/gasco/Inbound/js/jszip-utils"
+], function (UIComponent, Device, models, FileSaver, jszip) {
 	"use strict";
 
 	return UIComponent.extend("com.gasco.Inbound.Component", {
