@@ -111,9 +111,17 @@
 									<Label class="font-xSmaller" text="Cantidad Picking:" textAlign="Center" required="true" width="100%"></Label>
 									<StepInput class="fontBold" width="100%" textAlign="Center" min = "{oModeloDataTemporalDetailReserva>minData}"  max = "{oModeloDataTemporalDetailReserva>maxData}" value = "{oModeloDataTemporalDetailReserva>value}"></StepInput>
 									<layoutData>
-										<l:GridData span="XL5 L5 M12 S12"/>
+										<l:GridData span="XL5 L5 M10 S10"/>
 									</layoutData>
 								</VBox>
+								
+								<VBox height="70px" justifyContent="Center" alignItems="Center">
+											<CheckBox width="100%" select="onSelectChange" selected	= "{oModeloDataTemporalDetailReserva>ckSelected}"
+											></CheckBox>
+											<layoutData>
+												<l:GridData span="XL2 L2 M2 S2"/>
+											</layoutData>
+										</VBox>
 								
 								<VBox visible="{oModeloDataTemporalDetailReserva>state}">
 									<Label class="font-xSmaller" text="Lote:" textAlign="Center" width="100%" ></Label>

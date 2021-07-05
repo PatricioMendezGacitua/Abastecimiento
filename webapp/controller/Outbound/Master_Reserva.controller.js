@@ -59,12 +59,9 @@ sap.ui.define([
 			}.bind(this));
 
 		},
-		
-		
-		
 
 		buscarAutocompletarReserva: function (oEvent) {
-			
+
 			var sValue = oEvent.getSource().getValue();
 			var filterFinal = [];
 			if (sValue.trim().length > 0) {
@@ -80,7 +77,7 @@ sap.ui.define([
 					value1: sValue,
 					caseSensitive: false
 				});
-				
+
 				filterFinal = new Filter({
 					filters: [oFilterNombre, oFilterApellido],
 					and: false
@@ -89,9 +86,9 @@ sap.ui.define([
 
 			var oList = this.byId("idList");
 			var oBinding = oList.getBinding("items");
-		
+
 			oBinding.filter(filterFinal, "Application");
-			},
+		},
 
 		onlyNumber: function (oEvent) {
 			var obj = oEvent.getSource();
@@ -137,38 +134,18 @@ sap.ui.define([
 			if (oArgs.estadoIngreso == "4") {
 				this.idEstadoIngreso = "1";
 			}
-            this.getView().byId("oSearchFieldBuscarReservaId").setValue();
+			this.getView().byId("oSearchFieldBuscarReservaId").setValue();
 			//this.iniciarView("X", this.idEstadoIngreso);
-            var sValueNroSAP = "ADGCONSULTIN";
-            var sValueTipo = "PEN";
-          
-			this.busquedaReserva(sValueNroSAP,sValueTipo, "Reserva").then(function (respuestabusquedaReserva) {
-				
-				this.getView().byId("idPageMaster").scrollTo(0, 0, 1000);
+			var sValueNroSAP = "ADGCONSULTIN";
+			var sValueTipo = "PEN";
 			this.openBusyDialogCargando();
+			this.busquedaReserva(sValueNroSAP, sValueTipo, "Reserva").then(function (respuestabusquedaReserva) {
 
-			
+				this.getView().byId("idPageMaster").scrollTo(0, 0, 1000);
+				this.BusyDialogCargando.close();
+				this.bindItemsList(respuestabusquedaReserva.datos);
 
-			this.bindItemsList(respuestabusquedaReserva.datos);
-				
-				
-				
-				
-				
-				
 			}.bind(this));
-
-			/*	this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
-				if (this._oStorage.get("navegacion_IngresoMercaderia") !== null) {
-					this._oStorage.put("navegacion_IngresoMercaderia", null);
-					this.userSCPCod = this._oStorage.get("user_code_IngresoMercaderia");
-					this.userSCPName = this._oStorage.get("user_name_IngresoMercaderia");
-					this.filtroDePantallaSeleccionado = this.idEstadoIngreso;
-					this.setearTextoMenuButton();
-					this.iniciarView("X", this.idEstadoIngreso);
-				} else {
-					this.onBackMenu();
-				}*/
 
 		},
 
@@ -276,43 +253,43 @@ sap.ui.define([
 			this.getView().byId("idPageMaster").scrollTo(0, 0, 1000);
 			this.openBusyDialogCargando();
 
-		/*	var temporales = [{
-				"ID_RESERVA": 718915,
-				"TITULO_ESTADO_INGRESO": this.texto,
-				"STATE_ESTADO_INGRESO": this.state,
-				"POSICION": 1,
-				"TIPO_DESPACHO": "DE",
-				"DENOMINACION": "DESPACHO",
-				"CENTRO": 7110,
-				"ALMACEN": 1130,
-				"MATERIAL": "MED_ACTARISG1.6GLP",
-				"TEXTO_BREVE": "MEDIDOR RESIDENCIAL G1.6 Mcal/hr GLP",
-				"EJECUTADO": "CJARA",
-				"CANT_SOL": 3,
-				"FECHA_A_PRESENTAR": "11.03.2021",
-				"HORA_A_PRESENTAR": "12:57:23",
-				"ID_ESTADO_INGRESO": 1
+			/*	var temporales = [{
+					"ID_RESERVA": 718915,
+					"TITULO_ESTADO_INGRESO": this.texto,
+					"STATE_ESTADO_INGRESO": this.state,
+					"POSICION": 1,
+					"TIPO_DESPACHO": "DE",
+					"DENOMINACION": "DESPACHO",
+					"CENTRO": 7110,
+					"ALMACEN": 1130,
+					"MATERIAL": "MED_ACTARISG1.6GLP",
+					"TEXTO_BREVE": "MEDIDOR RESIDENCIAL G1.6 Mcal/hr GLP",
+					"EJECUTADO": "CJARA",
+					"CANT_SOL": 3,
+					"FECHA_A_PRESENTAR": "11.03.2021",
+					"HORA_A_PRESENTAR": "12:57:23",
+					"ID_ESTADO_INGRESO": 1
 
-			}, {
-				"ID_RESERVA": 718930,
-				"TITULO_ESTADO_INGRESO": "Pendiente",
-				"STATE_ESTADO_INGRESO": "Warning",
-				"POSICION": 1,
-				"TIPO_DESPACHO": "RE",
-				"DENOMINACION": "RETIRO",
-				"CENTRO": 7110,
-				"ALMACEN": 1130,
-				"MATERIAL": "GO_ALI",
-				"TEXTO_BREVE": "GOLILLA ACRILONITRILO 23",
-				"EJECUTADO": "CJARA",
-				"CANT_SOL": 3,
-				"FECHA_A_PRESENTAR": "27.03.2021",
-				"HORA_A_PRESENTAR": "17:57:23",
-				"ID_ESTADO_INGRESO": 1
+				}, {
+					"ID_RESERVA": 718930,
+					"TITULO_ESTADO_INGRESO": "Pendiente",
+					"STATE_ESTADO_INGRESO": "Warning",
+					"POSICION": 1,
+					"TIPO_DESPACHO": "RE",
+					"DENOMINACION": "RETIRO",
+					"CENTRO": 7110,
+					"ALMACEN": 1130,
+					"MATERIAL": "GO_ALI",
+					"TEXTO_BREVE": "GOLILLA ACRILONITRILO 23",
+					"EJECUTADO": "CJARA",
+					"CANT_SOL": 3,
+					"FECHA_A_PRESENTAR": "27.03.2021",
+					"HORA_A_PRESENTAR": "17:57:23",
+					"ID_ESTADO_INGRESO": 1
 
-			}];
+				}];
 
-			this.bindItemsList(temporales);*/
+				this.bindItemsList(temporales);*/
 
 			/*this.temporalesPorUsuarioConectado(this.userSCPCod, idIngreso, idEstadoIngreso, false).then(function (
 				respuestaTemporalesPorUsuarioConectado) {
@@ -323,35 +300,35 @@ sap.ui.define([
 
 		},
 
-	/*	eliminaDuplicado: function (tuArreglo, atributodetuArreglo) {
-			var nuevoArreglo = [];
-			var nuevoJson = {};
+		/*	eliminaDuplicado: function (tuArreglo, atributodetuArreglo) {
+				var nuevoArreglo = [];
+				var nuevoJson = {};
 
-			for (var i in tuArreglo) {
-				if (tuArreglo[i].ID_ESTADO_INGRESO === 4) {
-					nuevoJson[tuArreglo[i][atributodetuArreglo]] = tuArreglo[i];
-				}
-			}
-
-			for (i in nuevoJson) {
-				nuevoArreglo.push(nuevoJson[i]);
-			}
-
-			nuevoJson = {};
-
-			for (var e in nuevoArreglo) {
-				for (var a in tuArreglo) {
-					if (tuArreglo[a].ID_INGRESO !== nuevoArreglo[e].ID_INGRESO && tuArreglo[a].ID_ESTADO_INGRESO !== 4) {
-						nuevoJson[tuArreglo[a][atributodetuArreglo]] = tuArreglo[a];
+				for (var i in tuArreglo) {
+					if (tuArreglo[i].ID_ESTADO_INGRESO === 4) {
+						nuevoJson[tuArreglo[i][atributodetuArreglo]] = tuArreglo[i];
 					}
 				}
-			}
 
-			for (e in nuevoJson) {
-				nuevoArreglo.push(nuevoJson[e]);
-			}
-			return nuevoArreglo;
-		},*/
+				for (i in nuevoJson) {
+					nuevoArreglo.push(nuevoJson[i]);
+				}
+
+				nuevoJson = {};
+
+				for (var e in nuevoArreglo) {
+					for (var a in tuArreglo) {
+						if (tuArreglo[a].ID_INGRESO !== nuevoArreglo[e].ID_INGRESO && tuArreglo[a].ID_ESTADO_INGRESO !== 4) {
+							nuevoJson[tuArreglo[a][atributodetuArreglo]] = tuArreglo[a];
+						}
+					}
+				}
+
+				for (e in nuevoJson) {
+					nuevoArreglo.push(nuevoJson[e]);
+				}
+				return nuevoArreglo;
+			},*/
 
 		desLista: function () {
 
@@ -366,18 +343,17 @@ sap.ui.define([
 
 		bindItemsList: function (temporales) {
 
-		/*	var toggle = this.getView().byId("oToggleButtonAnularOCId");
-			toggle.setEnabled(true);*/
-		var oModeloTemporales = new JSONModel([]);
+			/*	var toggle = this.getView().byId("oToggleButtonAnularOCId");
+				toggle.setEnabled(true);*/
+			var oModeloTemporales = new JSONModel([]);
 			this.getView().setModel(oModeloTemporales, "oModeloTemporalesReserva");
-			
 
 			if (temporales.length > 100) {
 				temporales.setSizeLimit(temporales.length);
 			}
 
 			if (temporales.length === 0) {
-				
+
 			}
 
 			oModeloTemporales.setData(temporales);
@@ -435,7 +411,7 @@ sap.ui.define([
 			var paths = base.getBindingContext("oModeloTemporalesReserva").getPath();
 
 			var idReserva = base.getBindingContext("oModeloTemporalesReserva").getProperty(paths).NRORESERVA;
-			var idEstadoIngreso = 1;// base.getBindingContext("oModeloTemporalesReserva").getProperty(paths).ID_ESTADO_INGRESO;
+			var idEstadoIngreso = 1; // base.getBindingContext("oModeloTemporalesReserva").getProperty(paths).ID_ESTADO_INGRESO;
 
 			this._oStorage.put("navegacion_IngresoMercaderia", "si");
 			this.getOwnerComponent().getRouter().navTo("Reserva_Detail", {
