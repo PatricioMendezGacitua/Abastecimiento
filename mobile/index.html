@@ -16,7 +16,7 @@
 		data-sap-ui-theme="sap_belize"
 		data-sap-ui-preload="async"
 		data-sap-ui-xx-bindingSyntax="complex"
-		data-sap-ui-resourceroots='{ "com.gasco.Inbound": "./" }'>
+		data-sap-ui-resourceroots='{ "com.gasco.Abastecimiento": "./" }'>
 	</script>
 
 	<script>
@@ -91,7 +91,7 @@
 	})();
 	
 	sap.hybrid.startApp = function() {
-		var componentName = "com.gasco.Inbound";
+		var componentName = "com.gasco.Abastecimiento";
 		
 		if (fiori_client_appConfig.fioriURL.indexOf("https://webidetesting-") === 0) {	// Developer Companion
 			sap.hybrid.loadComponent(componentName);

@@ -6,8 +6,8 @@
  *	app settings.
  */
 var fiori_client_appConfig = {
-	"appName": "Ingreso Mercaderia",
-	"appVersion": "1.7",
+	"appName": "Abastecimiento",
+	"appVersion": "1.8",
 	"appID": "com.sap.webide.x4ced6a78ab824be3b334bbe1d1d1201c",
 	"fioriURL": "https://mobile-pnci3ek7c9.us3.hana.ondemand.com:443",
 	"auth": [
