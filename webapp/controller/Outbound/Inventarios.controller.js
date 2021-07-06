@@ -331,8 +331,8 @@ sap.ui.define([
 															MessageToast.show("Inventario Realizado");
 															jQuery.sap.delayedCall(3000, this, function () {
 																this.btnReestablecerInventario();
-															}.bind(this));
 															this.getView().setBusy(false);
+															}.bind(this));
 														}.bind(this));
 													}.bind(this));
 												} else {
@@ -378,13 +378,15 @@ sap.ui.define([
 													zeroCount = "0";
 													recordERPDet.Erfmg = "0";
 												} else if (pos.getValue() === "") {
-													zeroCount = "";
+													zeroCount = "X";
 												}
 											}
 
 											recordERPDet.ZeroCount = zeroCount; //Edm.String" Nullable="false" MaxLength="1" sap:label="Recuento cero"
 
-											recordERPCab.NavEjeInventarioPos.push(recordERPDet);
+											if (pos.getValue() !== "") {
+												recordERPCab.NavEjeInventarioPos.push(recordERPDet);
+											}
 
 											//HANA
 											recordERPDetHana.Zeili = obj.Zeili;
@@ -399,7 +401,10 @@ sap.ui.define([
 											recordERPDetHana.Transaccion = existeEnHana;
 											recordERPDetHana.Charg = obj.Charg;
 											recordERPDetHana.error = false;
-											recordERPCabHana.NavEjeInventarioPos.push(recordERPDetHana);
+
+											if (pos.getValue() !== "") {
+												recordERPCabHana.NavEjeInventarioPos.push(recordERPDetHana);
+											}
 
 											i++;
 											functionRecorrer(listInventario, i);
@@ -524,6 +529,8 @@ sap.ui.define([
 									}
 								}.bind(this);
 								functionRecorrer(inventario, 0);
+							} else {
+								resolve(tx);
 							}
 						}.bind(this),
 						error: function (oError) {
@@ -536,7 +543,7 @@ sap.ui.define([
 		inventariarEnERP: function (datos, datosParaHana) {
 			return new Promise(
 				function resolver(resolve, reject) {
-					debugger;
+
 					this.getView().getModel("oModelSAPERP").create('/EjeInventarioSet', datos, {
 						success: function (oResult) {
 							var datosRotorno = oResult.NavEjeInventarioRet.results;

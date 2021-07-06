@@ -46,7 +46,7 @@
 							<l:GridData span="XL6 L6 M6 S12"/>
 						</layoutData>
 					</VBox>
-					<VBox id="gBodegaDiarioId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTilePM">
+					<VBox id="gBodegaDiarioId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
 						<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://activity-individual" size="6rem" color="#346187"
 							press="navToGestionBodegaDiario"></core:Icon>
 						<Text text="GESTIÓN BODEGA" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
@@ -54,7 +54,7 @@
 							<l:GridData span="XL6 L6 M6 S12"/>
 						</layoutData>
 					</VBox>
-					<VBox id="inventarioId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTilePM">
+					<VBox id="inventarioId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
 						<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://form" size="6rem" color="#346187" press="navToInventario"></core:Icon>
 						<Text text="INVENTARIOS" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
 						<layoutData>
@@ -75,7 +75,7 @@
 							<l:GridData span="XL6 L6 M6 S12"/>
 						</layoutData>
 					</VBox>
-					<VBox id="traspasosId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTilePM">
+					<VBox id="traspasosId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
 						<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://action" size="6rem" color="#346187" press="navToTraspaso"></core:Icon>
 						<Text text="TRASPASOS" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
 						<layoutData>

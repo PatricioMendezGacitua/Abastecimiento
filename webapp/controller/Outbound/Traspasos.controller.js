@@ -527,6 +527,7 @@ sap.ui.define([
 								oModelLotes.setData(resultadoLote);
 								oModelLotes.refresh();
 								oSelectLote.setBusy(false);
+							this._oViewAddPosTraspasoDialog.setBusy(false);
 							}.bind(this));
 						} else {
 							this._oViewAddPosTraspasoDialog.setBusy(false);
@@ -643,6 +644,7 @@ sap.ui.define([
 								var oDatePickerFCTraspaso = this.getView().byId("oDatePickerFCTraspaso");
 								var oTextAreaObservacion = this.getView().byId("oTextAreaObservacion");
 								var oInputCentroCTraspaso = this.getView().byId("oInputCentroCTraspaso");
+								var oInputAlmacenCTraspaso = this.getView().byId("oInputAlmacenCTraspaso");
 
 								var recordERPCab = {};
 								recordERPCab.Ikey = "1";
@@ -650,7 +652,9 @@ sap.ui.define([
 								recordERPCab.NavEjeTraspasoDoc = {
 									Ikey: "1", // Edm.String" Nullable="false" MaxLength="1"
 									EMblnr: "", //Edm.String" Nullable="false" MaxLength="10" sap:label="Doc.material"
-									EMjahr: "" //Edm.String" Nullable="false" MaxLength="4" sap:label="Ejerc.doc.mat.""
+									EMjahr: "", //Edm.String" Nullable="false" MaxLength="4" sap:label="Ejerc.doc.mat."
+									Type: "", //Edm.String" Nullable="false" MaxLength="1" sap:label="Tipo de mensaje"
+									Message: "" //Edm.String" Nullable="false" MaxLength="220" sap:label="Texto mensaje"
 								};
 
 								var recordERPCabHana = {};
@@ -682,7 +686,19 @@ sap.ui.define([
 												}.bind(this));
 											} else {
 												this.getView().setBusy(false);
-												MessageToast.show("No fue posible traspasar las posiciones, intente más tarde.");
+												var msj = 'No fue posible traspasar la posición, intente más tarde.';
+
+												if (cantidadItems.length > 1) {
+													msj = 'No fue posible traspasar las posiciones, intente más tarde.';
+												}
+
+												MessageBox.information(msj, {
+													title: "Aviso",
+													actions: ["OK"],
+													styleClass: "",
+													onClose: function (sAction) {}.bind(this),
+													details: respuestaIERP.error,
+												});
 											}
 										}.bind(this));
 									} else {
@@ -699,7 +715,8 @@ sap.ui.define([
 										recordERPDet.Bktxt = oTextAreaObservacion.getValue().trim().slice(0, 25); //Edm.String" Nullable="false" MaxLength="25" sap:label="Txt.cab.doc."
 										recordERPDet.Xblnr = ""; //Edm.String" Nullable="false" MaxLength="16" sap:label="Referencia"
 										recordERPDet.Werks = oInputCentroCTraspaso.getValue().slice(0, 4); //Edm.String" Nullable="false" MaxLength="4" sap:label="Centro"
-										recordERPDet.Lgort = obj.almacen.slice(0, 4); //Edm.String" Nullable="false" MaxLength="4" sap:label="Almacén"
+										recordERPDet.LgortIni = oInputAlmacenCTraspaso.getValue().slice(0, 4); //Edm.String" Nullable="false" MaxLength="4" sap:label="Almacén inicio"
+										recordERPDet.LgortDes = obj.almacen.slice(0, 4); //Edm.String" Nullable="false" MaxLength="4" sap:label="Almacén destino"
 										recordERPDet.Sgtxt = obj.denMaterial.slice(0, 50); //Edm.String" Nullable="false" MaxLength="50" sap:label="Texto"
 										recordERPDet.Matnr = obj.codMaterial.slice(0, 18); //Edm.String" Nullable="false" MaxLength="18" sap:label="Material"
 										var cantidad = obj.cantidad.replace(/,/g, ".");
@@ -756,11 +773,19 @@ sap.ui.define([
 						success: function (oResult) {
 
 							var respuesta = oResult.NavEjeTraspasoDoc.EMblnr + "-" + oResult.NavEjeTraspasoDoc.EMjahr;
-							resolve({
-								nroDocumento: respuesta,
-								resolve: true,
-								error: ""
-							});
+							if (oResult.NavEjeTraspasoDoc.Type === "E") {
+								resolve({
+									nroDocumento: "",
+									resolve: false,
+									error: oResult.NavEjeTraspasoDoc.Message
+								});
+							} else {
+								resolve({
+									nroDocumento: respuesta,
+									resolve: true,
+									error: ""
+								});
+							}
 
 						}.bind(this),
 						error: function (oError) {
