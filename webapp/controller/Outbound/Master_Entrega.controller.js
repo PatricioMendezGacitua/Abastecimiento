@@ -1,5 +1,5 @@
 sap.ui.define([
-	"com/gasco/Inbound/controller/Outbound/BaseController",
+	"com/gasco/Abastecimiento/controller/Outbound/BaseController",
 	"sap/ui/model/Filter",
 	"sap/m/Dialog",
 	"sap/m/Button",
@@ -23,7 +23,7 @@ sap.ui.define([
 	GroupHeaderListItem) {
 	var evento;
 
-	return BaseController.extend("com.gasco.Inbound.controller.Outbound.Master_Entrega", {
+	return BaseController.extend("com.gasco.Abastecimiento.controller.Outbound.Master_Entrega", {
 
 		onInit: function () {
 			this._route = this.getOwnerComponent().getRouter();
@@ -434,7 +434,7 @@ this.iniciarView("X", this.idEstadoIngreso);*/
 
 			if (!this._menuFilter) {
 				this._menuFilter = sap.ui.xmlfragment(
-					"com.gasco.Inbound.view.fragments.MenuFilter",
+					"com.gasco.Abastecimiento.view.fragments.MenuFilter",
 					this
 				);
 				this.getView().addDependent(this._menuFilter);

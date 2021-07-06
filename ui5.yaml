@@ -1,6 +1,6 @@
 specVersion: '1.0'
 metadata:
-  name: Inbound
+  name: Abastecimiento
 type: application
 resources:
   configuration:

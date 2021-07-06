@@ -1,14 +1,14 @@
 sap.ui.define([
 	"sap/ui/core/UIComponent",
 	"sap/ui/Device",
-	"com/gasco/Inbound/model/models",
-	"com/gasco/Inbound/js/FileSaver",
-	"com/gasco/Inbound/js/jszip",
-	"com/gasco/Inbound/js/jszip-utils"
+	"com/gasco/Abastecimiento/model/models",
+	"com/gasco/Abastecimiento/js/FileSaver",
+	"com/gasco/Abastecimiento/js/jszip",
+	"com/gasco/Abastecimiento/js/jszip-utils"
 ], function (UIComponent, Device, models, FileSaver, jszip) {
 	"use strict";
 
-	return UIComponent.extend("com.gasco.Inbound.Component", {
+	return UIComponent.extend("com.gasco.Abastecimiento.Component", {
 
 		metadata: {
 			manifest: "json"

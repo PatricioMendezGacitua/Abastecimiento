@@ -1,12 +1,12 @@
 sap.ui.define([
-	"com/gasco/Inbound/controller/Outbound/BaseController",
+	"com/gasco/Abastecimiento/controller/Outbound/BaseController",
 	"sap/m/MessageToast",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
 	"sap/ndc/BarcodeScanner"
 ], function (BaseController, MessageToast, JSONModel, MessageBox, BarcodeScanner) {
 
-	return BaseController.extend("com.gasco.Inbound.controller.Outbound.Traspasos", {
+	return BaseController.extend("com.gasco.Abastecimiento.controller.Outbound.Traspasos", {
 
 		onInit: function () {
 			this.getOwnerComponent().getRouter().getRoute("traspaso").attachMatched(this._onRouteMatched, this);
@@ -128,7 +128,7 @@ sap.ui.define([
 			var numeroCentro = this.getView().byId("oInputCentroCTraspaso");
 			var numeroAlmacen = this.getView().byId("oInputAlmacenCTraspaso");
 			if (numeroAlmacen.getValue().length > 0) {
-				this._oViewAddPosTraspasoDialog = sap.ui.xmlfragment("com.gasco.Inbound.view.fragments.addPosTraspaso", this);
+				this._oViewAddPosTraspasoDialog = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.addPosTraspaso", this);
 
 				this._oViewAddPosTraspasoDialog.attachAfterClose(function () {
 					this._oViewAddPosTraspasoDialog.destroy();
@@ -281,7 +281,7 @@ sap.ui.define([
 		openListAlmacenesCompleta: function (oEvent) {
 			this.idAlmacen = oEvent.getSource().getId();
 			if (!this._valueDialogListAlmacenes) {
-				this._valueDialogListAlmacenes = sap.ui.xmlfragment("com.gasco.Inbound.view.fragments.dialogoListAlmacenAll", this);
+				this._valueDialogListAlmacenes = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.dialogoListAlmacenAll", this);
 			}
 
 			var numeroCentro = this.getView().byId("oInputCentroCTraspaso").getValue();
@@ -305,7 +305,7 @@ sap.ui.define([
 		openListAlmacenFilter: function (oEvent) {
 			this.idAlmacen = oEvent.getSource().getId();
 			if (!this._valueDialogListAlmacenesFilter) {
-				this._valueDialogListAlmacenesFilter = sap.ui.xmlfragment("com.gasco.Inbound.view.fragments.dialogoListAlmacenFilter", this);
+				this._valueDialogListAlmacenesFilter = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.dialogoListAlmacenFilter", this);
 			}
 
 			var numeroCentro = this.getView().byId("oInputCentroCTraspaso").getValue();
@@ -337,7 +337,7 @@ sap.ui.define([
 
 			this.idCentro = oEvent.getSource().getId();
 			if (!this._valueDialogListCentros) {
-				this._valueDialogListCentros = sap.ui.xmlfragment("com.gasco.Inbound.view.fragments.dialogoListCentroAll", this);
+				this._valueDialogListCentros = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.dialogoListCentroAll", this);
 			}
 
 			var modelCentro = new JSONModel([]);

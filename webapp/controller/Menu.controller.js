@@ -1,11 +1,11 @@
 sap.ui.define([
-	"com/gasco/Inbound/controller/BaseController",
+	"com/gasco/Abastecimiento/controller/BaseController",
 	"sap/m/MessageToast",
 	"sap/ui/model/json/JSONModel"
 ], function (BaseController, MessageToast, JSONModel) {
 	"use strict";
 
-	return BaseController.extend("com.gasco.Inbound.controller.Menu", {
+	return BaseController.extend("com.gasco.Abastecimiento.controller.Menu", {
 
 		onInit: function () {
 			this.getOwnerComponent().getRouter().getRoute("Menu").attachMatched(this._onRouteMatched, this);

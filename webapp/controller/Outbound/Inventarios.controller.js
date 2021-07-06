@@ -1,12 +1,12 @@
 sap.ui.define([
-	"com/gasco/Inbound/controller/Outbound/BaseController",
+	"com/gasco/Abastecimiento/controller/Outbound/BaseController",
 	"sap/m/MessageToast",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
 	"sap/ndc/BarcodeScanner"
 ], function (BaseController, MessageToast, JSONModel, MessageBox, BarcodeScanner) {
 
-	return BaseController.extend("com.gasco.Inbound.controller.Outbound.Inventarios", {
+	return BaseController.extend("com.gasco.Abastecimiento.controller.Outbound.Inventarios", {
 
 		onInit: function () {
 			this.getOwnerComponent().getRouter().getRoute("inventario").attachMatched(this._onRouteMatched, this);

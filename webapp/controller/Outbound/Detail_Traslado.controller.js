@@ -1,12 +1,12 @@
 sap.ui.define([
-	"com/gasco/Inbound/controller/Outbound/BaseController",
+	"com/gasco/Abastecimiento/controller/Outbound/BaseController",
 	"sap/m/MessageToast",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
 	"sap/ndc/BarcodeScanner"
 ], function (BaseController, MessageToast, JSONModel, MessageBox, BarcodeScanner) {
 
-	return BaseController.extend("com.gasco.Inbound.controller.Outbound.Detail_Traslado", {
+	return BaseController.extend("com.gasco.Abastecimiento.controller.Outbound.Detail_Traslado", {
 
 		onInit: function () {
 			this.getOwnerComponent().getRouter().getRoute("traslado").attachMatched(this._onRouteMatched, this);
@@ -371,7 +371,7 @@ sap.ui.define([
 		/**
 		 * Similar to onAfterRendering, but this hook is invoked before the controller's View is re-rendered
 		 * (NOT before the first rendering! onInit() is used for that one!).
-		 * @memberOf com.gasco.Inbound.view.Detail_Traslado
+		 * @memberOf com.gasco.Abastecimiento.view.Detail_Traslado
 		 */
 		//	onBeforeRendering: function() {
 		//
@@ -380,7 +380,7 @@ sap.ui.define([
 		/**
 		 * Called when the View has been rendered (so its HTML is part of the document). Post-rendering manipulations of the HTML could be done here.
 		 * This hook is the same one that SAPUI5 controls get after being rendered.
-		 * @memberOf com.gasco.Inbound.view.Detail_Traslado
+		 * @memberOf com.gasco.Abastecimiento.view.Detail_Traslado
 		 */
 		//	onAfterRendering: function() {
 		//
@@ -388,7 +388,7 @@ sap.ui.define([
 
 		/**
 		 * Called when the Controller is destroyed. Use this one to free resources and finalize activities.
-		 * @memberOf com.gasco.Inbound.view.Detail_Traslado
+		 * @memberOf com.gasco.Abastecimiento.view.Detail_Traslado
 		 */
 		//	onExit: function() {
 		//

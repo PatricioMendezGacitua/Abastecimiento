@@ -9,7 +9,7 @@ sap.ui.define([
 	"sap/m/MessageToast",
 	"sap/m/MessageBox",
 	"sap/ui/model/FilterOperator",
-	"com/gasco/Inbound/controller/consultaUsuario"
+	"com/gasco/Abastecimiento/controller/consultaUsuario"
 ], function (
 	Controller, History,
 	Filter,
@@ -23,7 +23,7 @@ sap.ui.define([
 	consultaUsuario) {
 	var sessionTime = new Date();
 	var session;
-	return Controller.extend("com.gasco.Inbound.controller.BaseController", {
+	return Controller.extend("com.gasco.Abastecimiento.controller.BaseController", {
 
 		initBaseController: function () {
 			$(document.body).click(function () {
@@ -61,7 +61,7 @@ sap.ui.define([
 
 			if (!this._menu) {
 				this._menu = sap.ui.xmlfragment(
-					"com.gasco.Inbound.view.fragments.MenuItem",
+					"com.gasco.Abastecimiento.view.fragments.MenuItem",
 					this
 				);
 				this.getView().addDependent(this._menu);
@@ -76,7 +76,7 @@ sap.ui.define([
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 
 			this._valueDialogActualizaDatos = sap.ui.xmlfragment(
-				"com.gasco.Inbound.view.fragments.dialogoActualizaDatos", this);
+				"com.gasco.Abastecimiento.view.fragments.dialogoActualizaDatos", this);
 
 			this._valueDialogActualizaDatos.attachAfterClose(function () {
 				this._valueDialogActualizaDatos.destroy();
@@ -88,7 +88,7 @@ sap.ui.define([
 
 			this._valueDialogActualizaDatos.open();
 
-			var versionApp = "Versión v1.7.0";
+			var versionApp = this.getView().getModel("i18n").getResourceBundle().getText("appVersion");
 			sap.ui.getCore().byId("versionAppId").setText(versionApp);
 
 		},
@@ -171,7 +171,7 @@ sap.ui.define([
 		openBusyReconectando: function (oEvent) {
 
 			if (!this.BusyReconectando) {
-				this.BusyReconectando = sap.ui.xmlfragment("com.gasco.Inbound.view.fragments.BusyReconectando", this);
+				this.BusyReconectando = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.BusyReconectando", this);
 			}
 
 			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.BusyReconectando);
@@ -181,7 +181,7 @@ sap.ui.define([
 		openBusyDialog: function (oEvent) {
 
 			if (!this.BusyDialog) {
-				this.BusyDialog = sap.ui.xmlfragment("com.gasco.Inbound.view.fragments.BusyDialog", this);
+				this.BusyDialog = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.BusyDialog", this);
 			}
 
 			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.BusyDialog);
@@ -191,7 +191,7 @@ sap.ui.define([
 		openBusyDialogCargando: function (oEvent) {
 
 			if (!this.BusyDialogCargando) {
-				this.BusyDialogCargando = sap.ui.xmlfragment("com.gasco.Inbound.view.fragments.BusyDialogCargando", this);
+				this.BusyDialogCargando = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.BusyDialogCargando", this);
 			}
 
 			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.BusyDialogCargando);

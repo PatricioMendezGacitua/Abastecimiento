@@ -9,7 +9,7 @@ sap.ui.define([
 	"sap/m/MessageToast",
 	"sap/m/MessageBox",
 	"sap/ui/model/FilterOperator",
-	"com/gasco/Inbound/controller/consultaUsuario"
+	"com/gasco/Abastecimiento/controller/consultaUsuario"
 ], function (
 	Controller, History,
 	Filter,
@@ -22,7 +22,7 @@ sap.ui.define([
 	FilterOperator,
 	consultaUsuario) {
 	"use strict";
-	return Controller.extend("com.gasco.Inbound.controller.Outbound.BaseController", {
+	return Controller.extend("com.gasco.Abastecimiento.controller.Outbound.BaseController", {
 
 		busquedaNroPedido: function (nropedido) {
 			return new Promise(
@@ -581,7 +581,7 @@ sap.ui.define([
 
 			if (!this._menu) {
 				this._menu = sap.ui.xmlfragment(
-					"com.gasco.Inbound.view.fragments.MenuItem",
+					"com.gasco.Abastecimiento.view.fragments.MenuItem",
 					this
 				);
 				this.getView().addDependent(this._menu);
@@ -1065,7 +1065,7 @@ sap.ui.define([
 		openBusyReconectando: function (oEvent) {
 
 			if (!this.BusyReconectando) {
-				this.BusyReconectando = sap.ui.xmlfragment("com.gasco.Inbound.view.fragments.BusyReconectando", this);
+				this.BusyReconectando = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.BusyReconectando", this);
 			}
 
 			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.BusyReconectando);
@@ -1075,7 +1075,7 @@ sap.ui.define([
 		openBusyDialog: function (oEvent) {
 
 			if (!this.BusyDialog) {
-				this.BusyDialog = sap.ui.xmlfragment("com.gasco.Inbound.view.fragments.BusyDialog", this);
+				this.BusyDialog = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.BusyDialog", this);
 			}
 
 			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.BusyDialog);
@@ -1085,7 +1085,7 @@ sap.ui.define([
 		openBusyDialogCargando: function (oEvent) {
 
 			if (!this.BusyDialogCargando) {
-				this.BusyDialogCargando = sap.ui.xmlfragment("com.gasco.Inbound.view.fragments.BusyDialogCargando", this);
+				this.BusyDialogCargando = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.BusyDialogCargando", this);
 			}
 
 			jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.BusyDialogCargando);
@@ -1116,7 +1116,7 @@ sap.ui.define([
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 
 			this._valueDialogActualizaDatos = sap.ui.xmlfragment(
-				"com.gasco.Inbound.view.fragments.dialogoActualizaDatos", this);
+				"com.gasco.Abastecimiento.view.fragments.dialogoActualizaDatos", this);
 
 			this._valueDialogActualizaDatos.attachAfterClose(function () {
 				this._valueDialogActualizaDatos.destroy();
@@ -1157,7 +1157,7 @@ sap.ui.define([
 		openListAlmacenesCompleta: function () {
 
 			if (!this._valueDialogListAlmacenes) {
-				this._valueDialogListAlmacenes = sap.ui.xmlfragment("com.gasco.Inbound.view.fragments.dialogoListAlmacenes", this);
+				this._valueDialogListAlmacenes = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.dialogoListAlmacenes", this);
 			}
 			var modelAlmacenes = new JSONModel([]);
 			this._valueDialogListAlmacenes.setModel(modelAlmacenes, "modelAlmacenes");
@@ -1177,7 +1177,7 @@ sap.ui.define([
 		openListAlmacenesBase: function (numeroCentro, obj) {
 			this.buttonAsignarAlmacen = obj;
 			if (!this._valueDialogListAlmacenes) {
-				this._valueDialogListAlmacenes = sap.ui.xmlfragment("com.gasco.Inbound.view.fragments.dialogoListAlmacenes", this);
+				this._valueDialogListAlmacenes = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.dialogoListAlmacenes", this);
 			}
 
 			var modelAlmacenes = new JSONModel([]);

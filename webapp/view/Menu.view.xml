@@ -1,4 +1,4 @@
-<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" controllerName="com.gasco.Inbound.controller.Menu"
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" controllerName="com.gasco.Abastecimiento.controller.Menu"
 	xmlns:html="http://www.w3.org/1999/xhtml" xmlns:l="sap.ui.layout">
 	<Page id="oPageAbastecimientoId" title="Abastecimiento">
 		<customHeader>

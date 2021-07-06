@@ -1,13 +1,13 @@
 sap.ui.define([
-	"com/gasco/Inbound/controller/Inbound/BaseController",
+	"com/gasco/Abastecimiento/controller/Inbound/BaseController",
 	"sap/m/MessageToast",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageBox",
 	"sap/ndc/BarcodeScanner",
-	"com/gasco/Inbound/model/apiBibliotecaDigital_Inbound"
+	"com/gasco/Abastecimiento/model/apiBibliotecaDigital_Inbound"
 ], function (BaseController, MessageToast, JSONModel, MessageBox, BarcodeScanner, apiBibliotecaDigital) {
 
-	return BaseController.extend("com.gasco.Inbound.controller.Inbound.Ingresos", {
+	return BaseController.extend("com.gasco.Abastecimiento.controller.Inbound.Ingresos", {
 
 		onInit: function () {
 			this.getOwnerComponent().getRouter().getRoute("ingresos").attachMatched(this._onRouteMatched, this);
@@ -949,7 +949,7 @@ sap.ui.define([
 
 		openMenuBusqueda: function (oEvent) {
 
-			this.dialogMenuBusqueda = sap.ui.xmlfragment("com.gasco.Inbound.view.fragments.menuBusqueda", this);
+			this.dialogMenuBusqueda = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.menuBusqueda", this);
 			this.getView().addDependent(this.dialogMenuBusqueda);
 
 			this.dialogMenuBusqueda.attachAfterClose(function () {

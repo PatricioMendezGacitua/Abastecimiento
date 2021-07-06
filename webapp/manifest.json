@@ -1,7 +1,7 @@
 {
 	"_version": "1.12.0",
 	"sap.app": {
-		"id": "com.gasco.Inbound",
+		"id": "com.gasco.Abastecimiento",
 		"type": "application",
 		"i18n": "i18n/i18n.properties",
 		"applicationVersion": {
@@ -65,7 +65,7 @@
 	"sap.ui5": {
 		"flexEnabled": false,
 		"rootView": {
-			"viewName": "com.gasco.Inbound.view.App",
+			"viewName": "com.gasco.Abastecimiento.view.App",
 			"type": "XML",
 			"async": true,
 			"id": "App"
@@ -86,7 +86,7 @@
 			"i18n": {
 				"type": "sap.ui.model.resource.ResourceModel",
 				"settings": {
-					"bundleName": "com.gasco.Inbound.i18n.i18n"
+					"bundleName": "com.gasco.Abastecimiento.i18n.i18n"
 				}
 			},
 			"oModeloHanaIngresoMercaderia": {
@@ -141,7 +141,7 @@
 				"routerClass": "sap.m.routing.Router",
 				"viewType": "XML",
 				"async": true,
-				"viewPath": "com.gasco.Inbound.view",
+				"viewPath": "com.gasco.Abastecimiento.view",
 				"controlAggregation": "pages",
 				"controlId": "app",
 				"clearControlAggregation": false

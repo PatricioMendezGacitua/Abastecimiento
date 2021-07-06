@@ -5,10 +5,10 @@ sap.ui.define([
 	"sap/m/MessageBox",
 	"sap/ui/core/routing/History",
 	'sap/ui/model/Filter',
-	"com/gasco/Inbound/controller/consultaUsuario"
+	"com/gasco/Abastecimiento/controller/consultaUsuario"
 ], function (Controller, JSONModel, MessageToast, MessageBox, History, Filter, consultaUsuario) {
 
-	return Controller.extend("com.gasco.Inbound.controller.cargando", {
+	return Controller.extend("com.gasco.Abastecimiento.controller.cargando", {
 
 		consultaUsuario: consultaUsuario,
 
@@ -27,6 +27,9 @@ sap.ui.define([
 		_onObjectMatched: function () {
 
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
+			
+			var versionApp = this.getView().getModel("i18n").getResourceBundle().getText("appVersion");
+			this.getView().byId("oTextVersionAppId").setText(versionApp);
 
 			consultaUsuario.datosUsuario().then(function (respuesta) {
 				if (respuesta.resolve) {
