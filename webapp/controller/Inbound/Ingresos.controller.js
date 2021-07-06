@@ -545,105 +545,115 @@ sap.ui.define([
 														this.createIngresoXSODATA(dataIngreso).then(function (respuestaIngreso) {
 															if (respuestaIngreso.resolve) {
 																var idIngreso = respuestaIngreso.idIngreso;
+																this.actualizarQREgreso(idIngreso).then(function () {
 
-																var idList = this.getView().byId("idtableLPHI");
+																	var idList = this.getView().byId("idtableLPHI");
 
-																var recorrerPosiciones = function (element, index) {
-																	if (element.length === index) {
-																		if (creacionConError === 0) {
+																	var recorrerPosiciones = function (element, index) {
+																		if (element.length === index) {
+																			if (creacionConError === 0) {
 
-																			this.datosCreacion = {
-																				ID_AVISO: idIngreso,
-																				NUMERO_MATERIAL: ""
-																			};
+																				this.datosCreacion = {
+																					ID_AVISO: idIngreso,
+																					NUMERO_MATERIAL: ""
+																				};
 
-																			this.registrarLog("Genera_Ingreso_Temporal", this.datosCreacion).then(function (respuestaRegistrarLog) {
+																				this.registrarLog("Genera_Ingreso_Temporal", this.datosCreacion).then(function (
+																					respuestaRegistrarLog) {
+																					this.BusyDialogCargando.close();
+																					this.preocesoGenerarOCConExito(idIngreso);
+																				}.bind(this));
+																			} else {
 																				this.BusyDialogCargando.close();
-																				this.preocesoGenerarOCConExito(idIngreso);
-																			}.bind(this));
+																				this.errorAlGenerarOC();
+																			}
 																		} else {
-																			this.BusyDialogCargando.close();
-																			this.errorAlGenerarOC();
-																		}
-																	} else {
 
-																		var pos0 = element[index].getContent()[0].getItems()[0].getContent();
-																		var pos1 = element[index].getContent()[0].getItems()[1].getContent();
+																			var pos0 = element[index].getContent()[0].getItems()[0].getContent();
+																			var pos1 = element[index].getContent()[0].getItems()[1].getContent();
 
-																		var cantPen = pos1[4].getItems()[1].getText();
-																		//var cantPenNum = Number(pos1[4].getItems()[1].getText().replace(/\./g, ""));
-																		if (cantPen !== "0") {
-																			var codMaterial = pos0[0].getItems()[1].getText();
-																			var stockMaterial = pos0[1].getItems()[1].getText();
-																			var position = pos0[2].getItems()[1].getText();
-																			var denomination = pos0[3].getItems()[1].getText();
+																			var cantPen = pos1[4].getItems()[1].getText();
+																			//var cantPenNum = Number(pos1[4].getItems()[1].getText().replace(/\./g, ""));
+																			if (cantPen !== "0") {
+																				var codMaterial = pos0[0].getItems()[1].getText();
+																				var stockMaterial = pos0[1].getItems()[1].getText();
+																				var position = pos0[2].getItems()[1].getText();
+																				var denomination = pos0[3].getItems()[1].getText();
 
-																			var ubicacion = pos1[0].getItems()[1].getItems()[0].getText();
-																			var centro = pos1[1].getItems()[1].getItems()[0].getText();
-																			var almacen = pos1[2].getItems()[1].getText();
-																			var cantTotal = pos1[3].getItems()[1].getText();
-																			var unidadMedida = pos1[5].getItems()[1].getText();
-																			var step = pos1[6].getItems()[1].getValue().toString();
-																			//var check = pos1[7].getItems()[0].getSelected();
+																				var ubicacion = pos1[0].getItems()[1].getItems()[0].getText();
+																				var centro = pos1[1].getItems()[1].getItems()[0].getText();
+																				var almacen = pos1[2].getItems()[1].getText();
+																				var cantTotal = pos1[3].getItems()[1].getText();
+																				var unidadMedida = pos1[5].getItems()[1].getText();
+																				var step = pos1[6].getItems()[1].getValue().toString();
+																				var check = pos1[7].getItems()[0].getSelected();
 
-																			var loteo = null;
-																			var idTipoPosicion = 1;
-																			var vBoxLote = pos1[8];
+																				var loteo = null;
+																				var idTipoPosicion = 1;
+																				var vBoxLote = pos1[8];
 
-																			if (vBoxLote.getVisible()) {
-																				loteo = vBoxLote.getItems()[1].getSelectedKey();
-																				idTipoPosicion = 2;
-																			}
-																			var stockZero = pos1[9].getItems()[1].getText();
-																			var codigoSAPProveedor = pos1[10].getItems()[1].getText();
-																			var esSeriado = pos1[11].getItems()[1].getText();
+																				if (vBoxLote.getVisible()) {
+																					loteo = vBoxLote.getItems()[1].getSelectedKey();
+																					idTipoPosicion = 2;
+																				}
+																				var stockZero = pos1[9].getItems()[1].getText();
+																				var codigoSAPProveedor = pos1[10].getItems()[1].getText();
+																				var esSeriado = pos1[11].getItems()[1].getText();
 
-																			if (esSeriado.length > 0) {
-																				idTipoPosicion = 3;
-																			}
+																				if (esSeriado.length > 0) {
+																					idTipoPosicion = 3;
+																				}
 
-																			if (almacen === "Asignar") {
-																				almacen = "";
-																			}
+																				if (almacen === "Asignar") {
+																					almacen = "";
+																				}
 
-																			var dataPosiciones = {
-																				ID_POSICION: 0,
-																				ID_INGRESO: idIngreso,
-																				ID_ESTADO_POSICION: 1,
-																				NUMERO_POSICION: position,
-																				CODIGO_MATERIAL: codMaterial,
-																				DESCRIPCION_MATERIAL: denomination,
-																				CANTIDAD_MATERIAL_TOTAL: cantTotal,
-																				CANTIDAD_MATERIAL_PENDIENTE: cantPen,
-																				CANTIDAD_MATERIAL_INGRESADO: step,
-																				UNIDAD_DE_MEDIDA_MATERIAL: unidadMedida,
-																				NUMERO_UBICACION: ubicacion,
-																				NUMERO_LOTE: loteo,
-																				CENTRO: centro,
-																				ALMACEN: almacen,
-																				ID_TIPO_POSICION: idTipoPosicion,
-																				STOCK_MATERIAL: stockZero,
-																				CODIGO_SAP_PROVEEDOR: codigoSAPProveedor
-																			};
+																				var dataPosiciones = {
+																					ID_POSICION: 0,
+																					ID_INGRESO: idIngreso,
+																					ID_ESTADO_POSICION: 1,
+																					NUMERO_POSICION: position,
+																					CODIGO_MATERIAL: codMaterial,
+																					DESCRIPCION_MATERIAL: denomination,
+																					CANTIDAD_MATERIAL_TOTAL: cantTotal,
+																					CANTIDAD_MATERIAL_PENDIENTE: cantPen,
+																					CANTIDAD_MATERIAL_INGRESADO: step,
+																					UNIDAD_DE_MEDIDA_MATERIAL: unidadMedida,
+																					NUMERO_UBICACION: ubicacion,
+																					NUMERO_LOTE: loteo,
+																					CENTRO: centro,
+																					ALMACEN: almacen,
+																					ID_TIPO_POSICION: idTipoPosicion,
+																					STOCK_MATERIAL: stockZero,
+																					CODIGO_SAP_PROVEEDOR: codigoSAPProveedor
+																				};
 
-																			this.createPosicionIngresoXSODATA(dataPosiciones).then(function (respuestaPosicionIngreso) {
-																				if (respuestaPosicionIngreso) {
-																					index++;
-																					recorrerPosiciones(element, index);
+																				if (check) {
+																					this.createPosicionIngresoXSODATA(dataPosiciones).then(function (respuestaPosicionIngreso) {
+																						if (respuestaPosicionIngreso) {
+																							index++;
+																							recorrerPosiciones(element, index);
+																						} else {
+																							creacionConError++;
+																							index++;
+																							recorrerPosiciones(element, index);
+																						}
+																					}.bind(this));
 																				} else {
-																					creacionConError++;
 																					index++;
 																					recorrerPosiciones(element, index);
 																				}
-																			}.bind(this));
-																		} else {
-																			index++;
-																			recorrerPosiciones(element, index);
-																		}
 
-																	}
-																}.bind(this);
-																recorrerPosiciones(idList.getItems(), 0);
+																			} else {
+																				index++;
+																				recorrerPosiciones(element, index);
+																			}
+
+																		}
+																	}.bind(this);
+																	recorrerPosiciones(idList.getItems(), 0);
+
+																}.bind(this));
 															} else {
 																this.BusyDialogCargando.close();
 																this.errorAlGenerarOC();
@@ -697,7 +707,7 @@ sap.ui.define([
 								var metadataManual = retorno[2];
 
 								if (idApp !== null && idPro !== null) {
-									debugger;
+
 									apiBibliotecaDigital.cargarArchivo(idApp, idPro, datos, metadataManual).then(function (res) {
 										var url = res.url;
 										resolve(url);
@@ -798,6 +808,37 @@ sap.ui.define([
 								});
 							}
 							resolve(respuesta);
+						}.bind(this),
+						error: function (oError) {
+							resolve({
+								idOc: oError,
+								resolve: false
+							});
+						}.bind(this)
+					});
+
+				}.bind(this));
+		},
+
+		actualizarQREgreso: function (idIngreso) {
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					var url = "/HANA/INGRESO_MERCADERIA/services.xsjs?accion=actualizarCabeceraQR";
+
+					var json = {
+						ID_QR: this.idQRHana,
+						ID_INGRESO: idIngreso
+					};
+
+					$.ajax({
+						url: url,
+						method: "POST",
+						data: JSON.stringify(json),
+						success: function (oResult) {
+							resolve({
+								resolve: true
+							});
 						}.bind(this),
 						error: function (oError) {
 							resolve({
