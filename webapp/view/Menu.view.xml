@@ -10,16 +10,16 @@
 					<Text text="Abastecimiento"></Text>
 				</contentMiddle>
 				<contentRight>
-					<Button icon="sap-icon://vertical-grip" type="Transparent" tooltip="Más Opciones" press="openMoreOption"/>
+					<Button id="oButtonMoreOptionId" enabled="false" icon="sap-icon://vertical-grip" type="Transparent" tooltip="Más Opciones" press="openMoreOption"/>
 				</contentRight>
 			</Bar>
 		</customHeader>
 		<content>
 			<VBox id="oVBoMenuId" width="100%">
-				<Toolbar class="sapUiSmallMarginTop" width="100%">
-					<Title text="INBOUND" titleStyle="H2" level="H2"></Title>
+				<Toolbar visible="false" id="oToolbarInBoundId" class="sapUiSmallMarginTop" width="100%">
+					<Title class="sapUiSmallMarginBegin" text="INBOUND" titleStyle="H2" level="H2"></Title>
 				</Toolbar>
-				<l:Grid class="sapUiMediumMarginTop" hSpacing="2" vSpacing="2" width="100%">
+				<l:Grid visible="false" id="oGridInBoundId" class="sapUiMediumMarginTop" hSpacing="2" vSpacing="2" width="100%">
 					<VBox id="ingresosId" visible="false" alignItems="Center" justifyContent="Center" class="fondoTile">
 						<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://inbox" size="6rem" color="#346187" press="navToMantencion"></core:Icon>
 						<Text text="INGRESOS" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
@@ -35,10 +35,10 @@
 						</layoutData>
 					</VBox>
 				</l:Grid>
-				<Toolbar class="sapUiSmallMarginTop" width="100%">
-					<Title text="OUTBOUND" titleStyle="H2" level="H2"></Title>
+				<Toolbar id="oToolbarOutBoundId" visible="false" class="sapUiSmallMarginTop" width="100%">
+					<Title class="sapUiSmallMarginBegin" text="OUTBOUND" titleStyle="H2" level="H2"></Title>
 				</Toolbar>
-				<l:Grid class="sapUiMediumMarginTop" hSpacing="2" vSpacing="2" width="100%">
+				<l:Grid visible="false" id="oGridOutBoundId" class="sapUiMediumMarginTop" hSpacing="2" vSpacing="2" width="100%">
 					<VBox id="entregaId" visible="true" alignItems="Center" justifyContent="Center" class="fondoTile">
 						<core:Icon class="sapUiSmallMarginTop iconButton" src="sap-icon://activity-2" size="6rem" color="#346187" press="navToEntrega"></core:Icon>
 						<Text text="ENTREGAS" class="sapUiSmallMarginTop sapUiSmallMarginBottom customText fontMedium" textAlign="Center"></Text>
@@ -84,8 +84,14 @@
 					</VBox>
 				</l:Grid>
 			</VBox>
-			<MessagePage id="messagePageErrorUser" visible="false" icon="sap-icon://locked" showHeader="false"
-				description="Tu perfil no cuenta con los permisos para visualizar esta aplicación.." text="¡Aviso!">
+			<MessagePage id="messagePageErrorUser" visible="false" icon="sap-icon://private" showHeader="false"
+				description="Tu perfil no cuenta con los permisos para visualizar esta aplicación" text="¡Aviso!">
+				<buttons>
+					<Button type="Emphasized" text="Salir" press="logOutApp"></Button>
+				</buttons>
+			</MessagePage>
+			<MessagePage id="messagePageNoUser" visible="false" icon="sap-icon://add-employee" showHeader="false"
+				description="" text="¡Aviso!">
 				<buttons>
 					<Button type="Emphasized" text="Salir" press="logOutApp"></Button>
 				</buttons>

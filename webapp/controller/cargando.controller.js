@@ -41,7 +41,7 @@ sap.ui.define([
 
 		llamadaServicio: function (userMail) {
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
-			
+
 			this.consultaRoles(userMail).then(function (respuestaConsultaRoles) {
 				jQuery.sap.delayedCall(1500, this, function () {
 					if (respuestaConsultaRoles) {
@@ -58,6 +58,30 @@ sap.ui.define([
 			return new Promise(
 				function resolver(resolve, reject) {
 					this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
+
+					var jsonDataUser = {
+						APELLIDO: "",
+						CORREO: correo,
+						ES_ADMNISTRADOR: false,
+						ES_BODEGUERO: false,
+						ES_BODEGUERO_OUT: false,
+						ES_JEFE_SUPERVISOR: false,
+						ES_SUPERVISOR: false,
+						FECHA: "",
+						HORA: "",
+						ID_ESTADO_TX: 1,
+						ID_PUBLICO_SCP: "",
+						NOMBRE: "",
+						NOMBRE_COMPLETO: "",
+						USER_SCP_COD: "",
+						ES_USUARIO: false 
+					};
+
+					this._oStorage.put("user_code_IngresoMercaderia", "");
+					this._oStorage.put("correo_IngresoMercaderia", "");
+					this._oStorage.put("user_name_IngresoMercaderia", "");
+					this._oStorage.put("datos_user_IngresoMercaderia", jsonDataUser);
+
 					var json = {
 						CORREO: correo
 					};
@@ -71,11 +95,12 @@ sap.ui.define([
 						success: function (oResult) {
 							var respuesta = oResult;
 							if (respuesta.length === 0) {
-								resolve(false);
+								resolve(true);
 							} else {
 								var data = respuesta[0];
 
 								if (data.USER_SCP_COD !== undefined) {
+									data.ES_USUARIO = true;
 									this._oStorage.put("user_code_IngresoMercaderia", data.USER_SCP_COD);
 									this._oStorage.put("correo_IngresoMercaderia", data.CORREO);
 									this._oStorage.put("user_name_IngresoMercaderia", data.NOMBRE + " " + data.APELLIDO);
