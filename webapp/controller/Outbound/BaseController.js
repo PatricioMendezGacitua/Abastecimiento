@@ -197,16 +197,19 @@ sap.ui.define([
 
 							} else {
 								if (item[i].Type === "I") {
-									this.str += "<li>Para la posición: " + item[i].Rspos + " " + item[i].Message + ". </li>";
-									dataPos[i].Resultado = true;
+									
+									
 									
 									if(dataPos[i].Estado==="EP"){
-										
+										this.str += "<li>Para la posición " + item[i].Rspos + " se ha generado el siguiente mensaje: " + item[i].Message + ". </li>";
 								    	dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
 								    	this.docSAP = dataPos[i].DocSAP;
+								    	dataPos[i].Resultado = true;
 										
 									}else{
-										dataPos[i].DocSAP = " El estado de la posición es en Preparación Bodega y no genera Nro. SAP";
+										this.str += "<li>Para la posición " + item[i].Rspos + " se ha cambiado de estado a En Preparación. </li>";
+										
+										dataPos[i].Resultado = false;
 									}
 									
 
@@ -214,7 +217,7 @@ sap.ui.define([
 									this.str += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message + ". </li>";
 									dataPos[i].Resultado = false;
 									dataPos[i].DocSAP = " - ";
-									this.docSAP = " - ";
+									//this.docSAP = " - ";
 								}
 								i++;
 								functionRecorrer(item, i);
