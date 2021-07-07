@@ -3,7 +3,7 @@
 <!-- Change the App Name, App Version, App Description and Min OS Versions in the 
      build wizard UI rather than manually modifying their values here. -->
 <!-- Do not change the widget "id" value here. -->
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.sap.webide.x4ced6a78ab824be3b334bbe1d1d1201c" version="1.9">
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" id="com.sap.webide.x4ced6a78ab824be3b334bbe1d1d1201c" version="2.0">
     <name>Abastecimiento</name>
     <description/>
     <author href="http://cordova.io">SAP hybrid mobile solution</author>
