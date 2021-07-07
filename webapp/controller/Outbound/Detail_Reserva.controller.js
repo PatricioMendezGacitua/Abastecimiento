@@ -450,7 +450,7 @@ sap.ui.define([
 										if (idList.getItems().length === indexx + 1) {
 
 											this.str += "</ul>";
-											if
+											
 											this.str += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong>";
 
 											MessageBox.information("Gestión Reserva N° " + this.idIngreso, {
