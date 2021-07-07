@@ -1438,14 +1438,12 @@ sap.ui.define([
 							var filename = sUrl.replace(/.*\//g, "");
 
 							var encodeUrl = decodeURI(sUrl);
-							var sValue = encodeUrl.replace("https://gascoglp.sharepoint.com/", "");
-
-							var sValueUrl = "https://gascoglp.sharepoint.com/sites/GDG/_api/web/GetFileByServerRelativeUrl('/";
+							var sValue = encodeUrl;
 							var vAux = sValue.split("/");
 							var sIndex = vAux.length - 1;
 							var sTitle = vAux[sIndex];
 							var mTipo = arr[i].MIMETYPE;
-							var url = sValueUrl + decodeURI(sValue) + "')/openbinarystream";
+							var url = "/SubFijoSharepoint/" + decodeURI(sValue) + "')/openbinarystream";
 							var xhr = new window.XMLHttpRequest();
 							xhr.open("GET", url, true);
 							xhr.setRequestHeader("authorization", "Bearer " + stoken);

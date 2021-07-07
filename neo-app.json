@@ -86,6 +86,14 @@
 			"entryPath": ""
 		},
 		"description": "Sharepoint"
+	}, {
+		"path": "/SubFijoSharepoint",
+		"target": {
+			"type": "destination",
+			"name": "SubFijoSharepoint",
+			"entryPath": ""
+		},
+		"description": "Sharepoint"
 	}],
 	"sendWelcomeFileRedirect": true
 }
