@@ -376,6 +376,7 @@ sap.ui.define([
 		},
 
 		onReservar: function (oEvent) {
+			
 			var listItems = this.getView().byId("idtableLPReserva").getItems();
 			var flagError = true;
 			this.docSAP = " - ";
