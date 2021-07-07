@@ -11,4 +11,7 @@ var mobile_appRoutes = [{
 }, {
 	"path": "/GW_ODP",
 	"destination": "GW_ODP_TOKEN"
+}, {
+	"path": "/Sharepoint",
+	"destination": "Sharepoint"
 }];
