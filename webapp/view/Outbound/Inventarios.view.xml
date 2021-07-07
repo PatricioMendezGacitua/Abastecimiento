@@ -20,14 +20,14 @@
 		<content>
 			<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiSmallMarginTop">
 				<VBox>
-					<Label class="font-smaller" text="Documento Inventario:" required="true" design="Bold" width="100%"></Label>
+					<Label class="font-smaller" text=" Documento Inventario:" required="true" design="Bold" width="100%"></Label>
 					<Input id="oInputDocumentoInventarioTraspaso" type="Tel" width="100%" liveChange="onlyNumber" maxLength="16"></Input>
 					<layoutData>
 						<l:GridData span="XL8 L8 M8 S8"/>
 					</layoutData>
 				</VBox>
 				<VBox>
-					<Label class="font-smaller" text="Ejercicio:" required="true" design="Bold" width="100%"></Label>
+					<Label class="font-smaller" text=" Ejercicio:" required="true" design="Bold" width="100%"></Label>
 					<DatePicker id="oInputPeriodo" width="100%" displayFormat="yyyy" valueFormat="YYYY"></DatePicker>
 					<layoutData>
 						<l:GridData span="XL4 L4 M4 S4"/>
@@ -43,21 +43,21 @@
 			</l:Grid>
 			<l:Grid hSpacing="1" vSpacing="0.5" width="100%" class="sapUiSmallMarginTop">
 				<VBox>
-					<Label class="font-smaller" design="Bold" text="Centro:" textAlign="Begin" width="100%"></Label>
+					<Label class="font-smaller" design="Bold" text=" Centro:" textAlign="Begin" width="100%"></Label>
 					<Input id="oInputCentroId" editable="false" width="100%"></Input>
 					<layoutData>
 						<l:GridData span="XL6 L6 M6 S6"/>
 					</layoutData>
 				</VBox>
 				<VBox>
-					<Label class="font-smaller" design="Bold" text="Almacén:" textAlign="Begin" width="100%"></Label>
+					<Label class="font-smaller" design="Bold" text=" Almacén:" textAlign="Begin" width="100%"></Label>
 					<Input id="oInputAlmacenId" editable="false" width="100%"></Input>
 					<layoutData>
 						<l:GridData span="XL6 L6 M6 S6"/>
 					</layoutData>
 				</VBox>
 				<VBox>
-					<Label class="font-smaller" design="Bold" text="Fecha Recuento:" required="true" textAlign="Begin" width="100%"></Label>
+					<Label class="font-smaller" design="Bold" text=" Fecha Recuento:" required="true" textAlign="Begin" width="100%"></Label>
 					<DatePicker id="oDatePickerFInv" editable="false" width="100%" change="alSeleccionarFechaInv" placeholder="Seleccione..."
 						displayFormat="dd/MM/YYYY"></DatePicker>
 					<layoutData>
@@ -65,7 +65,7 @@
 					</layoutData>
 				</VBox>
 				<VBox>
-					<Label class="font-smaller" text="Usuario Registro Inventario:" required="true" design="Bold" width="100%"></Label>
+					<Label class="font-smaller" text=" Usuario Registro Inventario:" required="true" design="Bold" width="100%"></Label>
 					<Input id="oInputUsuarioReg" width="100%" editable="false" liveChange="onUpperCase2" maxLength="16"></Input>
 					<layoutData>
 						<l:GridData span="XL12 L12 M12 S12"/>

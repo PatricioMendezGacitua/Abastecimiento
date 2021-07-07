@@ -10,6 +10,11 @@ var mobile_appRoutes = [{
 	"originDestination": "GEST_DOCUMENTAL",
 	"entryPath": "/"
 }, {
+	"path": "/GestDocumental",
+	"destination": "GEST_DOCUMENT",
+	"originDestination": "GEST_DOCUMENTAL_CLONING",
+	"entryPath": "/"
+}, {
 	"path": "/GW_ODP",
 	"destination": "GW_ODP_TOKEN"
 }];
