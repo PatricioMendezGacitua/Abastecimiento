@@ -1114,6 +1114,9 @@ sap.ui.define([
 			});
 
 		},
+		
+		
+	
 
 		_dialogActualizaDatos: function (oEvent) {
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
@@ -1151,10 +1154,17 @@ sap.ui.define([
 		openListAlmacenesInbound: function (oEvent) {
 			var obj = oEvent.getSource();
 			var datos = obj.getBindingContext("oModeloDataTemporalDetailReserva").getObject();
-
+			var path = obj.getBindingContext("oModeloDataTemporalDetailReserva").getPath();
+			path = path.slice(1,path.length);
+			this.byId("idtableLPReserva").getItems()[path].getContent()[0].getItems()[0].getContent()[6].getItems()[1].setType("Ghost");
+			
+			
+        
 			var numeroCentro = datos.Werks;
 			this.seleccionAlmacen = obj.getText();
 			this.openListAlmacenesBase(numeroCentro, obj);
+			
+			
 		},
 
 		openListAlmacenesCompleta: function () {
