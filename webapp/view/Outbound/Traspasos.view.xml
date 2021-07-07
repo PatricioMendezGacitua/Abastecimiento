@@ -20,7 +20,7 @@
 		<content>
 			<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiSmallMarginTop">
 				<VBox>
-					<Label class="font-smaller" text="Centro:" textAlign="Begin" required="true" design="Bold" width="100%"></Label>
+					<Label class="font-smaller" text=" Centro:" textAlign="Begin" required="true" design="Bold" width="100%"></Label>
 					<VBox justifyContent="Center">
 						<Input id="oInputCentroCTraspaso" valueHelpOnly="true" valueHelpRequest=".openListCentrosCompleta" width="100%" showValueHelp="true"></Input>
 					</VBox>
@@ -29,7 +29,7 @@
 					</layoutData>
 				</VBox>
 				<VBox>
-					<Label class="font-smaller" text="Almacén:" textAlign="Begin" required="true" design="Bold" width="100%"></Label>
+					<Label class="font-smaller" text=" Almacén:" textAlign="Begin" required="true" design="Bold" width="100%"></Label>
 					<VBox justifyContent="Center">
 						<Input id="oInputAlmacenCTraspaso" editable="false" valueHelpOnly="true" valueHelpRequest=".openListAlmacenesCompleta" width="100%"
 							showValueHelp="true"></Input>
