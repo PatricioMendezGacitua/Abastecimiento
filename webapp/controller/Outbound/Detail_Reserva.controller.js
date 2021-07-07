@@ -490,8 +490,8 @@ sap.ui.define([
 								if (sAction === "Si") {
 									this.openBusyDialogCargando();
 									this.createReservaERP(resplistaCant.datos, "Reserva").then(function (respuestaReservaERP) {
-										debugger
-                                                    if(this.docSAP !== " - "){
+									
+                                                    if(this.docSAP.length !== " - "){
 												       respuestaReservaERP.detail += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong>";
                                                     }
 												
