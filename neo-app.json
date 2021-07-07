@@ -50,14 +50,6 @@
 		},
 		"description": "HANA"
 	}, {
-		"path": "/GestDoc",
-		"target": {
-			"type": "destination",
-			"name": "GEST_DOCUMENTAL",
-			"entryPath": "/"
-		},
-		"description": "SAPUI5 Test Resources"
-	}, {
 		"path": "/GestDocumental",
 		"target": {
 			"type": "destination",

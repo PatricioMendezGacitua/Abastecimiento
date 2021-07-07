@@ -5,13 +5,8 @@ var mobile_appRoutes = [{
 	"path": "/HANA",
 	"destination": "HANA"
 }, {
-	"path": "/GestDoc",
-	"destination": "GEST_DOCUMENTA",
-	"originDestination": "GEST_DOCUMENTAL",
-	"entryPath": "/"
-}, {
 	"path": "/GestDocumental",
-	"destination": "GEST_DOCUMENT",
+	"destination": "GEST_DOCUMENTA",
 	"originDestination": "GEST_DOCUMENTAL_CLONING",
 	"entryPath": "/"
 }, {
