@@ -213,9 +213,10 @@ sap.ui.define([
 				oDatePickerFDRecepcion.setDateValue(this.fechaRevert(data.FECHA_GUIA_DESPACHO));
 				oTextAreaObservacionRecepcion.setValue(data.OBSERVACION);
 
-				var url = encodeURI(data.LINK_GUIA_DESPACHO);
+				var url = encodeURI(data.LINK_GUIA_DESPACHO_MOBILE);
+				var urlOriginal = encodeURI(data.LINK_GUIA_DESPACHO);
 				
-				this.linkGuiaDespacho = url === "" ? null : url;
+				this.linkGuiaDespacho = urlOriginal === "" ? null : urlOriginal;
 				oImageEvidenciaGuiaDespacho.setSrc();
 				oLightBoxItemEvidenciaGuiaDespacho.setImageSrc();
 
