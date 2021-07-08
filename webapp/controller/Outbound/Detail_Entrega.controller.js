@@ -826,7 +826,7 @@ sap.ui.define([
 									resolve: true,
 									detail: str,
 									datosPosicion: dataPos
-
+ 
 								});
 
 							} else {
