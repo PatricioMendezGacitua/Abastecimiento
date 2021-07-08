@@ -591,17 +591,6 @@ sap.ui.define([
 
 					if (sAction === "Si") {
 
-						this.byId("chkEntrega").setSelected(false);
-						this.byId("chkEntrega").setText("Seleccionar Todos");
-						var listItems = this.byId("idtableLPEntrega").getItems();
-
-						listItems.forEach(function (element, index) {
-
-							element.getContent()[0].getItems()[0].getContent()[0].getItems()[0].setSelected(false);
-							element.getContent()[0].getItems()[0].getContent()[0].getItems()[0].setValueState("None");
-
-						}.bind(this));
-
 						this.resetMasterDetail();
 
 					}
@@ -1072,7 +1061,10 @@ sap.ui.define([
 									onClose: function (sAction) {
 
 										this.BusyDialogCargando.close();
-										this.resetMasterDetail();
+										if(this.docSAP !== " - "){
+											this.resetMasterDetail();
+										}
+										
 									}.bind(this)
 								});
 
@@ -1414,6 +1406,18 @@ sap.ui.define([
 					styleClass: "",
 					onClose: function (sAction) {
 						if (sAction === "Si") {
+
+							this.byId("chkEntrega").setSelected(false);
+							this.byId("chkEntrega").setText("Seleccionar Todos");
+							var listItems = this.byId("idtableLPEntrega").getItems();
+
+							listItems.forEach(function (element, index) {
+
+								element.getContent()[0].getItems()[0].getContent()[0].getItems()[0].setSelected(false);
+								element.getContent()[0].getItems()[0].getContent()[0].getItems()[0].setValueState("None");
+
+							}.bind(this));
+
 							this.resetMasterDetail();
 						}
 					}.bind(this)

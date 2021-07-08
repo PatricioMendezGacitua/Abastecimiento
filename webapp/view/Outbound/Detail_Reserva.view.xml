@@ -141,7 +141,7 @@
 				</contentMiddle>
 				<contentRight>
 					<Button id="oButtonRecepcionarId" type="Emphasized" text="Reservar" press="onReservar"></Button>
-					<Button type="Reject" text="Cancelar" press="btnReestablecerReserva"/>
+				<!--	<Button type="Reject" text="Cancelar" press="btnReestablecerReserva"/>-->
 				</contentRight>
 			</Bar>
 		</footer>

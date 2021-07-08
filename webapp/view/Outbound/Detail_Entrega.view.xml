@@ -189,7 +189,7 @@
 				</contentMiddle>
 				<contentRight>
 					<Button id="oButtonRecepcionarId" type="Emphasized" text="Entregar" press="onEntregar"></Button>
-					<Button type="Reject" text="Cancelar" press="btnReestablecerEntrega"/>
+				<!--	<Button type="Reject" text="Cancelar" press="btnReestablecerEntrega"/>-->
 				</contentRight>
 			</Bar>
 		</footer>
