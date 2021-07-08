@@ -7,7 +7,7 @@
  */
 var fiori_client_appConfig = {
 	"appName": "Abastecimiento",
-	"appVersion": "2.4",
+	"appVersion": "2.5",
 	"appID": "com.sap.webide.x4ced6a78ab824be3b334bbe1d1d1201c",
 	"fioriURL": "https://mobile-pnci3ek7c9.us3.hana.ondemand.com:443",
 	"auth": [

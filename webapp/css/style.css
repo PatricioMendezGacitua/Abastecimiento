@@ -1,3 +1,7 @@
+.sapMOHRStatus .sapMObjStatusWarning .sapMObjStatusText {
+    color: white;
+}
+
 .borderMaterial{
 	border: 1px solid #89919a;
     border-radius: 5px;
