@@ -1059,6 +1059,9 @@ sap.ui.define([
 		byId: function (id) {
 			return this.getView().byId(id);
 		},
+		CbyId: function (id) {
+			return sap.ui.getCore().byId(id);
+		},
 
 		getObjetId: function (sName) {
 			return this.getView().byId(sName);

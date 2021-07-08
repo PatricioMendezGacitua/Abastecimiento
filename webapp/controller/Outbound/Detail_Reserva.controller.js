@@ -18,7 +18,7 @@ sap.ui.define([
 			var oArgs = oEvent.getParameter("arguments");
 			this.idIngreso = oArgs.idReserva;
 			this.idEstadoIngreso = oArgs.ingreso;
-
+            this.getView().byId("oPageDetailId").scrollTo(0, 0);
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 			if (this._oStorage.get("navegacion_IngresoMercaderia") === "si") {
 				this._oStorage.put("navegacion_IngresoMercaderia", "no");
@@ -481,7 +481,7 @@ sap.ui.define([
 
 					this.listaPosiciones(listItems).then(function (resplistaCant) {
 						console.log(resplistaCant);
-						MessageBox.information('¿Seguro deseas reservar?', {
+						MessageBox.information("¿Seguro deseas gestionar la reserva N° " + this.idIngreso + "?", {
 							title: "Aviso",
 							details: resplistaCant.detail,
 							actions: ["Si", "No"],

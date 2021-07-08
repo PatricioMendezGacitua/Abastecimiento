@@ -79,7 +79,7 @@
 								<VBox>
 									<Label class="font-xSmaller" text="Almacén:" textAlign="Center" width="100%"></Label>
 									<!--<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailReserva>Lgort}" textAlign="Center" wrapping="true"></Text>-->
-									<Button class="fontBold" width="100%" iconFirst="true" type="Ghost" icon="sap-icon://edit" 
+									<Button class="fontBold" width="100%" iconFirst="true" type="Ghost" icon="sap-icon://edit"
 										text="{path: 'oModeloDataTemporalDetailReserva>Lgort', formatter: '.formatterTextoAlmacen'}" press="openListAlmacenesInbound"></Button>
 									<layoutData>
 										<l:GridData span="XL5 L5 M4 S4"/>
@@ -87,7 +87,7 @@
 								</VBox>
 								<VBox>
 									<Label class="font-xSmaller" text="Cant. Solicitada:" textAlign="Center" width="100%"></Label>
-									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailReserva>CantSolicitada}"  textAlign="Center" wrapping="true"></Text>
+									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailReserva>CantSolicitada}" textAlign="Center" wrapping="true"></Text>
 									<layoutData>
 										<l:GridData span="XL5 L5 M4 S4"/>
 									</layoutData>
@@ -115,6 +115,7 @@
 									</layoutData>
 								</VBox>
 								<VBox height="70px" justifyContent="Center" alignItems="Center">
+									
 									<CheckBox width="100%" select="onSelectChange" selected="{oModeloDataTemporalDetailReserva>ckSelected}"></CheckBox>
 									<layoutData>
 										<l:GridData span="XL2 L2 M2 S2"/>

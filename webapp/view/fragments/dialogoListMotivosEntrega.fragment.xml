@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<SelectDialog noDataText="Sin resultados" multiSelect="false" title="Lista de Almacenes (0)" liveChange="onSearchMotivos"
+		confirm="onValueHelpDialogCloseMotivo" cancel="onValueHelpDialogCloseMotivo" showClearButton="false"
+		items="{ path: 'modelMotivos>/' }">
+		<StandardListItem title="{modelMotivos>Grund}" description="{modelMotivos>Bwart} - {modelMotivos>Grtxt}" type="Active"/>
+	</SelectDialog>
+</core:FragmentDefinition>
