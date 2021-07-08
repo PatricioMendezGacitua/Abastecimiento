@@ -1443,7 +1443,8 @@ sap.ui.define([
 							var sIndex = vAux.length - 1;
 							var sTitle = vAux[sIndex];
 							var mTipo = arr[i].MIMETYPE;
-							var url = "/SubFijoSharepoint/" + decodeURI(sValue) + "')/openbinarystream";
+							
+							var url = "/Sharepoint/sites/GDG/_api/web/GetFileByServerRelativeUrl('/" + decodeURI(sValue) + "')/openbinarystream";
 							var xhr = new window.XMLHttpRequest();
 							xhr.open("GET", url, true);
 							xhr.setRequestHeader("authorization", "Bearer " + stoken);
