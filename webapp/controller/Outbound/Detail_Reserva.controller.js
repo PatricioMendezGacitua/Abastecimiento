@@ -18,7 +18,7 @@ sap.ui.define([
 			var oArgs = oEvent.getParameter("arguments");
 			this.idIngreso = oArgs.idReserva;
 			this.idEstadoIngreso = oArgs.ingreso;
-
+            this.getView().byId("oPageDetailId").scrollTo(0, 0);
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 			if (this._oStorage.get("navegacion_IngresoMercaderia") === "si") {
 				this._oStorage.put("navegacion_IngresoMercaderia", "no");

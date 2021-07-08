@@ -1,4 +1,4 @@
-<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout"
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:u="sap.ui.unified"
 	controllerName="com.gasco.Abastecimiento.controller.Outbound.Detail_Entrega" xmlns:html="http://www.w3.org/1999/xhtml">
 	<Page id="oPageDetailId" showHeader="true" showFooter="true">
 		<customHeader>
@@ -17,8 +17,8 @@
 		</customHeader>
 		<content>
 			<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
-				<VBox alignContent="Center" alignItems="Center">
-					<ObjectStatus text="Entregando" state="Success" inverted="true" textAlign="Center"></ObjectStatus>
+				<VBox alignContent="Start" alignItems="Start">
+					<CheckBox id="chkEntrega" width="100%" select="onSelectChangeAll" selected="false" text="Seleccionar Todos"></CheckBox>
 					<layoutData>
 						<l:GridData span="XL4 L4 M12 S12"/>
 					</layoutData>
@@ -34,18 +34,24 @@
 					<CustomListItem type="Inactive">
 						<VBox class="sapUiTinyMargin">
 							<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
+								<VBox alignContent="Start" alignItems="Start">
+									<CheckBox width="100%" select="onSelectChangeItem" selected="false"></CheckBox>
+									<layoutData>
+										<l:GridData span="XL4 L4 M2 S2"/>
+									</layoutData>
+								</VBox>
 								<VBox>
 									<Label class="font-xSmaller" text="Material:" textAlign="Center" width="100%"></Label>
 									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>Matnr}" textAlign="Center" wrapping="true"></Text>
 									<layoutData>
-										<l:GridData span="XL4 L4 M8 S8"/>
+										<l:GridData span="XL4 L4 M7 S7"/>
 									</layoutData>
 								</VBox>
 								<VBox>
 									<Label class="font-xSmaller" text="Posición:" width="100%" textAlign="Begin"></Label>
 									<Text class="fontBold" width="100%" text="{oModeloDataTemporalDetailEntrega>Rspos}" textAlign="Begin" wrapping="true"></Text>
 									<layoutData>
-										<l:GridData span="XL4 L4 M4 S4"/>
+										<l:GridData span="XL4 L4 M3 S3"/>
 									</layoutData>
 								</VBox>
 								<VBox>
@@ -123,6 +129,52 @@
 					</CustomListItem>
 				</items>
 			</List>
+			<VBox >
+				<Text></Text>
+				<Text class="fontBold" width="100%" text="EVIDENCIAS" wrapping="true" textAlign="Center"></Text>
+				<layoutData>
+					<l:GridData span="XL4 L4 M12 S12"/>
+				</layoutData>
+			</VBox>
+			<VBox >
+				<Text></Text>
+			</VBox>
+			<VBox >
+				<u:FileUploader id="fileUploader" change="onSavefileUploadColection" multiple="true" buttonOnly="true" icon="sap-icon://attachment"
+					iconFirst="true" buttonText="Cargar Documentos" width="100%"/>
+				<UploadCollection id="UploadCollection" visible="false" multiple="true" showSeparators="{settings>/showSeparators}" uploadEnabled="false"
+					fileDeleted="onDeleteFile" mode="Delete" items="{oModelListaAdjuntos>/}">
+					<items>
+						<UploadCollectionItem fileName="{oModelListaAdjuntos>TITULO}" visibleDelete="true" visibleEdit="false" press="onPressItems">
+							<attributes>
+								<ObjectAttribute title="Asigna" text="Doc. Base" active="true" visible="{oModelListaAdjuntos>VISIBLE}" press="onAttributePress"/>
+							</attributes>
+							<statuses>
+								<ObjectStatus title="Archivo Cargado" text="{oModelListaAdjuntos>DOCCARGADO}" state="Success" visible="{oModelListaAdjuntos>VISIBLE}"/>
+							</statuses>
+						</UploadCollectionItem>
+					</items>
+				</UploadCollection>
+				<layoutData>
+					<l:GridData span="XL4 L4 M12 S12"/>
+				</layoutData>
+			</VBox>
+			<VBox>
+				<Button  text="Añadir Evidencia" type="Default" width="100%" icon="sap-icon://add-photo"		press="capturePhoto"></Button>
+				<layoutData>
+					<l:GridData span="XL4 L4 M12 S12"/>
+				</layoutData>
+			</VBox>
+			<VBox>
+				<MessageStrip id="mensajeFoto" text="Para eliminar una imagen solo debes presionarla" type="Information" showIcon="true" class="sapUiMediumMarginBottom"></MessageStrip>
+				<Carousel id="myImage" showPageIndicator="true" pages="{oModelImage>/}">
+					<Image src="{oModelImage>URL}" press="deleteImage"></Image>
+				</Carousel>
+				<layoutData>
+					<l:GridData span="XL4 L4 M12 S12"/>
+				</layoutData>
+				
+			</VBox>
 			<!--<Carousel id= class="sapUiContentPadding" loop="true" visible="false">
 				<Image src="{img>/products/pic1}" alt="Example picture of speakers"/>
 				<Image src="{img>/products/pic2}" alt="Example picture of USB flash drive"/>
@@ -133,9 +185,8 @@
 		<footer>
 			<Bar id="oFooterPageId" visible="true">
 				<contentLeft>
-					<Button id="idImagenesEvidencia" tooltip="Añadir Evidencia" type="Transparent" icon="sap-icon://add-photo" iconFirst="true"
-						press="capturePhoto"></Button>
-					<Button id="idImagenesEvidenciaDoc" tooltip="Añadir Evidencia" type="Transparent" icon="sap-icon://attachment"></Button>
+					<Button  tooltip="Subir" type="Transparent" icon="sap-icon://arrow-top" press="upPage"></Button>
+					<Button  tooltip="Bajar"   type="Transparent" icon="sap-icon://arrow-bottom" press="downPage"></Button>
 				</contentLeft>
 				<contentMiddle>
 					<ObjectStatus visible="false" id="oObjectStatusId"></ObjectStatus>

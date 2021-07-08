@@ -18,32 +18,11 @@ sap.ui.define([
 			var oArgs = oEvent.getParameter("arguments");
 			this.idIngreso = oArgs.idReserva;
 			this.idEstadoIngreso = oArgs.ingreso;
+			this.flagSelectAll = false;
 			this.getView().byId("tituloDetalleSolicitudView").setText("Detalle Reserva N°" + this.idIngreso);
-			/*var arr = [{
-				"codMaterial":101529,
-				"unidad":"C/U",
-				"centro":7110,
-				"almacen":1100,
-				"posicion": 10,
-				"Lote":"",
-				"ubicacion": 1109,
-				"cantidad":3,
-				"URL":"",
-				"DOCUMENTO":""
-				
-			},
-			{
-				"codMaterial":101539,
-				"unidad":"C/U",
-				"centro":7110,
-				"almacen":1100,
-				"posicion": 20,
-				"Lote":"45",
-				"ubicacion": 1109,
-				"cantidad":3
-				
-			}
-			];*/
+			this.getView().byId("oPageDetailId").scrollTo(0, 0);
+			this.getView().setModel(new JSONModel([]),"oModelImage");
+			this.byId("mensajeFoto").setVisible(false);
 
 			this.getView().setModel(model, "oModeloDataTemporalDetailEntrega");
 
@@ -67,7 +46,33 @@ sap.ui.define([
 			}
 
 		},
+		upPage: function (oEvent) {
+			this.getView().byId("oPageDetailId").scrollTo(0, 0);
+		},
+		downPage: function (oEvent) {
+			var h = $(window).height();
+			this.getView().byId("oPageDetailId").scrollTo(h, 0);
+			
+		},
 
+		onSelectChangeAll: function (oEvent) {
+			var id = this.byId("chkEntrega");
+
+			(!this.flagSelectAll) ? id.setText("Deseleccionar Todos"): id.setText("Seleccionar Todos");
+
+			var obj = this.byId("idtableLPEntrega").getItems();
+			obj.forEach(function (element, index) {
+				element.getContent()[0].getItems()[0].getContent()[0].getItems()[0].setSelected(!this.flagSelectAll);
+
+			}.bind(this));
+			this.flagSelectAll = !this.flagSelectAll;
+		},
+		onSelectChangeItem: function (oEvent) {
+			var path = oEvent.getSource().getBindingContext("oModeloDataTemporalDetailEntrega").getPath();
+			path = path.slice(1, path.length);
+
+			this.byId("idtableLPEntrega").getItems()[path].getContent()[0].getItems()[0].getContent()[0].getItems()[0].setValueState("None");
+		},
 		countTitleLPEntrega: function (oEvent) {
 
 			//Actualiza el numero de registros
@@ -310,9 +315,7 @@ sap.ui.define([
 			});
 		},
 		capturePhoto: function (oEvent) {
-			debugger
-			this.path = oEvent.getSource().getBindingContext("oModeloDataTemporalDetailEntrega").getPath();
-			this.path = this.path.slice(1, this.path.length);
+		
 			var oNav = navigator.camera;
 			oNav.getPicture(this.onPhotoDataSuccess.bind(this), this.onFail, {
 				quality: 25,
@@ -324,17 +327,43 @@ sap.ui.define([
 		onPhotoDataSuccess: function (imageData) {
 
 			var imagen = "data:image/png;base64," + imageData;
-			var carousel = this.getView().byId("myImageEntregaProyecto");
-			var oModelImages = this.getView().getModel("oModeloDataTemporalDetailEntrega");
+			//var carousel = this.getView().byId("oModelImage");
+			var oModelImages = this.getView().getModel("oModelImage");
 			var json = {
 				URL: imagen,
 				VISIBLE: true
 			};
-			oModelImages.getData()[this.path].URL = "imagen_" + this.corre + ".jpg"
-			oModelImages.refresh();
-			this.corre++;
+			this.byId("mensajeFoto").setVisible(true);
+			var cant = oModelImages.getData().length;
+			
+			if(cant <=2){
+				oModelImages.getData().unshift(json);
+				oModelImages.refresh();
+			}else{
+					MessageToast.show("Solo puedes cargar máximo 3 fotos", {
+						duration: 6000
+					});
+			}
+			
+			
+			
+			
+			/*var imagen = "data:image/png;base64," + imageData;
+			var imagen2 = new sap.m.Image();
+			
+			imagen2.setSrc(imagen);
+			this.getView().byId("myImage").insertPage(imagen2, 0);
+			this.getView().byId("myImage").setActivePage(imagen2);
+			*/
+			
+			
 
 		},
+		deleteImage:function(oEvent){
+			debugger
+			
+		},
+		onFail: function(){},
 
 		onEntregar: function (oEvent) {
 
