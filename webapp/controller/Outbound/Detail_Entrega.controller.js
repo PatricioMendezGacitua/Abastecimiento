@@ -735,10 +735,9 @@ sap.ui.define([
 		cargaImagenesBiblioteca: function (datos, reserva, nro_material) {
 			return new Promise(
 				function resolver(resolve, reject) {
-						
-							
+
 					var functionRecorrer = function recorrer(item, i) {
-					
+
 						if (i === item.length) {
 							resolve(true);
 						} else {
@@ -753,18 +752,13 @@ sap.ui.define([
 									record.NUMERO_MATERIAL = nro_material;
 									record.DOCUMENTO_SALIDA = this.docSAP;
 									record.NUMERO_RESERVA = reserva;
-									
-									if(item[i].TIPO === "Imagen"){
+
+									if (item[i].TIPO === "Imagen") {
 										record.NOMBRE_ARCHIVO = this.nameFileAbastecimiento(reserva);
-									}else{
+									} else {
 										record.NOMBRE_ARCHIVO = item[i].TITULO;
 									}
-									
-									
-									
-									
-									
-									
+
 									/*var jsonData = [];
 									jsonData.push(record);*/
 
@@ -806,14 +800,15 @@ sap.ui.define([
 
 		cargaDetalleEntrega: function (datos, reserva, dataPos) {
 			var str = "<ul>";
-       var cargaB = false
+			var cargaB = false
 			return new Promise(
 				function resolver(resolve, reject) {
 
 					if (datos.length === 0) {
 						resolve({
 							resolve: true,
-							detail: str
+							detail: str,
+							cargaB: cargaB
 
 						});
 					} else {
@@ -825,8 +820,9 @@ sap.ui.define([
 								resolve({
 									resolve: true,
 									detail: str,
-									datosPosicion: dataPos
- 
+									datosPosicion: dataPos,
+									cargaB: cargaB
+
 								});
 
 							} else {
@@ -844,7 +840,6 @@ sap.ui.define([
 									dataPos[i].DocSAP = " - ";
 									this.docSAP = " - ";
 									str += "<li>La entrega ha arrojado el siguiente error: " + item[i].Message + ". </li>";
-									
 
 								}
 								i++;
@@ -878,27 +873,38 @@ sap.ui.define([
 
 									this.cargaHana(respuestaCargaDetalle.datosPosicion, tipo).then(function (
 										respuestacargaHana) {
+										if (respuestaCargaDetalle.cargaB) {
+											var valor = 0;
+											var arrImage = this.getView().getModel("oModelImage").getData();
+											var arrDoc = this.getView().getModel("oModelListaAdjuntos").getData();
+											valor = Number(arrImage.length) + Number(arrDoc.length);
+											//colocar condicion si resultado exitoso
+											if (valor > 0) {
+												var model = new JSONModel([]);
+												this.getView().setModel(model, "oModelEvidencia");
+												var oModelEvidencias = this.getView().getModel("oModelEvidencia").getData();
+												arrImage.forEach(function (elementt, indexx) {
+													oModelEvidencias.push(elementt);
+												}.bind(this));
+												arrDoc.forEach(function (elementt, indexx) {
+													oModelEvidencias.push(elementt);
+												}.bind(this));
 
-										var valor = 0;
-										var arrImage = this.getView().getModel("oModelImage").getData();
-										var arrDoc = this.getView().getModel("oModelListaAdjuntos").getData();
-										valor = Number(arrImage.length) + Number(arrDoc.length);
-										//colocar condicion si resultado exitoso
-										if (valor > 0) {
-											var model = new JSONModel([]);
-											this.getView().setModel(model, "oModelEvidencia");
-											var oModelEvidencias = this.getView().getModel("oModelEvidencia").getData();
-											arrImage.forEach(function (elementt, indexx) {
-												oModelEvidencias.push(elementt);
-											}.bind(this));
-											arrDoc.forEach(function (elementt, indexx) {
-												oModelEvidencias.push(elementt);
-											}.bind(this));
+												var reserva = dataPos[0].Rsnum;
+												var nro_material = dataPos[0].Matnr;
 
-											var reserva = dataPos[0].Rsnum;
-											var nro_material = dataPos[0].Matnr;
+												this.cargaImagenesBiblioteca(oModelEvidencias, reserva, nro_material).then(function (respCargaHana) {
+													respuestaCargaDetalle.detail += "</ul>";
+													resolve({
 
-											this.cargaImagenesBiblioteca(oModelEvidencias, reserva, nro_material).then(function (respCargaHana) {
+														resolve: true,
+														detail: respuestaCargaDetalle.detail,
+														error: ""
+													});
+
+												}.bind(this));
+
+											} else {
 												respuestaCargaDetalle.detail += "</ul>";
 												resolve({
 
@@ -906,8 +912,7 @@ sap.ui.define([
 													detail: respuestaCargaDetalle.detail,
 													error: ""
 												});
-
-											}.bind(this));
+											}
 
 										} else {
 											respuestaCargaDetalle.detail += "</ul>";
@@ -917,6 +922,7 @@ sap.ui.define([
 												detail: respuestaCargaDetalle.detail,
 												error: ""
 											});
+
 										}
 									}.bind(this));
 
