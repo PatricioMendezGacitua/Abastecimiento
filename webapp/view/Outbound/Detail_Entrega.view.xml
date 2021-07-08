@@ -164,7 +164,7 @@
 				<MessageStrip id="mensajeFoto" text="Para eliminar una imagen solo debes presionarla" type="Information" showIcon="true" class="sapUiMediumMarginBottom"></MessageStrip>
 				<Carousel id="myImage" showPageIndicator="true" pages="{oModelImage>/}">
 					
-					<Image src="{oModelImage>URL}" press="deleteImage"></Image>
+					<Image src="{oModelImage>BASE64}" press="deleteImage"></Image>
 				</Carousel>
 				<layoutData>
 					<l:GridData span="XL4 L4 M12 S12"/>
