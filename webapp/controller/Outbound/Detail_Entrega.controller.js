@@ -2,8 +2,9 @@ sap.ui.define([
 	"com/gasco/Abastecimiento/controller/Outbound/BaseController",
 	"sap/ui/model/json/JSONModel",
 	"sap/m/MessageToast",
-	"sap/m/MessageBox"
-], function (Controller, JSONModel, MessageToast, MessageBox) {
+	"sap/m/MessageBox",
+	"com/gasco/Abastecimiento/model/apiBibliotecaDigital_Outbound"
+], function (Controller, JSONModel, MessageToast, MessageBox, apiBibliotecaDigital) {
 	"use strict";
 
 	return Controller.extend("com.gasco.Abastecimiento.controller.Outbound.Detail_Entrega", {
@@ -31,6 +32,7 @@ sap.ui.define([
 			this.docSAP = " - ";
 
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
+			this.userSCPName = this._oStorage.get("user_name_IngresoMercaderia");
 			if (this._oStorage.get("navegacion_IngresoMercaderia") === "si") {
 				this._oStorage.put("navegacion_IngresoMercaderia", "no");
 
@@ -54,8 +56,9 @@ sap.ui.define([
 			this.getView().byId("oPageDetailId").scrollTo(0, 0);
 		},
 		downPage: function (oEvent) {
+
 			var h = $(window).height();
-			this.getView().byId("oPageDetailId").scrollTo(h, 0);
+			this.getView().byId("oPageDetailId").scrollTo(h * 1000, 0);
 
 		},
 
@@ -311,7 +314,8 @@ sap.ui.define([
 								ID_DOC_OBL: null,
 								SIZE: parseFloat(items[i].SIZE),
 								TYPE: items[i].TYPE,
-								BASE64: respuestaGetBase64Upload
+								BASE64: respuestaGetBase64Upload,
+								TIPO: "Documento"
 							};
 
 							this.sArrayArchivos.push(json);
@@ -584,22 +588,21 @@ sap.ui.define([
 				actions: ["Si", "No"],
 				styleClass: "",
 				onClose: function (sAction) {
+
 					if (sAction === "Si") {
-						//this._oStorage.put("logeoIngresoMerecaderia", "Si");
-						//if (!this.validar(this.InputsViewCabeceraTraslado, "", "vista")) {
-						this._route.navTo("Entrega_master_Dos", {
-							estadoReserva: "Cancelar",
-							idreserva: this.idIngreso
 
-						});
+						this.byId("chkEntrega").setSelected(false);
+						this.byId("chkEntrega").setText("Seleccionar Todos");
+						var listItems = this.byId("idtableLPEntrega").getItems();
 
-						/*} else {
-							MessageToast.show("Complete los datos obligatorios.");
-							jQuery.sap.delayedCall(3000, this, function () {
-								this.cerrar(this.InputsViewCabeceraTraslado, "", "vista");
-								this.quitarState(this.InputsViewCabeceraTraslado, "", "vista");
-							}.bind(this));
-						}*/
+						listItems.forEach(function (element, index) {
+
+							element.getContent()[0].getItems()[0].getContent()[0].getItems()[0].setSelected(false);
+							element.getContent()[0].getItems()[0].getContent()[0].getItems()[0].setValueState("None");
+
+						}.bind(this));
+
+						this.resetMasterDetail();
 
 					}
 				}.bind(this)
@@ -622,9 +625,9 @@ sap.ui.define([
 			//var carousel = this.getView().byId("oModelImage");
 			var oModelImages = this.getView().getModel("oModelImage");
 			var json = {
-				URL: imagen,
+				BASE64: imagen,
 				VISIBLE: true,
-				TITULO: this.corre
+				TIPO: "Imagen"
 			};
 			this.byId("mensajeFoto").setVisible(true);
 			var cant = oModelImages.getData().length;
@@ -719,15 +722,95 @@ sap.ui.define([
 			this.addMotivoReserva.destroy();
 		},
 
-		cargaDetalle: function (datos, reserva, dataPos) {
+		nameFileAbastecimiento: function (reserva) {
+
+			var fecha = new Date();
+			fecha = fecha.toString().replace(/\ /g, "_").replace(/\:/g, "-");
+			fecha = fecha.split("GMT")[0];
+			var name = "imagen_reserva_" + reserva + "_" + fecha;
+
+			return name;
+		},
+
+		cargaImagenesBiblioteca: function (datos, reserva, nro_material) {
+			return new Promise(
+				function resolver(resolve, reject) {
+						
+							
+					var functionRecorrer = function recorrer(item, i) {
+					
+						if (i === item.length) {
+							resolve(true);
+						} else {
+
+							if (item[i].BASE64 !== undefined) {
+								if (item[i].BASE64.length > 0) {
+
+									var record = {};
+									record.NOMBRE_USUARIO = this.userSCPName;
+									record.BASE64 = item[i].BASE64;
+									record.PERIODO = new Date().getFullYear().toString();
+									record.NUMERO_MATERIAL = nro_material;
+									record.DOCUMENTO_SALIDA = this.docSAP;
+									record.NUMERO_RESERVA = reserva;
+									
+									if(item[i].TIPO === "Imagen"){
+										record.NOMBRE_ARCHIVO = this.nameFileAbastecimiento(reserva);
+									}else{
+										record.NOMBRE_ARCHIVO = item[i].TITULO;
+									}
+									
+									
+									
+									
+									
+									
+									/*var jsonData = [];
+									jsonData.push(record);*/
+
+									apiBibliotecaDigital.consultaIds(record).then(function (retorno) {
+										var idApp = retorno[0];
+										var idPro = retorno[1];
+										var metadataManual = retorno[2];
+
+										if (idApp !== null && idPro !== null) {
+
+											apiBibliotecaDigital.cargarArchivo(idApp, idPro, record, metadataManual).then(function (res) {
+												i++;
+												functionRecorrer(item, i);
+
+											}.bind(this));
+										} else {
+											i++;
+											functionRecorrer(item, i);
+										}
+									}.bind(this));
+
+								} else {
+									i++;
+									functionRecorrer(item, i);
+								}
+							} else {
+								i++;
+								functionRecorrer(item, i);
+							}
+							i++;
+							functionRecorrer(item, i);
+						}
+
+					}.bind(this);
+					//eliminar reserva posicion 00000
+					functionRecorrer(datos, 0);
+				}.bind(this));
+		},
+
+		cargaDetalleEntrega: function (datos, reserva, dataPos) {
 			var str = "<ul>";
-			var cont = 0;
-			var contPB = 0;
+       var cargaB = false
 			return new Promise(
 				function resolver(resolve, reject) {
 
 					if (datos.length === 0) {
-						str += "<li>Para la posición: " + dataPos.Rspos + " ha ocurrido el siguiente error: " + dataPos.Message + ". </li>";
 						resolve({
 							resolve: true,
 							detail: str
@@ -738,7 +821,7 @@ sap.ui.define([
 						var functionRecorrer = function recorrer(item, i) {
 
 							if (i === item.length) {
-
+								str += "</ul>";
 								resolve({
 									resolve: true,
 									detail: str,
@@ -749,24 +832,20 @@ sap.ui.define([
 							} else {
 								if (item[i].Type === "I") {
 
-									if (dataPos[i].Estado === "EP") {
-										str += "<li>Para la posición " + item[i].Rspos + " se ha generado la reserva con exito con el siguiente mensaje: " + item[
-											i].Message + ". </li>";
-										dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
-										this.docSAP = dataPos[i].DocSAP;
-										dataPos[i].Resultado = true;
-
-									} else {
-										str += "<li>Para la posición " + item[i].Rspos + " se ha cambiado de estado a En Preparación. </li>";
-										dataPos[i].DocSAP = " - ";
-										dataPos[i].Resultado = false;
-									}
+									dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
+									this.docSAP = dataPos[i].DocSAP;
+									dataPos[i].Resultado = true;
+									cargaB = true;
+									str += "<li>La entrega se ha gestionado  satisfactoriamente con el siguiente mensaje: " +
+										item[i].Message + ". </li>";
 
 								} else {
-									this.str += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message + ". </li>";
 									dataPos[i].Resultado = false;
 									dataPos[i].DocSAP = " - ";
 									this.docSAP = " - ";
+									str += "<li>La entrega ha arrojado el siguiente error: " + item[i].Message + ". </li>";
+									
+
 								}
 								i++;
 								functionRecorrer(item, i);
@@ -784,29 +863,61 @@ sap.ui.define([
 				function resolver(resolve, reject) {
 					console.log(datos);
 
-					var reserva = datos.NavGestReservaPos[0].Rsnum;
-					var posicion = datos.NavGestReservaPos[0].Rspos;
+					var reserva = datos.NavEntrReservaPos[0].Rsnum;
+					var posicion = datos.NavEntrReservaPos[0].Rspos;
 
-					this.getView().getModel("oModelSAPERP").create('/GestReservaSet ', datos, {
+					this.getView().getModel("oModelSAPERP").create('/EntrReservaSet ', datos, {
 						success: function (oResult) {
 							console.log(oResult);
-							var data = oResult.NavGestReservaDoc.results;
-							var dataPos = oResult.NavGestReservaPos.results;
+							var data = oResult.NavEntrReservaDoc.results;
+							var dataPos = oResult.NavEntrReservaPos.results;
 
 							if (data.length > 0) {
 
-								this.cargaDetalle(data, reserva, dataPos).then(function (respuestaCargaDetalle) {
+								this.cargaDetalleEntrega(data, reserva, dataPos).then(function (respuestaCargaDetalle) {
 
 									this.cargaHana(respuestaCargaDetalle.datosPosicion, tipo).then(function (
 										respuestacargaHana) {
-										respuestaCargaDetalle.detail += "</ul>";
-										resolve({
 
-											resolve: true,
-											detail: respuestaCargaDetalle.detail,
-											error: ""
-										});
+										var valor = 0;
+										var arrImage = this.getView().getModel("oModelImage").getData();
+										var arrDoc = this.getView().getModel("oModelListaAdjuntos").getData();
+										valor = Number(arrImage.length) + Number(arrDoc.length);
+										//colocar condicion si resultado exitoso
+										if (valor > 0) {
+											var model = new JSONModel([]);
+											this.getView().setModel(model, "oModelEvidencia");
+											var oModelEvidencias = this.getView().getModel("oModelEvidencia").getData();
+											arrImage.forEach(function (elementt, indexx) {
+												oModelEvidencias.push(elementt);
+											}.bind(this));
+											arrDoc.forEach(function (elementt, indexx) {
+												oModelEvidencias.push(elementt);
+											}.bind(this));
 
+											var reserva = dataPos[0].Rsnum;
+											var nro_material = dataPos[0].Matnr;
+
+											this.cargaImagenesBiblioteca(oModelEvidencias, reserva, nro_material).then(function (respCargaHana) {
+												respuestaCargaDetalle.detail += "</ul>";
+												resolve({
+
+													resolve: true,
+													detail: respuestaCargaDetalle.detail,
+													error: ""
+												});
+
+											}.bind(this));
+
+										} else {
+											respuestaCargaDetalle.detail += "</ul>";
+											resolve({
+
+												resolve: true,
+												detail: respuestaCargaDetalle.detail,
+												error: ""
+											});
+										}
 									}.bind(this));
 
 								}.bind(this));
@@ -823,7 +934,7 @@ sap.ui.define([
 								record.Rspos = posicion;
 								record.Message = mensaje;
 
-								this.cargaDetalle(dataError, reserva, record).then(function (respuestaCargaDetalle) {
+								this.cargaDetalleEntrega(dataError, reserva, record).then(function (respuestaCargaDetalle) {
 									respuestaCargaDetalle.detail += "</ul>";
 									this.docSAP = " - ";
 									resolve({
@@ -854,8 +965,6 @@ sap.ui.define([
 				}.bind(this));
 		},
 
-	
-
 		listaPosiciones: function (datos) {
 			var generaReserva = {};
 			generaReserva.NavEntrReservaPos = [];
@@ -879,15 +988,15 @@ sap.ui.define([
 							});
 
 						} else {
-							var seleccionado = item[i].getContent()[0].getItems()[0].getContent()[11].getItems()[0].getSelected();
+							var seleccionado = item[i].getContent()[0].getItems()[0].getContent()[0].getItems()[0].getSelected();
 
 							if (seleccionado) {
 								var elementt = item[i];
 								generaReserva.Ikey = "1";
 								var recordNavPos = {};
 								recordNavPos.Ikey = "1";
-								var obj = elementt.getBindingContext("oModeloDataTemporalDetailEntrega").getObject();                         
-
+								var obj = elementt.getBindingContext("oModeloDataTemporalDetailEntrega").getObject();
+								recordNavPos.Rsnum = this.idIngreso;
 								recordNavPos.Rspos = obj.Rspos; //Edm.String" MaxLength="4" "Posición"/>
 								recordNavPos.TipoDespacho = obj.TipoDespacho; //Edm.String" MaxLength="2" "Tipo Despacho"/>
 								recordNavPos.DescTipoDespacho = obj.DescTipoDespacho; //Edm.String" MaxLength="50" "Descripción"/>
@@ -914,8 +1023,8 @@ sap.ui.define([
 								recordNavPos.Integracion = obj.Integracion; //Edm.String" MaxLength="100" "Integración"/>
 								recordNavPos.Grund = this.idGrund; //Edm.String" MaxLength="4" "Motivo del mov."/>
 								recordNavPos.ItemText = this.idItemText; //Edm.String" MaxLength="50" "Texto"/>
- 								generaReserva.NavEntrReservaPos.push(recordNavPos);
- 								
+								generaReserva.NavEntrReservaPos.push(recordNavPos);
+
 							}
 
 							i++;
@@ -935,42 +1044,37 @@ sap.ui.define([
 			this.openBusyDialogCargando();
 
 			this.listaPosiciones(listItems).then(function (respGestionEntrega) {
+				console.log(respGestionEntrega)
 				this.BusyDialogCargando.close();
 				MessageBox.information("¿Seguro deseas gestionar la reserva N° " + this.idIngreso + "?", {
-							title: "Aviso",
-							details: respGestionEntrega.detail,
-							actions: ["Si", "No"],
-							styleClass: "",
-							onClose: function (sAction) {
-								if (sAction === "Si") {
-									this.openBusyDialogCargando();
-									this.gestionEntregaReserva(respGestionEntrega.datos, "Entrega").then(function (respuestagestionEntregaReserva) {
-									
-                                                    if(this.docSAP.length !== " - "){
-												       respuestagestionEntregaReserva.detail += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong>";
-                                                    }
+					title: "Aviso",
+					details: respGestionEntrega.detail,
+					actions: ["Si", "No"],
+					styleClass: "",
+					onClose: function (sAction) {
+						if (sAction === "Si") {
+							this.openBusyDialogCargando();
+							this.gestionEntregaReserva(respGestionEntrega.datos, "Entrega").then(function (respuestagestionEntregaReserva) {
 
-													MessageBox.information("Gestión Reserva N° " + this.idIngreso, {
-														title: "Aviso",
-														details: respuestagestionEntregaReserva.detail,
-														onClose: function (sAction) {
-															
-															this.BusyDialogCargando.close();
-															this.resetMasterDetail();
-														}.bind(this)
-													});
-
-												
-
-											}.bind(this));
+								if (this.docSAP !== " - ") {
+									respuestagestionEntregaReserva.detail += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong>";
 								}
-							}.bind(this)
 
-						});
-				
-				
+								MessageBox.information("Gestión Reserva N° " + this.idIngreso, {
+									title: "Aviso",
+									details: respuestagestionEntregaReserva.detail,
+									onClose: function (sAction) {
 
-				
+										this.BusyDialogCargando.close();
+										this.resetMasterDetail();
+									}.bind(this)
+								});
+
+							}.bind(this));
+						}
+					}.bind(this)
+
+				});
 
 			}.bind(this));
 
@@ -1314,11 +1418,13 @@ sap.ui.define([
 		},
 
 		resetMasterDetail: function () {
+
 			this._oStorage.put("navegacion_IngresoMercaderia", "si");
 			this.getOwnerComponent().getRouter().navTo("Entrega_master_Dos", {
 				estadoReserva: this.idEstadoIngreso,
 				idreserva: this.idIngreso
 			});
+
 		},
 
 		onExit: function () {
