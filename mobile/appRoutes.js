@@ -14,8 +14,4 @@ var mobile_appRoutes = [{
 }, {
 	"path": "/Sharepoint",
 	"destination": "Sharepoint"
-}, {
-	"path": "/SubFijoSharepoint",
-	"destination": "SubFijoSharepo",
-	"originDestination": "SubFijoSharepoint"
 }];
