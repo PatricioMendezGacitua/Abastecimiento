@@ -15,6 +15,7 @@ sap.ui.define([
 
 		_onRouteMatched: function (oEvent) {
 			this.corre = 1;
+
 			var oArgs = oEvent.getParameter("arguments");
 			this.idIngreso = oArgs.idReserva;
 			this.idEstadoIngreso = oArgs.ingreso;
@@ -25,6 +26,9 @@ sap.ui.define([
 			this.byId("mensajeFoto").setVisible(false);
 			this.byId("UploadCollection").setVisible(false);
 			this.getView().setModel(model, "oModeloDataTemporalDetailEntrega");
+			this.idGrund = "";
+			this.idItemText = "";
+			this.docSAP = " - ";
 
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 			if (this._oStorage.get("navegacion_IngresoMercaderia") === "si") {
@@ -55,6 +59,114 @@ sap.ui.define([
 
 		},
 
+		getMotivosERP: function () {
+			return new Promise(
+				function resolver(resolve) {
+					var aFil = [];
+
+					var tFilterIkey = new sap.ui.model.Filter({
+						path: "Ikey",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: "1"
+					});
+					aFil.push(tFilterIkey);
+
+					this.getView().getModel("oModelSAPERP").read('/ListaMotivoSet', {
+						filters: aFil,
+						success: function (oResult) {
+							var datos = oResult.results;
+
+							if (datos.length > 0) {
+								resolve(datos);
+							} else {
+								resolve([]);
+							}
+						}.bind(this),
+						error: function (oError) {
+							resolve([]);
+						}.bind(this)
+					});
+
+				}.bind(this));
+
+		},
+
+		openListMotivoFilter: function (oEvent) {
+
+			if (!this._valueDialogListMotivosEntrega) {
+				this._valueDialogListMotivosEntrega = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.dialogoListMotivosEntrega", this);
+			}
+
+			var modelMotivos = new JSONModel([]);
+			this._valueDialogListMotivosEntrega.setModel(modelMotivos, "modelMotivos");
+			this._valueDialogListMotivosEntrega.open();
+			this._valueDialogListMotivosEntrega.setBusy(true);
+			var modelMotivos = this._valueDialogListMotivosEntrega.getModel("modelMotivos");
+
+			this.getMotivosERP().then(function (resultado) {
+				/*var resultadoF = [];
+				resultadoF.push(element);
+				resultado.forEach(function (element) {
+					
+						resultadoF.push(element);
+					
+				}.bind(this));*/
+				modelMotivos.setData(resultado);
+				modelMotivos.refresh();
+				if (resultado.length > 100) {
+					modelMotivos.setSizeLimit(resultado.length);
+				}
+				this._valueDialogListMotivosEntrega.setTitle("Lista de Motivos (" + modelMotivos.getData().length + ")");
+				this._valueDialogListMotivosEntrega.setBusy(false);
+			}.bind(this));
+
+		},
+
+		onSearchMotivos: function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var filterFinal = [];
+			if (sValue.trim().length > 0) {
+				var oFilterNumeroAlmacen = new sap.ui.model.Filter({
+					path: "Grund",
+					operator: sap.ui.model.FilterOperator.Contains,
+					value1: sValue,
+					caseSensitive: false
+				});
+
+				filterFinal = new sap.ui.model.Filter({
+					filters: [oFilterNumeroAlmacen],
+					and: false
+				});
+			}
+			var oBinding = oEvent.getParameter("itemsBinding");
+			oBinding.filter(filterFinal);
+		},
+
+		onValueHelpDialogCloseMotivo: function (oEvent) {
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+
+			if (oSelectedItem) {
+
+				this.CbyId("idAddMotivoAyuda").setValue(oSelectedItem.getTitle());
+				this.idGrund = oSelectedItem.getTitle();
+				if (this.CbyId("idAddMotivoTexto").getValue().length > 0) {
+					this.CbyId("btIngresarPosTraspaso").setEnabled(true);
+				}
+
+			}
+		},
+
+		controlLength: function (oEvent) {
+			var textMax = this.CbyId("idAddMotivoTexto").getValue().length;
+			var texto = textMax + "/50";
+			this.CbyId("lbMaxTexto").setText(texto);
+			this.idItemText = this.CbyId("idAddMotivoTexto").getValue();
+			if (this.CbyId("idAddMotivoAyuda").getValue().length > 0) {
+				this.CbyId("btIngresarPosTraspaso").setEnabled(true);
+			}
+
+		},
+
 		onSelectChangeAll: function (oEvent) {
 			var id = this.byId("chkEntrega");
 
@@ -63,6 +175,7 @@ sap.ui.define([
 			var obj = this.byId("idtableLPEntrega").getItems();
 			obj.forEach(function (element, index) {
 				element.getContent()[0].getItems()[0].getContent()[0].getItems()[0].setSelected(!this.flagSelectAll);
+				element.getContent()[0].getItems()[0].getContent()[0].getItems()[0].setValueState("None");
 
 			}.bind(this));
 			this.flagSelectAll = !this.flagSelectAll;
@@ -239,7 +352,7 @@ sap.ui.define([
 			this.getView().setModel(oModelFPermitidos, "oModelFormatosPermitidos");
 			var oModelFormatos = this.getView().getModel("oModelFormatosPermitidos").getData();
 			var items = uploadColection.files;
-			
+
 			if (items.length <= 3) {
 
 				var countPesoCero = 0;
@@ -375,94 +488,6 @@ sap.ui.define([
 			}];
 
 			this.bindView(data);
-
-			/*	this.temporalesPorUsuarioConectado(this.userSCPCod, this.idIngreso, this.idEstadoIngreso, true).then(function (
-					respuestaTemporalesPorUsuarioConectado) {
-					var data = respuestaTemporalesPorUsuarioConectado[0];
-					this.idOC = data.ID_OC;
-					this.ordenDeCompra = data.ORDEN_DE_COMPRA;
-					this.idEstadoIngresoFull = data.ID_ESTADO_INGRESO;
-					var oObjectStatus = this.getView().byId("oObjectStatusId");
-
-					oObjectStatus.setState(data.STATE_ESTADO_INGRESO);
-					oObjectStatus.setText(data.TITULO_ESTADO_INGRESO);
-					oObjectStatus.setVisible(data.VISIBLE_ESTADO_INGRESO);
-
-					var oFooterPage = this.getView().byId("oFooterPageId");
-					oFooterPage.setVisible(true);
-
-					var numeroDocumentoVBOX = this.getView().byId("idNumeroDocumentoVBOX");
-					var oTextNroDocuento = this.getView().byId("oTextNroDocuentoId");
-
-					numeroDocumentoVBOX.setVisible(data.VISIBLE_NRO_DOCUMENTO);
-					oTextNroDocuento.setText(data.NUMERO_INGRESO_ERP);
-
-					var textoErrorVBOX = this.getView().byId("idTextoErrorVBOX");
-					var oTextMotivoFalla = this.getView().byId("oTextMotivoFallaId");
-
-					textoErrorVBOX.setVisible(data.VISIBLE_TEXTO_ERROR);
-					oTextMotivoFalla.setText(data.TEXTO_ERROR);
-
-					var oInputOCRecepcion = this.getView().byId("oInputOCRecepcion");
-					var oDatePickerFCRecepcion = this.getView().byId("oDatePickerFCRecepcion");
-					var oInputPatenteRecepcion = this.getView().byId("oInputPatenteRecepcion");
-					var oInputGuiaDespachoRecepcion = this.getView().byId("oInputGuiaDespachoRecepcion");
-					var oDatePickerFDRecepcion = this.getView().byId("oDatePickerFDRecepcion");
-					var oTextAreaObservacionRecepcion = this.getView().byId("oTextAreaObservacionRecepcion");
-					var oButtonRecepcionar = this.getView().byId("oButtonRecepcionarId");
-					oButtonRecepcionar.setEnabled(false);
-
-					var arrPicker = [{
-						id: "oDatePickerFDRecepcion",
-						type: "date"
-					}, {
-						id: "oDatePickerFCRecepcion",
-						type: "date"
-					}];
-
-					this.functionDisablePicker(arrPicker);
-
-					////oDatePickerFDRecepcion.setMaxDate(new Date());
-
-					var hoy = new Date();
-					var unMesesEnMilisegundos = 2629750000;
-					var resta = hoy.getTime() - unMesesEnMilisegundos;
-
-					var primerDiaDelMes = new Date(resta);
-					primerDiaDelMes = primerDiaDelMes.setDate(1);
-
-					var fechaHaceTresMesesEnMilisegundos = new Date(primerDiaDelMes);
-					oDatePickerFCRecepcion.setMinDate(new Date(fechaHaceTresMesesEnMilisegundos));
-					oDatePickerFCRecepcion.setMaxDate(hoy);
-
-					oInputOCRecepcion.setValue(data.ORDEN_DE_COMPRA);
-					oDatePickerFCRecepcion.setDateValue(this.fechaRevert(data.FECHA_CONTABILIZACION));
-					oInputPatenteRecepcion.setValue(data.PATENTE);
-					oInputGuiaDespachoRecepcion.setValue(data.GUIA_DESPACHO);
-					oDatePickerFDRecepcion.setDateValue(this.fechaRevert(data.FECHA_GUIA_DESPACHO));
-					oTextAreaObservacionRecepcion.setValue(data.OBSERVACION);
-
-					var countSeriado = 0;
-					data.POSICIONES.forEach(function (element, index) {
-						if (element.TITULO_TIPO_POSICION === "Seriado") {
-							countSeriado++;
-						}
-
-						if (data.POSICIONES.length === (index + 1)) {
-							if (countSeriado === 0) {
-								oButtonRecepcionar.setEnabled(true);
-							} else {
-								MessageBox.information('Ingreso temporal N°' + this.idIngreso +
-									' cuenta con una o más posiciones de tipo "Seriado". \n Para recepcionar esté ingreso debe acceder desde el Portal Web.', {
-										title: "Aviso",
-										onClose: function (sAction) {}.bind(this)
-									});
-							}
-						}
-					}.bind(this));
-
-					this.bindView(data);
-				}.bind(this));*/
 
 		},
 
@@ -615,14 +640,6 @@ sap.ui.define([
 
 			this.corre++;
 
-			/*var imagen = "data:image/png;base64," + imageData;
-			var imagen2 = new sap.m.Image();
-			
-			imagen2.setSrc(imagen);
-			this.getView().byId("myImage").insertPage(imagen2, 0);
-			this.getView().byId("myImage").setActivePage(imagen2);
-			*/
-
 		},
 		deleteImage: function (oEvent) {
 
@@ -632,49 +649,367 @@ sap.ui.define([
 			oModelImages.refresh();
 
 		},
-		onDeleteFile: function(oEvent){
+		onDeleteFile: function (oEvent) {
 			var path = oEvent.getSource().getBindingContext("oModelListaAdjuntos").getPath().slice(1);
 			var oModelImages = this.getView().getModel("oModelListaAdjuntos");
 			oModelImages.getData().splice(Number(path), 1);
 			oModelImages.refresh();
-			
+
 		},
 		onFail: function () {},
 
-		onEntregar: function (oEvent) {
+		verificaEntrega: function (datos) {
+			var contSeleccion = false;
+			var posicionInicial = 0;
+			var flagPos = true;
+			var msg = "";
+			return new Promise(
+				function resolver(resolve, reject) {
+					var functionRecorrer = function recorrer(item, i) {
+						if (datos.length === i) {
+							if (!contSeleccion) {
+								resolve({
+									resultado: false,
+									detail: "Debe seleccionar al menos 1 posición para iniciar la entrega."
+								});
+							} else {
+								if (!flagPos) {
+									resolve({
+										resultado: false,
+										detail: msg
+									});
 
-			MessageBox.information('¿Seguro deseas Entregar?', {
+								} else {
+									resolve({
+										resultado: true,
+										detail: ""
+									});
+								}
+
+							}
+
+						} else {
+							var seleccion = item[i].getContent()[0].getItems()[0].getContent()[0].getItems()[0].getSelected();
+							if (seleccion) {
+								contSeleccion = true;
+								var pos = item[i].getContent()[0].getItems()[0].getContent()[2].getItems()[1].getText();
+
+								if (pos === posicionInicial) {
+									flagPos = false;
+									msg = "No puede seleccionar 2 posiciones iguales para la reserva.";
+									item[i].getContent()[0].getItems()[0].getContent()[0].getItems()[0].setValueState("Error");
+									posicionInicial = pos;
+								} else {
+									posicionInicial = pos;
+								}
+
+							}
+							i++;
+							functionRecorrer(item, i);
+						}
+
+					}.bind(this);
+					functionRecorrer(datos, 0);
+
+				}.bind(this));
+		},
+
+		cerraraddMotivoReserva: function () {
+			//this.onRestablecerBusqueda();
+			this.addMotivoReserva.destroy();
+		},
+
+		cargaDetalle: function (datos, reserva, dataPos) {
+			var str = "<ul>";
+			var cont = 0;
+			var contPB = 0;
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					if (datos.length === 0) {
+						str += "<li>Para la posición: " + dataPos.Rspos + " ha ocurrido el siguiente error: " + dataPos.Message + ". </li>";
+						resolve({
+							resolve: true,
+							detail: str
+
+						});
+					} else {
+
+						var functionRecorrer = function recorrer(item, i) {
+
+							if (i === item.length) {
+
+								resolve({
+									resolve: true,
+									detail: str,
+									datosPosicion: dataPos
+
+								});
+
+							} else {
+								if (item[i].Type === "I") {
+
+									if (dataPos[i].Estado === "EP") {
+										str += "<li>Para la posición " + item[i].Rspos + " se ha generado la reserva con exito con el siguiente mensaje: " + item[
+											i].Message + ". </li>";
+										dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
+										this.docSAP = dataPos[i].DocSAP;
+										dataPos[i].Resultado = true;
+
+									} else {
+										str += "<li>Para la posición " + item[i].Rspos + " se ha cambiado de estado a En Preparación. </li>";
+										dataPos[i].DocSAP = " - ";
+										dataPos[i].Resultado = false;
+									}
+
+								} else {
+									this.str += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message + ". </li>";
+									dataPos[i].Resultado = false;
+									dataPos[i].DocSAP = " - ";
+									this.docSAP = " - ";
+								}
+								i++;
+								functionRecorrer(item, i);
+
+							}
+
+						}.bind(this);
+						//eliminar reserva posicion 00000
+						functionRecorrer(datos, 0);
+					}
+				}.bind(this));
+		},
+		gestionEntregaReserva: function (datos, tipo) {
+			return new Promise(
+				function resolver(resolve, reject) {
+					console.log(datos);
+
+					var reserva = datos.NavGestReservaPos[0].Rsnum;
+					var posicion = datos.NavGestReservaPos[0].Rspos;
+
+					this.getView().getModel("oModelSAPERP").create('/GestReservaSet ', datos, {
+						success: function (oResult) {
+							console.log(oResult);
+							var data = oResult.NavGestReservaDoc.results;
+							var dataPos = oResult.NavGestReservaPos.results;
+
+							if (data.length > 0) {
+
+								this.cargaDetalle(data, reserva, dataPos).then(function (respuestaCargaDetalle) {
+
+									this.cargaHana(respuestaCargaDetalle.datosPosicion, tipo).then(function (
+										respuestacargaHana) {
+										respuestaCargaDetalle.detail += "</ul>";
+										resolve({
+
+											resolve: true,
+											detail: respuestaCargaDetalle.detail,
+											error: ""
+										});
+
+									}.bind(this));
+
+								}.bind(this));
+							}
+
+						}.bind(this),
+						error: function (oError) {
+
+							var dataError = [];
+							var mensaje = "";
+							try {
+								mensaje = JSON.parse(oError.responseText).error.message.value;
+								var record = {};
+								record.Rspos = posicion;
+								record.Message = mensaje;
+
+								this.cargaDetalle(dataError, reserva, record).then(function (respuestaCargaDetalle) {
+									respuestaCargaDetalle.detail += "</ul>";
+									this.docSAP = " - ";
+									resolve({
+
+										resolve: true,
+										detail: respuestaCargaDetalle.detail,
+										error: ""
+									});
+
+								}.bind(this));
+
+								resolve({
+
+									error: mensaje,
+									resolve: false
+								});
+							} catch (e) {
+								resolve({
+
+									error: e.message,
+									resolve: false
+								});
+							}
+
+						}.bind(this)
+					});
+
+				}.bind(this));
+		},
+
+	
+
+		listaPosiciones: function (datos) {
+			var generaReserva = {};
+			generaReserva.NavEntrReservaPos = [];
+			generaReserva.NavEntrReservaDoc = [];
+
+			return new Promise(
+				function resolver(resolve, reject) {
+					var functionRecorrer = function recorrer(item, i) {
+						if (datos.length === i) {
+							var str = "<ul>";
+							var cont = generaReserva.NavEntrReservaPos.length
+							if (cont === 1) {
+								str += "<li> Se gestionará " + cont + " posición.</li>";
+							} else {
+								str += "<li> Se gestionarán " + cont + " posiciones.</li>";
+							}
+
+							resolve({
+								detail: str,
+								datos: generaReserva
+							});
+
+						} else {
+							var seleccionado = item[i].getContent()[0].getItems()[0].getContent()[11].getItems()[0].getSelected();
+
+							if (seleccionado) {
+								var elementt = item[i];
+								generaReserva.Ikey = "1";
+								var recordNavPos = {};
+								recordNavPos.Ikey = "1";
+								var obj = elementt.getBindingContext("oModeloDataTemporalDetailEntrega").getObject();                         
+
+								recordNavPos.Rspos = obj.Rspos; //Edm.String" MaxLength="4" "Posición"/>
+								recordNavPos.TipoDespacho = obj.TipoDespacho; //Edm.String" MaxLength="2" "Tipo Despacho"/>
+								recordNavPos.DescTipoDespacho = obj.DescTipoDespacho; //Edm.String" MaxLength="50" "Descripción"/>
+								recordNavPos.Bdter = obj.Bdter; //Edm.DateTime" Precision="7" "Fecha necesidad"/>
+								recordNavPos.Matnr = obj.Matnr; //Edm.String" MaxLength="18" "Material"/>
+								recordNavPos.Maktx = obj.Maktx; //Edm.String" MaxLength="40" "Denominación"/>
+								recordNavPos.Estado = obj.Estado; //Edm.String" MaxLength="3" "Estado Reserva"/>
+								recordNavPos.Uexnam = obj.Uexnam; //Edm.String" MaxLength="12" "Ejecutado por"/>
+								recordNavPos.Dexdat = obj.Dexdat; //Edm.DateTime" Precision="7" "Fecha ejecución"/>
+								recordNavPos.Texdat = this.getHourERP(obj.Texdat); //Edm.Time" Precision="0" "Hora ejecución"/>
+								recordNavPos.CantSolicitada = parseFloat(obj.CantSolicitada).toFixed(2); //Edm.Decimal" Precision="13" Scale="3" "Cantidad"/>
+								recordNavPos.CantEnviada = parseFloat(obj.CantEnviada).toFixed(2); //Edm.Decimal" Precision="13" Scale="3" "Cantidad"/>
+								recordNavPos.CantEnviar = parseFloat(obj.CantEnviar).toFixed(2); //Edm.Decimal" Precision="13" Scale="3" "Cantidad"/>
+								recordNavPos.CantPreparada = parseFloat(obj.CantPreparada).toFixed(2); //Edm.Decimal" Precision="13" Scale="3" "Cantidad"/>
+								recordNavPos.Meins = obj.Meins; //Edm.String" MaxLength="3" 
+								recordNavPos.Ekgrp = obj.Ekgrp; //Edm.String" MaxLength="3" "Grupo compras"/>
+								recordNavPos.Bodeguero = obj.Bodeguero; //Edm.String" MaxLength="12" "Usuario"/>
+								recordNavPos.Supervisor = obj.Supervisor; //Edm.String" MaxLength="12" "Usuario"/>
+								recordNavPos.Creador = obj.Creador; //Edm.String" MaxLength="12" "Usuario"/>
+								recordNavPos.Werks = obj.Werks; //Edm.String" MaxLength="4" "Centro"/>
+								recordNavPos.Lgort = obj.Lgort; //Edm.String" MaxLength="4" "Almacén"/>
+								recordNavPos.Charg = obj.Charg; //Edm.String" MaxLength="10" "Lote"/>
+								recordNavPos.Lgpbe = obj.Lgpbe; //Edm.String" MaxLength="10" "Ubicación"/>
+								recordNavPos.Integracion = obj.Integracion; //Edm.String" MaxLength="100" "Integración"/>
+								recordNavPos.Grund = this.idGrund; //Edm.String" MaxLength="4" "Motivo del mov."/>
+								recordNavPos.ItemText = this.idItemText; //Edm.String" MaxLength="50" "Texto"/>
+ 								generaReserva.NavEntrReservaPos.push(recordNavPos);
+ 								
+							}
+
+							i++;
+							functionRecorrer(item, i);
+						}
+
+					}.bind(this);
+					functionRecorrer(datos, 0);
+
+				}.bind(this));
+
+		},
+
+		onInsertarMotivo: function (oEvent) {
+			var listItems = this.getView().byId("idtableLPEntrega").getItems();
+			this.cerraraddMotivoReserva();
+			this.openBusyDialogCargando();
+
+			this.listaPosiciones(listItems).then(function (respGestionEntrega) {
+				this.BusyDialogCargando.close();
+				MessageBox.information("¿Seguro deseas gestionar la reserva N° " + this.idIngreso + "?", {
+							title: "Aviso",
+							details: respGestionEntrega.detail,
+							actions: ["Si", "No"],
+							styleClass: "",
+							onClose: function (sAction) {
+								if (sAction === "Si") {
+									this.openBusyDialogCargando();
+									this.gestionEntregaReserva(respGestionEntrega.datos, "Entrega").then(function (respuestagestionEntregaReserva) {
+									
+                                                    if(this.docSAP.length !== " - "){
+												       respuestagestionEntregaReserva.detail += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong>";
+                                                    }
+
+													MessageBox.information("Gestión Reserva N° " + this.idIngreso, {
+														title: "Aviso",
+														details: respuestagestionEntregaReserva.detail,
+														onClose: function (sAction) {
+															
+															this.BusyDialogCargando.close();
+															this.resetMasterDetail();
+														}.bind(this)
+													});
+
+												
+
+											}.bind(this));
+								}
+							}.bind(this)
+
+						});
+				
+				
+
+				
+
+			}.bind(this));
+
+		},
+
+		onEntregar: function (oEvent) {
+			var listItems = this.getView().byId("idtableLPEntrega").getItems();
+			this.openBusyDialogCargando();
+			this.verificaEntrega(listItems).then(function (respVerificaE) {
+				if (!respVerificaE.resultado) {
+					MessageToast.show(respVerificaE.detail, {
+						duration: 6000
+					});
+					this.BusyDialogCargando.close();
+				} else {
+					this.BusyDialogCargando.close();
+					this.addMotivoReserva = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.addMotivoReserva", this);
+					this.getView().addDependent(this.addMotivoReserva);
+
+					this.addMotivoReserva.attachAfterClose(function () {
+						this.cerraraddMotivoReserva();
+					}.bind(this));
+
+					//this.dialogShowAdjuntos.setModel(this.getView().getModel("mainModel"));
+					this.addMotivoReserva.open();
+
+				}
+
+			}.bind(this));
+
+			/*MessageBox.information('¿Seguro deseas Entregar?', {
 				title: "Aviso",
 				actions: ["Si", "No"],
 				styleClass: "",
 				onClose: function (sAction) {
-					if (sAction === "Si") {
-						//this._oStorage.put("logeoIngresoMerecaderia", "Si");
-						//if (!this.validar(this.InputsViewCabeceraTraslado, "", "vista")) {
-
-						MessageToast.show("Entrega Realizada");
-						jQuery.sap.delayedCall(3000, this, function () {
-							//t
-							this._route.navTo("Entrega_master_Dos", {
-								estadoReserva: "Entregar",
-								idreserva: this.idIngreso
-
-							});
-							//this._route.navTo("outbound");
-						}.bind(this));
-
-						/*} else {
-							MessageToast.show("Complete los datos obligatorios.");
-							jQuery.sap.delayedCall(3000, this, function () {
-								this.cerrar(this.InputsViewCabeceraTraslado, "", "vista");
-								this.quitarState(this.InputsViewCabeceraTraslado, "", "vista");
-							}.bind(this));
-						}*/
-
-					}
+					if (sAction === "Si") {}
 				}.bind(this)
 
-			});
+			});*/
 
 		},
 

@@ -481,7 +481,7 @@ sap.ui.define([
 
 					this.listaPosiciones(listItems).then(function (resplistaCant) {
 						console.log(resplistaCant);
-						MessageBox.information('¿Seguro deseas reservar?', {
+						MessageBox.information("¿Seguro deseas gestionar la reserva N° " + this.idIngreso + "?", {
 							title: "Aviso",
 							details: resplistaCant.detail,
 							actions: ["Si", "No"],

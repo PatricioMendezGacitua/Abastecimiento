@@ -1,0 +1,34 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
+	<Dialog busy='{editInforme>/busy}' busyIndicatorDelay='0' title="Ingresar un Motivo" type='Message' contentWidth="400px">
+		<content>
+			<VBox>
+			
+				<VBox class="borderMaterial sapUiSmallMarginTop" id="idVboxFrag" >
+					<l:Grid class="sapUiSmallMargin" hSpacing="0.5" vSpacing="0.5" width="100%">
+						<VBox>
+							<Label class="font-xSmaller" text="Texto:" width="100%" required="true"></Label>
+							<TextArea id="idAddMotivoTexto" class="fontBold" width="100%" maxLength="50" liveChange="controlLength"></TextArea>
+							<Label id="lbMaxTexto" class="font-xSmaller" text="0/50:" width="100%"></Label>
+							<layoutData>
+								<l:GridData span="XL12 L12 M12 S12"/>
+							</layoutData>
+						</VBox>
+						<VBox>
+							<Label class="font-xSmaller" text="Motivo:" width="100%" required="true"></Label>
+							<Input id="idAddMotivoAyuda" valueHelpOnly="true" showValueHelp="true" valueHelpRequest=".openListMotivoFilter"
+								placeholder="Seleccione un motivo..." class="fontBold" width="100%"></Input>
+							<layoutData>
+								<l:GridData span="XL12 L12 M12 S12"/>
+							</layoutData>
+						</VBox>
+					
+					</l:Grid>
+				</VBox>
+			</VBox>
+		</content>
+		<buttons>
+			<Button text="Cancelar" press="cerraraddMotivoReserva"/>
+			<Button id="btIngresarPosTraspaso" enabled="false" type="Emphasized" text="Ingresar" press="onInsertarMotivo"/>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>
