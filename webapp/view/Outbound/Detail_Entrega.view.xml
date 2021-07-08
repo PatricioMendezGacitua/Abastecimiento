@@ -142,16 +142,11 @@
 			<VBox >
 				<u:FileUploader id="fileUploader" change="onSavefileUploadColection" multiple="true" buttonOnly="true" icon="sap-icon://attachment"
 					iconFirst="true" buttonText="Cargar Documentos" width="100%"/>
-				<UploadCollection id="UploadCollection" visible="false" multiple="true" showSeparators="{settings>/showSeparators}" uploadEnabled="false"
-					fileDeleted="onDeleteFile" mode="Delete" items="{oModelListaAdjuntos>/}">
+				<UploadCollection id="UploadCollection" visible="false" multiple="true" showSeparators="{settings>/showSeparators}" 
+					 mode="Delete" uploadButtonInvisible="true"      items="{oModelListaAdjuntos>/}">
 					<items>
-						<UploadCollectionItem fileName="{oModelListaAdjuntos>TITULO}" visibleDelete="true" visibleEdit="false" press="onPressItems">
-							<attributes>
-								<ObjectAttribute title="Asigna" text="Doc. Base" active="true" visible="{oModelListaAdjuntos>VISIBLE}" press="onAttributePress"/>
-							</attributes>
-							<statuses>
-								<ObjectStatus title="Archivo Cargado" text="{oModelListaAdjuntos>DOCCARGADO}" state="Success" visible="{oModelListaAdjuntos>VISIBLE}"/>
-							</statuses>
+						<UploadCollectionItem fileName="{oModelListaAdjuntos>TITULO}" visibleDelete="true" visibleEdit="false" deletePress="onDeleteFile" >
+						
 						</UploadCollectionItem>
 					</items>
 				</UploadCollection>
@@ -168,6 +163,7 @@
 			<VBox>
 				<MessageStrip id="mensajeFoto" text="Para eliminar una imagen solo debes presionarla" type="Information" showIcon="true" class="sapUiMediumMarginBottom"></MessageStrip>
 				<Carousel id="myImage" showPageIndicator="true" pages="{oModelImage>/}">
+					
 					<Image src="{oModelImage>URL}" press="deleteImage"></Image>
 				</Carousel>
 				<layoutData>

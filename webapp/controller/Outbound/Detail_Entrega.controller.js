@@ -21,9 +21,9 @@ sap.ui.define([
 			this.flagSelectAll = false;
 			this.getView().byId("tituloDetalleSolicitudView").setText("Detalle Reserva N°" + this.idIngreso);
 			this.getView().byId("oPageDetailId").scrollTo(0, 0);
-			this.getView().setModel(new JSONModel([]),"oModelImage");
+			this.getView().setModel(new JSONModel([]), "oModelImage");
 			this.byId("mensajeFoto").setVisible(false);
-
+			this.byId("UploadCollection").setVisible(false);
 			this.getView().setModel(model, "oModeloDataTemporalDetailEntrega");
 
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
@@ -52,7 +52,7 @@ sap.ui.define([
 		downPage: function (oEvent) {
 			var h = $(window).height();
 			this.getView().byId("oPageDetailId").scrollTo(h, 0);
-			
+
 		},
 
 		onSelectChangeAll: function (oEvent) {
@@ -73,6 +73,273 @@ sap.ui.define([
 
 			this.byId("idtableLPEntrega").getItems()[path].getContent()[0].getItems()[0].getContent()[0].getItems()[0].setValueState("None");
 		},
+		getFormatType: function (type) {
+			var sValue = "";
+			switch (type) {
+			case "application/acad":
+				sValue = "dwg";
+				break;
+			case "image/vnd.dwg":
+				sValue = "dwg";
+				break;
+			case "text/plain":
+				sValue = "txt";
+				break;
+			case "image/x-dwg":
+				sValue = "dwg";
+				break;
+			case "application/dxf":
+				sValue = "dxf";
+				break;
+			case "application/vnd.google-earth.kmz":
+				sValue = "kmz";
+				break;
+			case "image/tiff":
+				sValue = "tiff";
+				break;
+			case "image/bmp":
+				sValue = "bmp";
+				break;
+			case "image/tif":
+				sValue = "tif";
+				break;
+			case "application/pdf":
+				sValue = "pdf";
+				break;
+			case "image/jpeg":
+				sValue = "jpg";
+				break;
+			case "image/png":
+				sValue = "png";
+				break;
+			case "video/ogg":
+				sValue = "mp4";
+				break;
+			case "application/msword":
+				sValue = "doc";
+				break;
+			case "application/vnd.ms-excel":
+				sValue = "xls";
+				break;
+			case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+				sValue = "xlsx";
+				break;
+			case "application/vnd.ms-powerpoint":
+				sValue = "ppt";
+				break;
+			case "application/x-rar-compressed":
+				sValue = "rar";
+				break;
+			case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+				sValue = "pptx";
+				break;
+			case "application/vnd.ms-word.template.macroEnabled.12":
+				sValue = "dotm";
+				break;
+			case "application/vnd.ms-word.document.macroEnabled.12":
+				sValue = "docm";
+				break;
+			case "application/vnd.openxmlformats-officedocument.wordprocessingml.template":
+				sValue = "dotx";
+				break;
+			case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+				sValue = "docx";
+				break;
+			}
+			return sValue;
+
+		},
+		getBase64Upload: function (file, tipo) {
+
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					var reader = new FileReader();
+					reader.onload = function (e) {
+
+						var base64 = e.target.result;
+						resolve(base64);
+					}.bind(this);
+					if (tipo === "Upload") {
+						reader.readAsDataURL(file);
+					} else {
+						reader.readAsBinaryString(file[0].url);
+					}
+
+				}.bind(this));
+		},
+		convertBase64: function (items, destination) {
+			var nameModel = "";
+			this.sArrayArchivos = [];
+			var recorrerPermitidos = function (item, i) {
+
+				if (item.length === i) {
+					this.getView().setModel(new JSONModel([]), "oModelListaAdjuntos");
+
+					var oJsonModelAdjuntos = this.getView().getModel("oModelListaAdjuntos");
+
+					this.sArrayArchivos.forEach(function (element) {
+						oJsonModelAdjuntos.getData().push(element);
+					});
+					oJsonModelAdjuntos.refresh();
+					this.byId("UploadCollection").setVisible(true);
+					this.BusyDialogCargando.close();
+
+				} else {
+
+					if (item[i].Carga === false) {
+
+						this.getBase64Upload(item[i].URL_ADJUNTO, "Upload").then(function (respuestaGetBase64Upload) {
+
+							var json = {
+								URL_ADJUNTO: respuestaGetBase64Upload.split(",")[1],
+								TITULO: items[i].TITULO,
+								VISIBLE: this._outPutVisible,
+								ID_DOC_OBL: null,
+								SIZE: parseFloat(items[i].SIZE),
+								TYPE: items[i].TYPE,
+								BASE64: respuestaGetBase64Upload
+							};
+
+							this.sArrayArchivos.push(json);
+							item[i].URL_ADJUNTO = respuestaGetBase64Upload.split(",")[1];
+							item[i].BASE64 = respuestaGetBase64Upload;
+							item[i].Carga = true;
+							this._arrUrlImagen.push(item[i].URL_ADJUNTO);
+							i++;
+							recorrerPermitidos(items, i);
+						}.bind(this));
+					} else {
+						i++;
+						recorrerPermitidos(items, i);
+
+					}
+
+				}
+			}.bind(this);
+			recorrerPermitidos(items, 0);
+
+		},
+		onSavefileUploadColection: function (oEvent) {
+			this._arrTituloArc = [];
+			var arrayPermitidos = [];
+			this._arrUrlImagen = [];
+			var destinationModel;
+			destinationModel = "ARCHIVO";
+
+			this.openBusyDialogCargando();
+			//
+			var uploadColection = oEvent.getParameters();
+
+			var url = "/HANA/GESTOR_DOCUMENTAL/XSJS/getFormatoPermitidos.xsjs?cmd=get&categoria=0&tipoDocumento=2801";
+			var oModelDetalle = new JSONModel();
+			oModelDetalle.loadData(url, null, false);
+
+			var oModelFPermitidos = new JSONModel(oModelDetalle.getData());
+			this.getView().setModel(oModelFPermitidos, "oModelFormatosPermitidos");
+			var oModelFormatos = this.getView().getModel("oModelFormatosPermitidos").getData();
+			var items = uploadColection.files;
+			
+			if (items.length <= 3) {
+
+				var countPesoCero = 0;
+
+				var functionRecorrerFiles = function (item, i) {
+
+					if (item.length === i) {
+						this.convertBase64(arrayPermitidos, destinationModel);
+						var mjs = "No fue posible cargar algunos archivos, su peso no es superior a 0.";
+						if (countPesoCero > 0) {
+							if (countPesoCero === 1) {
+								mjs = "No fue posible cargar un archivo, su peso no es superior a 0.";
+							}
+							MessageToast.show(mjs, {
+								duration: 5000
+							});
+						}
+					} else {
+						var filePreview = item[i];
+						var fileTypereview = filePreview.type;
+						var _typeArch = this.getFormatType(fileTypereview);
+						var filesize = filePreview.size;
+						if (filesize > 0) {
+							var sizeMax = filePreview.size / 1000000;
+							var textFileSize = sizeMax.toFixed(3) + " MB";
+							this._sSizeFile = sizeMax.toFixed(3);
+							var div = filePreview.name.split(".");
+							var nameArch = "." + div[(div.length - 1)];
+
+							var functionRecorrerFormatosPermitidos = function (itemFormatoPermitido, b, entro, textFormatosPermitdos) {
+
+								if (itemFormatoPermitido.length === b) {
+									if (entro) {
+										i++;
+										functionRecorrerFiles(items, i);
+									} else {
+										MessageBox.information("Formato no soportado.", {
+											title: "Aviso",
+											actions: [sap.m.MessageBox.Action.CLOSE],
+											details: '<p><strong>El formato del archivo no es permitido.</strong></p>',
+											styleClass: "",
+											contentWidth: "100px"
+										});
+										this.busyGlobal(false);
+									}
+
+								} else {
+									var lengthMax = itemFormatoPermitido.length - 1;
+									var formatoPermitido = itemFormatoPermitido[b].EXTENSION;
+									var sizePermitido = itemFormatoPermitido[b].SIZE * 1000000;
+									var textSizePermitido = itemFormatoPermitido[b].SIZE + " MB"
+									var textFormatosPermitdos = itemFormatoPermitido[lengthMax].TEXTO;
+
+									//	textFormatosPermitdos = textFormatosPermitdos.slice(0, textFormatosPermitdos.length-1);
+
+									if (nameArch === formatoPermitido) {
+										entro = true;
+										if (filesize <= sizePermitido) {
+											this.jsonCarga = {
+												URL_ADJUNTO: items[i],
+												TITULO: items[i].name,
+												Carga: false,
+												TYPE: _typeArch,
+												SIZE: filesize,
+												BASE64: items[i]
+											};
+											arrayPermitidos.push(this.jsonCarga);
+										} else {
+											entro = true;
+											MessageBox.information("Tamaño no soportado.", {
+												title: "Aviso",
+												actions: [sap.m.MessageBox.Action.CLOSE],
+												details: '<p><strong>El Tamaño máximo del archivo desigando es de ' + textSizePermitido + ' y el archivo pesa: ' +
+													textFileSize + '</strong></p>',
+												styleClass: "",
+												contentWidth: "100px"
+											});
+										}
+									}
+									b++;
+									functionRecorrerFormatosPermitidos(oModelFormatos, b, entro, textFormatosPermitdos);
+								}
+							}.bind(this);
+							functionRecorrerFormatosPermitidos(oModelFormatos, 0, false, ' ');
+						} else {
+							countPesoCero++;
+							i++;
+							functionRecorrerFiles(items, i);
+						}
+					}
+				}.bind(this);
+				functionRecorrerFiles(items, 0);
+			} else {
+				this.BusyDialogCargando.close();
+				MessageToast.show("Solo puedes cargar máximo 3 documentos", {
+					duration: 6000
+				});
+			}
+		},
+
 		countTitleLPEntrega: function (oEvent) {
 
 			//Actualiza el numero de registros
@@ -315,7 +582,7 @@ sap.ui.define([
 			});
 		},
 		capturePhoto: function (oEvent) {
-		
+
 			var oNav = navigator.camera;
 			oNav.getPicture(this.onPhotoDataSuccess.bind(this), this.onFail, {
 				quality: 25,
@@ -331,23 +598,23 @@ sap.ui.define([
 			var oModelImages = this.getView().getModel("oModelImage");
 			var json = {
 				URL: imagen,
-				VISIBLE: true
+				VISIBLE: true,
+				TITULO: this.corre
 			};
 			this.byId("mensajeFoto").setVisible(true);
 			var cant = oModelImages.getData().length;
-			
-			if(cant <=2){
+
+			if (cant <= 2) {
 				oModelImages.getData().unshift(json);
 				oModelImages.refresh();
-			}else{
-					MessageToast.show("Solo puedes cargar máximo 3 fotos", {
-						duration: 6000
-					});
+			} else {
+				MessageToast.show("Solo puedes cargar máximo 3 fotos", {
+					duration: 6000
+				});
 			}
-			
-			
-			
-			
+
+			this.corre++;
+
 			/*var imagen = "data:image/png;base64," + imageData;
 			var imagen2 = new sap.m.Image();
 			
@@ -355,15 +622,24 @@ sap.ui.define([
 			this.getView().byId("myImage").insertPage(imagen2, 0);
 			this.getView().byId("myImage").setActivePage(imagen2);
 			*/
-			
-			
 
 		},
-		deleteImage:function(oEvent){
-			debugger
+		deleteImage: function (oEvent) {
+
+			var path = oEvent.getSource().getBindingContext("oModelImage").getPath().slice(1);
+			var oModelImages = this.getView().getModel("oModelImage");
+			oModelImages.getData().splice(Number(path), 1);
+			oModelImages.refresh();
+
+		},
+		onDeleteFile: function(oEvent){
+			var path = oEvent.getSource().getBindingContext("oModelListaAdjuntos").getPath().slice(1);
+			var oModelImages = this.getView().getModel("oModelListaAdjuntos");
+			oModelImages.getData().splice(Number(path), 1);
+			oModelImages.refresh();
 			
 		},
-		onFail: function(){},
+		onFail: function () {},
 
 		onEntregar: function (oEvent) {
 
