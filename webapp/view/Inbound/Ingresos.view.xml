@@ -107,12 +107,12 @@
 								<l:GridData span="XL12 L12 M12 S12"/>
 							</layoutData>
 						</VBox>
-						<Button id="oButtonBuscarId" text="Buscar" type="Emphasized" width="100%" press="onPressBuscar" icon="sap-icon://search" iconFirst="true">
+						<Button text="Restablecer" type="Ghost" width="100%" press="onPressRestablecer">
 							<layoutData>
 								<l:GridData span="XL6 L6 M6 S6"/>
 							</layoutData>
 						</Button>
-						<Button text="Restablecer" type="Ghost" width="100%" press="onPressRestablecer">
+						<Button id="oButtonBuscarId" text="Buscar" type="Emphasized" width="100%" press="onPressBuscar" icon="sap-icon://search" iconFirst="true">
 							<layoutData>
 								<l:GridData span="XL6 L6 M6 S6"/>
 							</layoutData>
