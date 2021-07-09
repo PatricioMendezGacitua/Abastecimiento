@@ -527,7 +527,7 @@ sap.ui.define([
 								oModelLotes.setData(resultadoLote);
 								oModelLotes.refresh();
 								oSelectLote.setBusy(false);
-							this._oViewAddPosTraspasoDialog.setBusy(false);
+								this._oViewAddPosTraspasoDialog.setBusy(false);
 							}.bind(this));
 						} else {
 							this._oViewAddPosTraspasoDialog.setBusy(false);
@@ -676,11 +676,8 @@ sap.ui.define([
 													};
 
 													this.registrarLog("Traspaso_Realizado", this.datosCreacion).then(function (respuestaRegistrarLog) {
-														MessageToast.show("Traspaso Realizado");
-														jQuery.sap.delayedCall(3000, this, function () {
-															this.btnReestablecerTraspaso();
-															this.getView().setBusy(false);
-														}.bind(this));
+														this.getView().setBusy(false);
+														this.preocesoGenerarTraspasoConExito(nroDocumentoSap);
 													}.bind(this));
 
 												}.bind(this));
@@ -763,6 +760,16 @@ sap.ui.define([
 				}.bind(this)
 
 			});
+		},
+
+		preocesoGenerarTraspasoConExito: function (nroDoc) {
+			MessageBox.success("Traspaso Realizado. \n  \n El documento SAP asociado es el N°" +
+				nroDoc + ".", {
+					title: "Aviso",
+					onClose: function (sAction) {
+						this.btnReestablecerTraspaso();
+					}.bind(this)
+				});
 		},
 
 		traspasarEnERP: function (datos) {
