@@ -167,60 +167,64 @@ sap.ui.define([
 				}.bind(this));
 		},
 		cargaDetalle: function (datos, reserva, dataPos) {
-			var str="<ul>";
-			var cont=0;
-			var contPB=0;
+			var str = "<ul>";
+			var cont = 0;
+			var contPB = 0;
+			this.GeneraDoc=false;
 			return new Promise(
 				function resolver(resolve, reject) {
 
 					if (datos.length === 0) {
-						str += "<li>Para la posición: " + dataPos.Rspos + " ha ocurrido el siguiente error: " + dataPos.Message + ". </li>";
-                        resolve({
-									resolve: true,
-									detail: str
-									
+						this.strVerifica  += "<li>Para la posición: " + dataPos.Rspos + " ha ocurrido el siguiente error: " + dataPos.Message + ". </li>";
+						resolve({
+							resolve: true/*,
+							detail: this.strVerifica*/
 
-								});
+						});
 					} else {
 
 						var functionRecorrer = function recorrer(item, i) {
-							
-							
-							
-							
-							if (i === item.length) {
 
+							if (i === item.length) {
 								
 								resolve({
 									resolve: true,
-									detail: str,
+								/*	detail: this.strVerifica,*/
 									datosPosicion: dataPos
 
 								});
 
 							} else {
 								if (item[i].Type === "I") {
-									
-									
-									
-									if(dataPos[i].Estado==="EP"){
-										str += "<li>Para la posición " + item[i].Rspos + " se ha generado la reserva con exito con el siguiente mensaje: " + item[i].Message + ". </li>";
-								    	dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
-								    	this.docSAP = dataPos[i].DocSAP;
-								    	dataPos[i].Resultado = true;
-										
-									}else{
-										str += "<li>Para la posición " + item[i].Rspos + " se ha cambiado de estado a En Preparación. </li>";
-										dataPos[i].DocSAP = " - ";
-										dataPos[i].Resultado = false;
+									if (item[i].Rspos !== "0000") {
+
+										if (dataPos[i].Estado === "EP") {
+											this.strVerifica  += "<li>Para la posición " + item[i].Rspos + " se ha generado la reserva con exito con el siguiente mensaje: " + item[
+												i].Message + ". </li>";
+											dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
+											this.docSAP = dataPos[i].DocSAP;
+											dataPos[i].Resultado = true;
+											this.GeneraDoc = true;
+											
+											this.strVerifica += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong> </p>";
+							
+
+										} else {
+											this.strVerifica  += "<li>Para la posición " + item[i].Rspos + " se ha cambiado de estado a En Preparación. </li>";
+											dataPos[i].DocSAP = " - ";
+											dataPos[i].Resultado = false;
+										}
 									}
-									
 
 								} else {
-									this.str += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message + ". </li>";
-									dataPos[i].Resultado = false;
-									dataPos[i].DocSAP = " - ";
-									this.docSAP = " - ";
+
+									if (item[i].Rspos !== "0000") {
+
+										this.strVerifica  += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message + ". </li>";
+										dataPos[i].Resultado = false;
+										dataPos[i].DocSAP = " - ";
+										this.docSAP = " - ";
+									}
 								}
 								i++;
 								functionRecorrer(item, i);
@@ -228,38 +232,69 @@ sap.ui.define([
 							}
 
 						}.bind(this);
-                        //eliminar reserva posicion 00000
+						//eliminar reserva posicion 00000
 						functionRecorrer(datos, 0);
 					}
 				}.bind(this));
 		},
+
+		enviaPorPosicion: function (datos, tipo) {
+            
+            
+			return new Promise(
+				function resolver(resolve, reject) {
+					var functionRecorrer = function (item, i) {
+						if (item.length === i) {
+							
+							 this.strVerifica  += "</ul>";
+							
+							 resolve(true);
+							
+
+						} else {
+
+							this.createReservaERP(item[i],tipo).then(function (respuestaReservaERP) {
+                               
+								i++;
+								functionRecorrer(item, i);	
+
+							}.bind(this));
+
+							
+						}
+
+					}.bind(this);
+					functionRecorrer(datos, 0)
+
+				}.bind(this));
+
+		},
+
 		createReservaERP: function (datos, tipo) {
 			return new Promise(
 				function resolver(resolve, reject) {
 					console.log(datos);
-					
+
 					var reserva = datos.NavGestReservaPos[0].Rsnum;
 					var posicion = datos.NavGestReservaPos[0].Rspos;
-					
-				
 
 					this.getView().getModel("oModelSAPERP").create('/GestReservaSet ', datos, {
 						success: function (oResult) {
 							console.log(oResult);
 							var data = oResult.NavGestReservaDoc.results;
 							var dataPos = oResult.NavGestReservaPos.results;
-                             
+
 							if (data.length > 0) {
 
 								this.cargaDetalle(data, reserva, dataPos).then(function (respuestaCargaDetalle) {
 
 									this.cargaHana(respuestaCargaDetalle.datosPosicion, tipo).then(function (
 										respuestacargaHana) {
-                                        respuestaCargaDetalle.detail += "</ul>";
+										//respuestaCargaDetalle.detail += "</ul>";
 										resolve({
-                                            
+
 											resolve: true,
-											detail: respuestaCargaDetalle.detail, 
+											
 											error: ""
 										});
 
@@ -270,33 +305,27 @@ sap.ui.define([
 
 						}.bind(this),
 						error: function (oError) {
-
+							console.log(oError);
 							var dataError = [];
-								var mensaje = "";
+							var mensaje = "";
 							try {
 								mensaje = JSON.parse(oError.responseText).error.message.value;
 								var record = {};
-								record.Rspos = posicion; 
+								record.Rspos = posicion;
 								record.Message = mensaje;
-							
-								this.cargaDetalle(dataError, reserva, record).then(function (respuestaCargaDetalle) {
-									  respuestaCargaDetalle.detail += "</ul>";
-									  this.docSAP = " - ";
-								  	resolve({
-                                            
-											resolve: true,
-											detail: respuestaCargaDetalle.detail,
-											error: ""
-										});	
-									
 
-							}.bind(this));
-								
-								
-								
-								
-								
-								
+								this.cargaDetalle(dataError, reserva, record).then(function (respuestaCargaDetalle) {
+									respuestaCargaDetalle.detail += "</ul>";
+									this.docSAP = " - ";
+									resolve({
+
+										resolve: true,
+										detail: respuestaCargaDetalle.detail,
+										error: ""
+									});
+
+								}.bind(this));
+
 								resolve({
 
 									error: mensaje,
@@ -309,13 +338,6 @@ sap.ui.define([
 									resolve: false
 								});
 							}
-							
-							
-							
-
-							
-
-						
 
 						}.bind(this)
 					});
@@ -342,7 +364,7 @@ sap.ui.define([
 							data[e].maxData = data[e].CantSolicitada - data[e].CantPreparada;
 							data[e].value = 0;
 							data[e].ckSelected = false;
-						    data[e].estadoPosicion= (data[e].Estado==="PB")?"Preparación Bodega": "En Preparación";
+							data[e].estadoPosicion = (data[e].Estado === "PB") ? "Preparación Bodega" : "En Preparación";
 							(data[e].Lgpbe.length > 0) ? arrayUbicaciones.push(data[e].Lgpbe): "";
 							data[e].order = order;
 							order++;
@@ -1124,9 +1146,6 @@ sap.ui.define([
 			});
 
 		},
-		
-		
-	
 
 		_dialogActualizaDatos: function (oEvent) {
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
@@ -1165,16 +1184,13 @@ sap.ui.define([
 			var obj = oEvent.getSource();
 			var datos = obj.getBindingContext("oModeloDataTemporalDetailReserva").getObject();
 			var path = obj.getBindingContext("oModeloDataTemporalDetailReserva").getPath();
-			path = path.slice(1,path.length);
+			path = path.slice(1, path.length);
 			this.byId("idtableLPReserva").getItems()[path].getContent()[0].getItems()[0].getContent()[6].getItems()[1].setType("Ghost");
-			
-			
-        
+
 			var numeroCentro = datos.Werks;
 			this.seleccionAlmacen = obj.getText();
 			this.openListAlmacenesBase(numeroCentro, obj);
-			
-			
+
 		},
 
 		openListAlmacenesCompleta: function () {

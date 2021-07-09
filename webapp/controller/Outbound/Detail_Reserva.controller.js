@@ -18,7 +18,8 @@ sap.ui.define([
 			var oArgs = oEvent.getParameter("arguments");
 			this.idIngreso = oArgs.idReserva;
 			this.idEstadoIngreso = oArgs.ingreso;
-            this.getView().byId("oPageDetailId").scrollTo(0, 0);
+			this.strVerifica = "<ul>";
+			this.getView().byId("oPageDetailId").scrollTo(0, 0);
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 			if (this._oStorage.get("navegacion_IngresoMercaderia") === "si") {
 				this._oStorage.put("navegacion_IngresoMercaderia", "no");
@@ -299,8 +300,9 @@ sap.ui.define([
 
 		verificaReserva: function (datos) {
 			var flagCant = true;
-			var flagSeleccion = true;
+			var flagSeleccion = false;
 			var flagAlmacen = true;
+			
 			var msge = "";
 			return new Promise(
 				function resolver(resolve, reject) {
@@ -335,24 +337,25 @@ sap.ui.define([
 							var idAlmacen = item[i].getContent()[0].getItems()[0].getContent()[6].getItems()[1].getText();
 							var chkPosicion = item[i].getContent()[0].getItems()[0].getContent()[11].getItems()[0].getSelected();
 							if (chkPosicion) {
-
+								flagSeleccion = true;
 								if (cantEnv === 0) {
 									msge = "Debes ingresar una cantidad para la posición seleccionada.";
 									item[i].getContent()[0].getItems()[0].getContent()[10].getItems()[1].setValueState("Error");
 									flagCant = false;
 								}
 
-								if (idAlmacen.length === 0) {
+								if (idAlmacen === "Asignar") {
 
 									flagAlmacen = false;
 
 									msge = "Debes ingresar un Almacen para reservar.";
+
 									item[i].getContent()[0].getItems()[0].getContent()[6].getItems()[1].setType("Reject");
 								}
 
 							} else {
 
-								flagSeleccion = false;
+								
 								msge = "Debes seleccionar al menos una posición.";
 								if (cantEnv > 0) {
 									item[i].getContent()[0].getItems()[0].getContent()[11].getItems()[0].setValueState("Error");
@@ -374,51 +377,48 @@ sap.ui.define([
 		},
 
 		listaPosiciones: function (datos) {
-			var generaReserva = {};
-			generaReserva.NavGestReservaPos = [];
-			generaReserva.NavGestReservaDoc = [];
-			
+			var datosGral = [];
+
 			return new Promise(
 				function resolver(resolve, reject) {
 					var functionRecorrer = function recorrer(item, i) {
 						if (datos.length === i) {
 							var str = "<ul>";
-							 if(this.cont ===1){
-							 	str += "<li> Se gestionará " + this.cont  + " posición.</li>";
-							 }else{
-							 	str += "<li> Se gestionarán " + this.cont  + " posiciones.</li>";
-							 }
-							 
-							 if(this.contPB > 0){
-							 	if(this.cont ===1){
-							 	str += "<li> La cual esta en estado Preparación Bodega , ésta solo cambiará de estado.</li>";
-							 }else{
-							 str += "<li> De las cuales " + this.contPB  + " están en estado Preparación Bodega , éstas solo cambiarán de estado.</li>";
-							 }
-							 	
-							 	
-							 	
-							 	
-							 	
-							 }
-							 //str +="</ul>";
-							 resolve({
-							 	detail: str,
-							 	datos:generaReserva
-							 });
+							if (this.cont === 1) {
+								str += "<li> Se gestionará " + this.cont + " posición.</li>";
+							} else {
+								str += "<li> Se gestionarán " + this.cont + " posiciones.</li>";
+							}
+
+							if (this.contPB > 0) {
+								if (this.cont === 1) {
+									str += "<li> La cual esta en estado Preparación Bodega , ésta solo cambiará de estado.</li>";
+								} else {
+									str += "<li> De las cuales " + this.contPB + " están en estado Preparación Bodega , éstas solo cambiarán de estado.</li>";
+								}
+
+							}
+							//str +="</ul>";
+							resolve({
+								detail: str,
+								datos: datosGral
+							});
 
 						} else {
 							var seleccionado = item[i].getContent()[0].getItems()[0].getContent()[11].getItems()[0].getSelected();
 
 							if (seleccionado) {
+								var generaReserva = {};
+								generaReserva.NavGestReservaPos = [];
+								generaReserva.NavGestReservaDoc = [];
 								var elementt = item[i];
 								var cantEnv = elementt.getContent()[0].getItems()[0].getContent()[10].getItems()[1].getValue();
 								this.flagDocSap = false;
 								generaReserva.Ikey = "1";
 								var estado = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Estado;
-								this.cont ++;
+								this.cont++;
 								(estado === "EP") ? generaReserva.IAccion = "C": generaReserva.IAccion = "P";
-                                (estado === "EP") ? "": this.contPB++;
+								(estado === "EP") ? "" : this.contPB++;
 								var recordNavPos = {};
 								recordNavPos.Ikey = "1";
 								recordNavPos.Rsnum = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Rsnum;
@@ -451,6 +451,7 @@ sap.ui.define([
 								recordNavPos.ItemText = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().ItemText;
 
 								generaReserva.NavGestReservaPos.push(recordNavPos);
+								datosGral.push(generaReserva);
 							}
 
 							i++;
@@ -465,13 +466,13 @@ sap.ui.define([
 		},
 
 		onReservar: function (oEvent) {
-
+			this.GeneraDoc = false;
 			var listItems = this.getView().byId("idtableLPReserva").getItems();
 			var flagError = true;
 			this.docSAP = " - ";
 			this.contPB = 0;
 			this.cont = 0;
-			this.strVerifica = "<ul>";
+			
 			this.verificaReserva(listItems).then(function (respVerificaReserva) {
 				if (!respVerificaReserva.resultado) {
 					MessageToast.show(respVerificaReserva.detail, {
@@ -480,7 +481,7 @@ sap.ui.define([
 				} else {
 
 					this.listaPosiciones(listItems).then(function (resplistaCant) {
-						console.log(resplistaCant);
+
 						MessageBox.information("¿Seguro deseas gestionar la reserva N° " + this.idIngreso + "?", {
 							title: "Aviso",
 							details: resplistaCant.detail,
@@ -488,35 +489,29 @@ sap.ui.define([
 							styleClass: "",
 							onClose: function (sAction) {
 								if (sAction === "Si") {
-									this.openBusyDialogCargando();
-									this.createReservaERP(resplistaCant.datos, "Reserva").then(function (respuestaReservaERP) {
+
 									
-                                                    if(this.docSAP !== " - "){
-												       respuestaReservaERP.detail += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong>";
-                                                    }
-												
+									this.openBusyDialogCargando();
+									this.enviaPorPosicion(resplistaCant.datos, "Reserva").then(function (respuestaReservaERP) {
 
-												
-
-													MessageBox.information("Gestión Reserva N° " + this.idIngreso, {
-														title: "Aviso",
-														details: respuestaReservaERP.detail,
-														onClose: function (sAction) {
-															this.BusyDialogCargando.close();
-															if(this.docSAP !== " - "){
-														    	this.resetMasterDetail();
-															}
-														}.bind(this)
-													});
-
-												
-
-											}.bind(this));
+									/*	if (this.GeneraDoc) {
+											this.strVerifica += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong>";
+										}*/
+										MessageBox.information("Gestión Reserva N° " + this.idIngreso, {
+											title: "Aviso",
+											details: this.strVerifica,
+											onClose: function (sAction) {
+												this.BusyDialogCargando.close();
+												//if(this.docSAP === " - "){
+												this.resetMasterDetail();
+												//}
+											}.bind(this)
+										});
+									}.bind(this));
 								}
 							}.bind(this)
 
 						});
-						
 
 					}.bind(this));
 
