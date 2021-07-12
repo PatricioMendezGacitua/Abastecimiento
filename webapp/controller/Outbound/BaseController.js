@@ -94,6 +94,56 @@ sap.ui.define([
 				}.bind(this));
 
 		},
+		
+		busquedaPedidoTraslado: function (campo, dato) {
+			return new Promise(
+				function resolver(resolve) {
+
+					var aFil = [];
+					var tFilterIkey = new sap.ui.model.Filter({
+						path: "Ikey",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: "1"
+					});
+					aFil.push(tFilterIkey);
+
+					var tFilterCampoBusqueda = new sap.ui.model.Filter({
+						path: campo,
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: dato
+					});
+					aFil.push(tFilterCampoBusqueda);
+
+					this.getView().getModel("oModelSAPERP").read('/BuscarPedidoTrasladoSet', {
+						filters: aFil,
+						success: function (oResult) {
+							var datos = oResult.results;
+							if (datos.length > 0) {
+								resolve({
+									mensajeError: "",
+									datos: datos,
+									resolve: true
+								});
+							} else {
+								resolve({
+									mensajeError: "Documento sin posiciones para recepcionar",
+									datos: [],
+									resolve: true
+								});
+							}
+						}.bind(this),
+						error: function (oError) {
+							resolve({
+								mensajeError: "Intente más tarde",
+								datos: [],
+								resolve: false
+							});
+						}.bind(this)
+					});
+
+				}.bind(this));
+
+		},
 
 		inventariarEnHANA: function (json) {
 			return new Promise(
@@ -167,30 +217,25 @@ sap.ui.define([
 				}.bind(this));
 		},
 		cargaDetalle: function (datos, reserva, dataPos) {
-			var str="<ul>";
-			var cont=0;
-			var contPB=0;
+			var str = "<ul>";
+			var cont = 0;
+			var contPB = 0;
 			return new Promise(
 				function resolver(resolve, reject) {
 
 					if (datos.length === 0) {
 						str += "<li>Para la posición: " + dataPos.Rspos + " ha ocurrido el siguiente error: " + dataPos.Message + ". </li>";
-                        resolve({
-									resolve: true,
-									detail: str
-									
+						resolve({
+							resolve: true,
+							detail: str
 
-								});
+						});
 					} else {
 
 						var functionRecorrer = function recorrer(item, i) {
-							
-							
-							
-							
+
 							if (i === item.length) {
 
-								
 								resolve({
 									resolve: true,
 									detail: str,
@@ -200,21 +245,19 @@ sap.ui.define([
 
 							} else {
 								if (item[i].Type === "I") {
-									
-									
-									
-									if(dataPos[i].Estado==="EP"){
-										str += "<li>Para la posición " + item[i].Rspos + " se ha generado la reserva con exito con el siguiente mensaje: " + item[i].Message + ". </li>";
-								    	dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
-								    	this.docSAP = dataPos[i].DocSAP;
-								    	dataPos[i].Resultado = true;
-										
-									}else{
+
+									if (dataPos[i].Estado === "EP") {
+										str += "<li>Para la posición " + item[i].Rspos + " se ha generado la reserva con exito con el siguiente mensaje: " + item[
+											i].Message + ". </li>";
+										dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
+										this.docSAP = dataPos[i].DocSAP;
+										dataPos[i].Resultado = true;
+
+									} else {
 										str += "<li>Para la posición " + item[i].Rspos + " se ha cambiado de estado a En Preparación. </li>";
 										dataPos[i].DocSAP = " - ";
 										dataPos[i].Resultado = false;
 									}
-									
 
 								} else {
 									this.str += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message + ". </li>";
@@ -228,7 +271,7 @@ sap.ui.define([
 							}
 
 						}.bind(this);
-                        //eliminar reserva posicion 00000
+						//eliminar reserva posicion 00000
 						functionRecorrer(datos, 0);
 					}
 				}.bind(this));
@@ -237,29 +280,27 @@ sap.ui.define([
 			return new Promise(
 				function resolver(resolve, reject) {
 					console.log(datos);
-					
+
 					var reserva = datos.NavGestReservaPos[0].Rsnum;
 					var posicion = datos.NavGestReservaPos[0].Rspos;
-					
-				
 
 					this.getView().getModel("oModelSAPERP").create('/GestReservaSet ', datos, {
 						success: function (oResult) {
 							console.log(oResult);
 							var data = oResult.NavGestReservaDoc.results;
 							var dataPos = oResult.NavGestReservaPos.results;
-                             
+
 							if (data.length > 0) {
 
 								this.cargaDetalle(data, reserva, dataPos).then(function (respuestaCargaDetalle) {
 
 									this.cargaHana(respuestaCargaDetalle.datosPosicion, tipo).then(function (
 										respuestacargaHana) {
-                                        respuestaCargaDetalle.detail += "</ul>";
+										respuestaCargaDetalle.detail += "</ul>";
 										resolve({
-                                            
+
 											resolve: true,
-											detail: respuestaCargaDetalle.detail, 
+											detail: respuestaCargaDetalle.detail,
 											error: ""
 										});
 
@@ -272,31 +313,25 @@ sap.ui.define([
 						error: function (oError) {
 
 							var dataError = [];
-								var mensaje = "";
+							var mensaje = "";
 							try {
 								mensaje = JSON.parse(oError.responseText).error.message.value;
 								var record = {};
-								record.Rspos = posicion; 
+								record.Rspos = posicion;
 								record.Message = mensaje;
-							
-								this.cargaDetalle(dataError, reserva, record).then(function (respuestaCargaDetalle) {
-									  respuestaCargaDetalle.detail += "</ul>";
-									  this.docSAP = " - ";
-								  	resolve({
-                                            
-											resolve: true,
-											detail: respuestaCargaDetalle.detail,
-											error: ""
-										});	
-									
 
-							}.bind(this));
-								
-								
-								
-								
-								
-								
+								this.cargaDetalle(dataError, reserva, record).then(function (respuestaCargaDetalle) {
+									respuestaCargaDetalle.detail += "</ul>";
+									this.docSAP = " - ";
+									resolve({
+
+										resolve: true,
+										detail: respuestaCargaDetalle.detail,
+										error: ""
+									});
+
+								}.bind(this));
+
 								resolve({
 
 									error: mensaje,
@@ -309,13 +344,6 @@ sap.ui.define([
 									resolve: false
 								});
 							}
-							
-							
-							
-
-							
-
-						
 
 						}.bind(this)
 					});
@@ -342,7 +370,7 @@ sap.ui.define([
 							data[e].maxData = data[e].CantSolicitada - data[e].CantPreparada;
 							data[e].value = 0;
 							data[e].ckSelected = false;
-						    data[e].estadoPosicion= (data[e].Estado==="PB")?"Preparación Bodega": "En Preparación";
+							data[e].estadoPosicion = (data[e].Estado === "PB") ? "Preparación Bodega" : "En Preparación";
 							(data[e].Lgpbe.length > 0) ? arrayUbicaciones.push(data[e].Lgpbe): "";
 							data[e].order = order;
 							order++;
@@ -1124,9 +1152,6 @@ sap.ui.define([
 			});
 
 		},
-		
-		
-	
 
 		_dialogActualizaDatos: function (oEvent) {
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
@@ -1165,16 +1190,13 @@ sap.ui.define([
 			var obj = oEvent.getSource();
 			var datos = obj.getBindingContext("oModeloDataTemporalDetailReserva").getObject();
 			var path = obj.getBindingContext("oModeloDataTemporalDetailReserva").getPath();
-			path = path.slice(1,path.length);
+			path = path.slice(1, path.length);
 			this.byId("idtableLPReserva").getItems()[path].getContent()[0].getItems()[0].getContent()[6].getItems()[1].setType("Ghost");
-			
-			
-        
+
 			var numeroCentro = datos.Werks;
 			this.seleccionAlmacen = obj.getText();
 			this.openListAlmacenesBase(numeroCentro, obj);
-			
-			
+
 		},
 
 		openListAlmacenesCompleta: function () {
@@ -1404,6 +1426,32 @@ sap.ui.define([
 
 				}.bind(this));
 
+		},
+
+		onSearchCentro: function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var filterFinal = [];
+			if (sValue.trim().length > 0) {
+				var oFilterCentro = new sap.ui.model.Filter({
+					path: "Werks",
+					operator: sap.ui.model.FilterOperator.Contains,
+					value1: sValue,
+					caseSensitive: false
+				});
+				var oFilterTextoCentro = new sap.ui.model.Filter({
+					path: "Name1",
+					operator: sap.ui.model.FilterOperator.Contains,
+					value1: sValue,
+					caseSensitive: false
+				});
+
+				filterFinal = new sap.ui.model.Filter({
+					filters: [oFilterCentro, oFilterTextoCentro],
+					and: false
+				});
+			}
+			var oBinding = oEvent.getParameter("itemsBinding");
+			oBinding.filter(filterFinal);
 		},
 
 		getCentrosERP: function () {

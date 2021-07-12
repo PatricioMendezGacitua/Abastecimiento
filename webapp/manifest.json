@@ -130,11 +130,9 @@
 			}
 		},
 		"resources": {
-			"css": [
-				{
-					"uri": "css/style.css"
-				}
-			]
+			"css": [{
+				"uri": "css/style.css"
+			}]
 		},
 		"routing": {
 			"config": {
@@ -146,127 +144,125 @@
 				"controlId": "app",
 				"clearControlAggregation": false
 			},
-			"routes": [
-				{
-					"name": "cargando",
-					"pattern": "",
-					"target": "Cargando"
-				},
-				{
-					"name": "Menu",
-					"pattern": "Menu",
-					"target": [
-						"Menu"
-					]
-				},
-				{
-					"name": "ingresos",
-					"pattern": "Ingresos",
-					"target": [
-						"Ingresos"
-					]
-				},
-				{
-					"name": "traspaso",
-					"pattern": "Traspaso",
-					"target": [
-						"Traspasos"
-					]
-				},
-				{
-					"name": "traslado",
-					"pattern": "Traslado",
-					"target": [
-						"Detail_Traslado"
-					]
-				},
-				{
-					"name": "inventario",
-					"pattern": "Inventario",
-					"target": [
-						"Inventarios"
-					]
-				},
-				{
-					"name": "gestion_bodega",
-					"pattern": "GestionBodega",
-					"target": [
-						"GestionBodega"
-					]
-				},
-				{
-					"name": "Recepciones_Master",
-					"pattern": "Recepciones_Master/{estadoIngreso}",
-					"target": [
-						"Detail_Zero",
-						"Master_Recepciones"
-					]
-				},
-				{
-					"name": "reserva_master",
-					"pattern": "reserva_master/{estadoReserva}",
-					"target": [
-						"Detail_Zero_Outbound",
-						"Master_Reserva"
-					]
-				},
-				{
-					"name": "reserva_master_Dos",
-					"pattern": "reserva_master/{estadoReserva}/{idreserva}",
-					"target": [
-						"Detail_Zero_Outbound",
-						"Master_Reserva"
-					]
-				},
-				{
-					"name": "Entrega_master",
-					"pattern": "Entrega_master/{estadoReserva}",
-					"target": [
-						"Detail_Zero_Outbound_Entrega",
-						"Master_Entrega"
-					]
-				},
-				{
-					"name": "Entrega_master_Dos",
-					"pattern": "Entrega_master/{estadoReserva}/{idreserva}",
-					"target": [
-						"Detail_Zero_Outbound_Entrega",
-						"Master_Entrega"
-					]
-				},
-				{
-					"name": "Recepciones_Master_Dos",
-					"pattern": "Recepciones_Masters/{estadoIngreso}",
-					"target": [
-						"Detail_Zero",
-						"Master_Recepciones"
-					]
-				},
-				{
-					"name": "Recepciones_Detail",
-					"pattern": "Recepciones_Detail/{ingreso}/{estadoIngreso}",
-					"target": [
-						"Master_Recepciones",
-						"Detail_Recepciones"
-					]
-				},
-				{
-					"name": "Reserva_Detail",
-					"pattern": "Reserva_Detail/{ingreso}/{idReserva}",
-					"target": [
-						"Master_Reserva",
-						"Detail_Reserva"
-					]
-				},
-				{
-					"name": "Entrega_Detail",
-					"pattern": "Entrega_Detail/{ingreso}/{idReserva}",
-					"target": [
-						"Master_Entrega",
-						"Detail_Entrega"
-					]
-				}
-			],
+			"routes": [{
+				"name": "cargando",
+				"pattern": "",
+				"target": "Cargando"
+			}, {
+				"name": "Menu",
+				"pattern": "Menu",
+				"target": [
+					"Menu"
+				]
+			}, {
+				"name": "ingresos",
+				"pattern": "Ingresos",
+				"target": [
+					"Ingresos"
+				]
+			}, {
+				"name": "traspaso",
+				"pattern": "Traspaso",
+				"target": [
+					"Traspasos"
+				]
+			}, {
+				"name": "inventario",
+				"pattern": "Inventario",
+				"target": [
+					"Inventarios"
+				]
+			}, {
+				"name": "gestion_bodega",
+				"pattern": "GestionBodega",
+				"target": [
+					"GestionBodega"
+				]
+			}, {
+				"name": "Recepciones_Master",
+				"pattern": "Recepciones_Master/{estadoIngreso}",
+				"target": [
+					"Detail_Zero",
+					"Master_Recepciones"
+				]
+			}, {
+				"name": "reserva_master",
+				"pattern": "reserva_master/{estadoReserva}",
+				"target": [
+					"Detail_Zero_Outbound",
+					"Master_Reserva"
+				]
+			}, {
+				"name": "reserva_master_Dos",
+				"pattern": "reserva_master/{estadoReserva}/{idreserva}",
+				"target": [
+					"Detail_Zero_Outbound",
+					"Master_Reserva"
+				]
+			}, {
+				"name": "Entrega_master",
+				"pattern": "Entrega_master/{estadoReserva}",
+				"target": [
+					"Detail_Zero_Outbound_Entrega",
+					"Master_Entrega"
+				]
+			}, {
+				"name": "Entrega_master_Dos",
+				"pattern": "Entrega_master/{estadoReserva}/{idreserva}",
+				"target": [
+					"Detail_Zero_Outbound_Entrega",
+					"Master_Entrega"
+				]
+			}, {
+				"name": "Recepciones_Master_Dos",
+				"pattern": "Recepciones_Masters/{estadoIngreso}",
+				"target": [
+					"Detail_Zero",
+					"Master_Recepciones"
+				]
+			}, {
+				"name": "Recepciones_Detail",
+				"pattern": "Recepciones_Detail/{ingreso}/{estadoIngreso}",
+				"target": [
+					"Master_Recepciones",
+					"Detail_Recepciones"
+				]
+			}, {
+				"name": "Reserva_Detail",
+				"pattern": "Reserva_Detail/{ingreso}/{idReserva}",
+				"target": [
+					"Master_Reserva",
+					"Detail_Reserva"
+				]
+			}, {
+				"name": "Entrega_Detail",
+				"pattern": "Entrega_Detail/{ingreso}/{idReserva}",
+				"target": [
+					"Master_Entrega",
+					"Detail_Entrega"
+				]
+			}, {
+				"name": "Traslados_Master",
+				"pattern": "Traslados_Master",
+				"target": [
+					"Detail_Zero_Traslados",
+					"Master_Traslados"
+				]
+			}, {
+				"name": "Traslados_Detail",
+				"pattern": "Traslados_Detail/{pedidoTraslado}",
+				"target": [
+					"Master_Traslados",
+					"Detail_Traslados"
+				]
+			}, {
+				"name": "Traslados_Master_Dos",
+				"pattern": "Traslados_Masters",
+				"target": [
+					"Detail_Zero_Traslados",
+					"Master_Traslados"
+				]
+			}],
 			"targets": {
 				"Cargando": {
 					"viewName": "cargando"
@@ -309,10 +305,6 @@
 					"viewType": "XML",
 					"viewName": "Outbound.Traspasos"
 				},
-				"Detail_Traslado": {
-					"viewType": "XML",
-					"viewName": "Outbound.Detail_Traslado"
-				},
 				"Inventarios": {
 					"viewType": "XML",
 					"viewName": "Outbound.Inventarios"
@@ -344,6 +336,27 @@
 				"Master_Entrega": {
 					"viewType": "XML",
 					"viewName": "Outbound.Master_Entrega"
+				},
+				"Master_Traslados": {
+					"viewName": "Outbound.Master_Traslados",
+					"viewLevel": 0,
+					"parent": "splitscreenTarget",
+					"controlId": "splitContainer",
+					"controlAggregation": "masterPages"
+				},
+				"Detail_Zero_Traslados": {
+					"viewName": "Outbound.Detail_Zero_Traslados",
+					"viewLevel": 0,
+					"parent": "splitscreenTarget",
+					"controlId": "splitContainer",
+					"controlAggregation": "detailPages"
+				},
+				"Detail_Traslados": {
+					"viewName": "Outbound.Detail_Traslados",
+					"viewLevel": 0,
+					"parent": "splitscreenTarget",
+					"controlId": "splitContainer",
+					"controlAggregation": "detailPages"
 				}
 			}
 		}

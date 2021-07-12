@@ -170,7 +170,7 @@ sap.ui.define([
 
 		navToTraslado: function () {
 			this._oStorage.put("navegacion_IngresoMercaderia", "si");
-			this._route.navTo("traslado");
+			this._route.navTo("Traslados_Master");
 		},
 
 		navToInventario: function () {
