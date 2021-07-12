@@ -309,7 +309,7 @@ sap.ui.define([
 							var dataError = [];
 							var mensaje = "";
 							try {
-								mensaje = JSON.parse(oError.responseText).error.message.value;
+								mensaje = oError.message;
 								var record = {};
 								record.Rspos = posicion;
 								record.Message = mensaje;
@@ -594,7 +594,7 @@ sap.ui.define([
 						}.bind(this),
 						error: function (oError) {
 
-							var err = JSON.parse(oError.responseText);
+							var err = oError.message;;
 
 							resolve({
 								mensajeError: "Error detectado: " + err.error.message.value,

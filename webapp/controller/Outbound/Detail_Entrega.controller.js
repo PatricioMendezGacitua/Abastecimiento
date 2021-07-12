@@ -24,6 +24,7 @@ sap.ui.define([
 			this.getView().byId("tituloDetalleSolicitudView").setText("Detalle Reserva N°" + this.idIngreso);
 			this.getView().byId("oPageDetailId").scrollTo(0, 0);
 			this.getView().setModel(new JSONModel([]), "oModelImage");
+			this.getView().setModel(new JSONModel([]), "oModelListaAdjuntos");
 			this.byId("mensajeFoto").setVisible(false);
 			this.byId("UploadCollection").setVisible(false);
 			this.getView().setModel(model, "oModeloDataTemporalDetailEntrega");

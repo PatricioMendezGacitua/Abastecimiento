@@ -35,7 +35,7 @@
 						<VBox class="sapUiTinyMargin">
 							<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
 								<VBox alignContent="Start" alignItems="Start">
-									<CheckBox width="100%" select="onSelectChangeItem" selected="false"></CheckBox>
+									<CheckBox width="100%" select="onSelectChangeItem" selected="{oModeloDataTemporalDetailEntrega>ckSelected}"></CheckBox>
 									<layoutData>
 										<l:GridData span="XL4 L4 M2 S2"/>
 									</layoutData>
