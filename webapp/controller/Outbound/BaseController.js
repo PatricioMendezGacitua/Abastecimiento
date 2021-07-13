@@ -257,7 +257,7 @@ sap.ui.define([
 											this.GeneraDoc = true;
 											
 											this.strVerifica += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong> </p>";
-							
+							 
 
 										} else {
 											this.strVerifica  += "<li>Para la posición " + item[i].Rspos + " se ha cambiado de estado a En Preparación. </li>";

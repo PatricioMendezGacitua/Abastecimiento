@@ -170,7 +170,7 @@ sap.ui.define([
 			
 			            this.getView().byId("oSearchFieldBuscarEntregaId").setValue();
 			//this.iniciarView("X", this.idEstadoIngreso);
-            var sValueNroSAP = "ADGCONSULTIN";
+            var sValueNroSAP = "JCONTRERAS";
             var sValueTipo = "PRE";
           
 			this.busquedaReserva(sValueNroSAP,sValueTipo, "Entrega").then(function (respuestabusquedaReserva) {
