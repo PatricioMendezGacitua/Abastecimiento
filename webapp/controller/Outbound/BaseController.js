@@ -94,6 +94,56 @@ sap.ui.define([
 				}.bind(this));
 
 		},
+		
+		busquedaPedidoTraslado: function (campo, dato) {
+			return new Promise(
+				function resolver(resolve) {
+
+					var aFil = [];
+					var tFilterIkey = new sap.ui.model.Filter({
+						path: "Ikey",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: "1"
+					});
+					aFil.push(tFilterIkey);
+
+					var tFilterCampoBusqueda = new sap.ui.model.Filter({
+						path: campo,
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: dato
+					});
+					aFil.push(tFilterCampoBusqueda);
+
+					this.getView().getModel("oModelSAPERP").read('/BuscarPedidoTrasladoSet', {
+						filters: aFil,
+						success: function (oResult) {
+							var datos = oResult.results;
+							if (datos.length > 0) {
+								resolve({
+									mensajeError: "",
+									datos: datos,
+									resolve: true
+								});
+							} else {
+								resolve({
+									mensajeError: "Documento sin posiciones para recepcionar",
+									datos: [],
+									resolve: true
+								});
+							}
+						}.bind(this),
+						error: function (oError) {
+							resolve({
+								mensajeError: "Intente más tarde",
+								datos: [],
+								resolve: false
+							});
+						}.bind(this)
+					});
+
+				}.bind(this));
+
+		},
 
 		inventariarEnHANA: function (json) {
 			return new Promise(
@@ -1420,6 +1470,32 @@ sap.ui.define([
 
 				}.bind(this));
 
+		},
+
+		onSearchCentro: function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var filterFinal = [];
+			if (sValue.trim().length > 0) {
+				var oFilterCentro = new sap.ui.model.Filter({
+					path: "Werks",
+					operator: sap.ui.model.FilterOperator.Contains,
+					value1: sValue,
+					caseSensitive: false
+				});
+				var oFilterTextoCentro = new sap.ui.model.Filter({
+					path: "Name1",
+					operator: sap.ui.model.FilterOperator.Contains,
+					value1: sValue,
+					caseSensitive: false
+				});
+
+				filterFinal = new sap.ui.model.Filter({
+					filters: [oFilterCentro, oFilterTextoCentro],
+					and: false
+				});
+			}
+			var oBinding = oEvent.getParameter("itemsBinding");
+			oBinding.filter(filterFinal);
 		},
 
 		getCentrosERP: function () {

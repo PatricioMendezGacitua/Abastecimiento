@@ -561,32 +561,6 @@ sap.ui.define([
 			event.getSource().suggest();
 		},
 
-		onSearchCentro: function (oEvent) {
-			var sValue = oEvent.getParameter("value");
-			var filterFinal = [];
-			if (sValue.trim().length > 0) {
-				var oFilterCentro = new sap.ui.model.Filter({
-					path: "Werks",
-					operator: sap.ui.model.FilterOperator.Contains,
-					value1: sValue,
-					caseSensitive: false
-				});
-				var oFilterTextoCentro = new sap.ui.model.Filter({
-					path: "Name1",
-					operator: sap.ui.model.FilterOperator.Contains,
-					value1: sValue,
-					caseSensitive: false
-				});
-
-				filterFinal = new sap.ui.model.Filter({
-					filters: [oFilterCentro, oFilterTextoCentro],
-					and: false
-				});
-			}
-			var oBinding = oEvent.getParameter("itemsBinding");
-			oBinding.filter(filterFinal);
-		},
-
 		btnReestablecerTraspaso: function () {
 			this.getView().byId("oPageTraspasoId").scrollTo(0, 0);
 			var oInputCentroCTraspaso = this.getView().byId("oInputCentroCTraspaso");

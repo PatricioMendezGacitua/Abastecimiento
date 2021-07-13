@@ -1,0 +1,151 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout"
+	controllerName="com.gasco.Abastecimiento.controller.Outbound.Detail_Traslados" xmlns:html="http://www.w3.org/1999/xhtml">
+	<html:style type="text/css">
+		div[data-mydataT="0"]>div { opacity: 0.3; }
+	</html:style>
+	<Page id="oPageDetailId" showHeader="true" showFooter="true">
+		<customHeader>
+			<Bar>
+				<contentLeft>
+					<Button visible="false" id="buttonMenuId" icon="sap-icon://menu2" press="volverAlListMenu"></Button>
+				</contentLeft>
+				<contentMiddle>
+					<Title id="tituloDetalleSolicitudView" text="Detalle Pedido Traslado"></Title>
+				</contentMiddle>
+				<contentRight>
+					<Button icon="sap-icon://synchronize" tooltip="Actualizar" type="Transparent" press="iniciarView"/>
+					<Button visible="false" id="buttonMenu2Id" icon="sap-icon://vertical-grip" type="Transparent" tooltip="Más Opciones" press="openMoreOption"/>
+				</contentRight>
+			</Bar>
+		</customHeader>
+		<content>
+			<l:Grid hSpacing="0" vSpacing="0" width="100%">
+				<VBox>
+					<layoutData>
+						<l:GridData span="XL2 L2 M12 S12" visibleXL="true" visibleL="true" visibleM="false" visibleS="false"/>
+					</layoutData>
+				</VBox>
+				<VBox>
+					<l:Grid id="oGridRecepcionarId" hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMargin">
+						<VBox class="sapUiSmallMarginTop">
+							<Label text=" Número de Pedido" design="Bold" required="true" width="100%"></Label>
+							<Input id="oInputNroPedidoTraslado" enabled="false" width="100%"></Input>
+							<layoutData>
+								<l:GridData span="XL12 L12 M12 S12"/>
+							</layoutData>
+						</VBox>
+						<VBox>
+							<Label text=" Centro" required="true" design="Bold" width="100%"></Label>
+							<Input id="oInputCentroTraslado" enabled="false" width="100%"></Input>
+							<layoutData>
+								<l:GridData span="XL6 L6 M6 S6"/>
+							</layoutData>
+						</VBox>
+						<VBox>
+							<Label text=" Almacén" required="true" design="Bold"></Label>
+							<Input id="oInputAlmacenTraslado" enabled="false" width="100%"></Input>
+							<layoutData>
+								<l:GridData span="XL6 L6 M6 S6"/>
+							</layoutData>
+						</VBox>
+					</l:Grid>
+					<l:VerticalLayout id="oVBoxRecepcionId" class="sapUiSmallMargin" width="auto">
+						<Toolbar>
+							<Title class="sapUiTinyMarginBegin" id="oTitlePosicionesIdTraslados" text="Posiciones (0)"></Title>
+						</Toolbar>
+						<List sticky="HeaderToolbar" id="idtableLPHIRecepcion" selectionChange="openPH" updateFinished="countTitleLPH" mode="None"
+							items="{oModeloDataTraslados>/}" width="100%">
+							<items>
+								<CustomListItem type="Inactive">
+									<l:VerticalLayout class="sapUiTinyMargin" width="auto">
+										<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%" class="sapUiTinyMarginTop">
+											<VBox>
+												<Label class="fontSizeSmall" text="Código Material:"></Label>
+												<Text class="fontBold" width="100%" text="{oModeloDataTraslados>Matnr}" wrapping="true"></Text>
+												<layoutData>
+													<l:GridData span="XL4 L4 M4 S4"/>
+												</layoutData>
+											</VBox>
+											<VBox>
+												<Label class="font-xSmaller" text="Ubicación:" textAlign="Center" width="100%"></Label>
+												<Text class="fontBold" width="100%" text="{oModeloDataTraslados>Lgpbe}" wrapping="true" textAlign="Center"></Text>
+												<layoutData>
+													<l:GridData span="XL4 L4 M4 S4"/>
+												</layoutData>
+											</VBox>
+											<VBox>
+												<Label class="fontSizeSmall" text="Posición:" textAlign="Center" width="100%"></Label>
+												<Text class="fontBold" width="100%" text="{oModeloDataTraslados>Ebelp}" wrapping="true" textAlign="Center"></Text>
+												<layoutData>
+													<l:GridData span="XL4 L4 M4 S4"/>
+												</layoutData>
+											</VBox>
+											<VBox>
+												<Label class="fontSizeSmall" text="Denominación Material:" width="100%"></Label>
+												<Text class="fontBold" width="100%" text="{oModeloDataTraslados>Txz01}" wrapping="true"></Text>
+												<layoutData>
+													<l:GridData span="XL12 L12 M12 S12"/>
+												</layoutData>
+											</VBox>
+										</l:Grid>
+										<l:Grid hSpacing="0.5" vSpacing="0.5" width="100%">
+											<VBox>
+												<Label class="fontSizeSmall" text="Cant. Pedido:" width="100%"></Label>
+												<Text class="fontBold" width="100%" text="{oModeloDataTraslados>Menge}" wrapping="true"></Text>
+												<layoutData>
+													<l:GridData span="XL6 L6 M6 S6"/>
+												</layoutData>
+											</VBox>
+											<VBox>
+												<Label class="fontSizeSmall" text="Und. Medida:" textAlign="Begin" width="100%"></Label>
+												<Text class="fontBold" width="100%" text="{oModeloDataTraslados>Meins}" wrapping="true" textAlign="Begin"></Text>
+												<layoutData>
+													<l:GridData span="XL6 L6 M6 S6"/>
+												</layoutData>
+											</VBox>
+											<VBox>
+												<Label class="fontSizeSmall" text="Cant. Picking:" textAlign="Center" width="100%"></Label>
+												<StepInput max="{path:'oModeloDataTraslados>Menge', formatter: '.formatterInteger'}" min="0" width="100%" textAlign="Center"/>
+												<layoutData>
+													<l:GridData span="XL12 L12 M12 S12"/>
+												</layoutData>
+											</VBox>
+											<VBox visible="{path:'oModeloDataTraslados>loteado', formatter: '.visibleLoteoTraslados'}">
+												<Label class="fontSizeSmall" text="Lote:" textAlign="Left" width="100%"></Label>
+												<Select items="{oModeloDataTraslados>lotes}" width="100%">
+													<core:Item text="" key=""></core:Item>
+												</Select>
+												<layoutData>
+													<l:GridData span="XL12 L12 M12 S12"/>
+												</layoutData>
+											</VBox>
+										</l:Grid>
+										<l:customData>
+											<core:CustomData key="mydataT" value="{oModeloDataTraslados>Menge}" writeToDom="true"/>
+										</l:customData>
+									</l:VerticalLayout>
+								</CustomListItem>
+							</items>
+						</List>
+					</l:VerticalLayout>
+					<layoutData>
+						<l:GridData span="XL8 L8 M12 S12" visibleXL="true" visibleL="true" visibleM="true" visibleS="true"/>
+					</layoutData>
+				</VBox>
+				<VBox>
+					<layoutData>
+						<l:GridData span="XL2 L2 M12 S12" visibleXL="true" visibleL="true" visibleM="false" visibleS="false"/>
+					</layoutData>
+				</VBox>
+			</l:Grid>
+		</content>
+		<footer>
+			<Bar>
+				<contentMiddle></contentMiddle>
+				<contentRight>
+					<Button id="oButtonTrasladarId" type="Emphasized" text="Trasladar" press="onRecepcionarIngresoPorSupervisor"></Button>
+				</contentRight>
+			</Bar>
+		</footer>
+	</Page>
+</mvc:View>

@@ -8,7 +8,7 @@ sap.ui.define([], function () {
 				function resolver(resolve, reject) {
 					var userMail = "";
 					$.ajax({
-						url: "/apiusuario/services/userapi/currentUser",
+						url: "/services/userapi/currentUser",
 						method: "GET",
 						success: function (oResult) {
 							var datosUser = oResult;
