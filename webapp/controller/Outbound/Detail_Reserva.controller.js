@@ -23,6 +23,8 @@ sap.ui.define([
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
 			if (this._oStorage.get("navegacion_IngresoMercaderia") === "si") {
 				this._oStorage.put("navegacion_IngresoMercaderia", "no");
+				this.userSCPCod = this._oStorage.get("user_code_IngresoMercaderia");
+				this.userSCPName = this._oStorage.get("user_name_IngresoMercaderia");
 
 				var model = sap.ui.getCore().getModel("oModeloTemporalesReservaCore").getData();
 				this.openBusyDialogCargando();
@@ -302,7 +304,7 @@ sap.ui.define([
 			var flagCant = true;
 			var flagSeleccion = false;
 			var flagAlmacen = true;
-			
+
 			var msge = "";
 			return new Promise(
 				function resolver(resolve, reject) {
@@ -355,7 +357,6 @@ sap.ui.define([
 
 							} else {
 
-								
 								msge = "Debes seleccionar al menos una posición.";
 								if (cantEnv > 0) {
 									item[i].getContent()[0].getItems()[0].getContent()[11].getItems()[0].setValueState("Error");
@@ -438,6 +439,11 @@ sap.ui.define([
 								recordNavPos.CantEnviar = parseFloat(cantEnv).toFixed(2);
 								recordNavPos.CantPreparada = parseFloat(elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().CantPreparada)
 									.toFixed(2);
+								
+									
+									
+									
+									
 								recordNavPos.Meins = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Meins;
 								recordNavPos.Ekgrp = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Ekgrp;
 								recordNavPos.Bodeguero = elementt.getBindingContext("oModeloDataTemporalDetailReserva").getObject().Bodeguero;
@@ -472,7 +478,7 @@ sap.ui.define([
 			this.docSAP = " - ";
 			this.contPB = 0;
 			this.cont = 0;
-			
+
 			this.verificaReserva(listItems).then(function (respVerificaReserva) {
 				if (!respVerificaReserva.resultado) {
 					MessageToast.show(respVerificaReserva.detail, {
@@ -489,14 +495,13 @@ sap.ui.define([
 							styleClass: "",
 							onClose: function (sAction) {
 								if (sAction === "Si") {
-
-									
+								console.log(resplistaCant);
 									this.openBusyDialogCargando();
 									this.enviaPorPosicion(resplistaCant.datos, "Reserva").then(function (respuestaReservaERP) {
 
-									/*	if (this.GeneraDoc) {
-											this.strVerifica += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong>";
-										}*/
+										/*	if (this.GeneraDoc) {
+												this.strVerifica += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong>";
+											}*/
 										MessageBox.information("Gestión Reserva N° " + this.idIngreso, {
 											title: "Aviso",
 											details: this.strVerifica,

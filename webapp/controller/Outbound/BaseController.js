@@ -244,7 +244,14 @@ sap.ui.define([
 									/*	detail: this.strVerifica,*/
 									datosPosicion: dataPos
 
-								});
+								this.registrarLog(this.mensajeLog, this.datosCreacion).then(function (respuestaRegistrarLog) {
+									resolve({
+										resolve: true,
+										
+										datosPosicion: dataPos
+
+									});
+								}.bind(this));
 
 							} else {
 								if (item[i].Type === "I") {
@@ -341,7 +348,6 @@ sap.ui.define([
 									this.cargaHana(respuestaCargaDetalle.datosPosicion, tipo).then(function (
 										respuestacargaHana) {
 										//respuestaCargaDetalle.detail += "</ul>";
-										resolve({
 
 											resolve: true,
 
@@ -587,6 +593,7 @@ sap.ui.define([
 							}
 							if (datos.length > 0) {
 								console.log(datos);
+								
 
 								for (var e = 0; e < datos.length; e++) {
 									var record = {};
@@ -1237,6 +1244,7 @@ sap.ui.define([
 			var datos = obj.getBindingContext("oModeloDataTemporalDetailReserva").getObject();
 			var path = obj.getBindingContext("oModeloDataTemporalDetailReserva").getPath();
 			path = path.slice(1, path.length);
+			
 			this.byId("idtableLPReserva").getItems()[path].getContent()[0].getItems()[0].getContent()[6].getItems()[1].setType("Ghost");
 
 			var numeroCentro = datos.Werks;
@@ -1936,7 +1944,14 @@ sap.ui.define([
 					} else if (actividad === "Tarea_Finalizada") {
 						this.contenido = "La actividad que se acaba de realizar corresponde a la finalización de la tarea N°" + datos.ID_TAREA +
 							", acción realizada por el usuario " + this.userSCPCod;
+					} else if (actividad === "Paso_reserva_corralito"){
+						this.contenido = "La posición " + datos.Rspos + " de la Reserva N° " + datos.reserva + " enviada a corralito con número documento sap " + datos.NRO_DOCUMENTO_SAP + ", acción realizada por el usuario " + this.userSCPCod;
+					} else if (actividad === "Cambio_estado_reserva"){
+						this.contenido = "La posición " + datos.Rspos + " de la Reserva N° " + datos.reserva + "  cambiada de estado a En preparación, acción realizada por el usuario " + this.userSCPCod;
+					} else if (actividad === "Entrega_realizada"){
+						this.contenido = "Reserva N° " + datos.reserva + " fue entregada con exito, acción realizada por el usuario " + this.userSCPCod;
 					}
+					
 
 					this.contenidoLog = {
 						ID_LOG: 0,
