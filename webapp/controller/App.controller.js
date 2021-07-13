@@ -5,7 +5,6 @@ sap.ui.define([
 
 	return Controller.extend("com.gasco.Abastecimiento.controller.App", {
 		onInit: function () {
-
 		}
 	});
 });

@@ -31,7 +31,7 @@ sap.ui.define([
 			this.userSCPCod = this._oStorage.get("user_code_IngresoMercaderia");
 			this.userSCPName = this._oStorage.get("user_name_IngresoMercaderia");
 
-			this.InputsViewRecepcionar = [{
+			this.InputsViewTrasladar = [{
 				"id": "oInputNroPedidoTraslado",
 				"required": true,
 				"type": "ip"
@@ -82,10 +82,17 @@ sap.ui.define([
 					var oInputAlmacenTraslado = this.getView().byId("oInputAlmacenTraslado");
 					var oButtonRecepcionar = this.getView().byId("oButtonTrasladarId");
 					oButtonRecepcionar.setEnabled(false);
-					
+
 					oInputNroPedidoTraslado.setValue(data.Ebeln);
 					oInputCentroTraslado.setValue(data.Werks);
 					oInputAlmacenTraslado.setValue(data.Lgort);
+					oInputAlmacenTraslado.setEditable(false);
+
+					if (data.Lgort !== null) {
+						if (data.Lgort.trim().length === 0) {
+							oInputAlmacenTraslado.setEditable(true);
+						}
+					}
 
 					var countSeriado = 0,
 						countLoteado = 0;
@@ -131,6 +138,41 @@ sap.ui.define([
 
 		},
 
+		onValueHelpDialogCloseAlmacen: function (oEvent) {
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			var oInputAlmacenTraslado = this.getView().byId("oInputAlmacenTraslado");
+			oInputAlmacenTraslado.setValue();
+
+			if (oSelectedItem) {
+				oInputAlmacenTraslado.setValue(oSelectedItem.getTitle());
+			}
+
+		},
+
+		openListAlmacenesCompleta: function (oEvent) {
+			this.idAlmacen = oEvent.getSource().getId();
+			if (!this._valueDialogListAlmacenesTraslados) {
+				this._valueDialogListAlmacenesTraslados = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.dialogoListAlmacenAll", this);
+			}
+
+			var numeroCentro = this.getView().byId("oInputCentroTraslado").getValue();
+			var modelAlmacenes = new JSONModel([]);
+			this._valueDialogListAlmacenesTraslados.setModel(modelAlmacenes, "modelAlmacenesC");
+			this._valueDialogListAlmacenesTraslados.open();
+			this._valueDialogListAlmacenesTraslados.setBusy(true);
+
+			this.getAlmacenesERP(numeroCentro).then(function (resultado) {
+				modelAlmacenes.setData(resultado);
+				modelAlmacenes.refresh();
+				if (resultado.length > 100) {
+					modelAlmacenes.setSizeLimit(resultado.length);
+				}
+				this._valueDialogListAlmacenesTraslados.setTitle("Lista de Almacenes (" + modelAlmacenes.getData().length + ")");
+				this._valueDialogListAlmacenesTraslados.setBusy(false);
+			}.bind(this));
+
+		},
+
 		visibleLoteoTraslados: function (sValue) {
 			var retorno = false;
 			if (sValue !== undefined) {
@@ -164,56 +206,25 @@ sap.ui.define([
 
 		},
 
-		onRecepcionarIngresoPorSupervisor: function () {
+		onTrasladar: function () {
 			var contenedor = this.getView().byId("oPageDetailId");
-			this.validar(this.InputsViewRecepcionar, "", contenedor).then(function (respuestaValidar) {
+			this.validar(this.InputsViewTrasladar, "", contenedor).then(function (respuestaValidar) {
 				if (!respuestaValidar) {
 
-					this.validarALoMenosUnoSeleccionadoSupervisor().then(function (respuesta) {
+					this.validarTodasLasPosicionesSobreZero().then(function (respuesta) {
 						if (respuesta) {
-							MessageBox.information('¿Seguro que deseas recepcionar el trabajo realizado?', {
+							MessageBox.information('¿Seguro que deseas trasladar el pedido?', {
 								title: "Aviso",
 								actions: ["Si", "No"],
 								styleClass: "",
 								onClose: function (sAction) {
 									if (sAction === "Si") {
-
-										this.openBusyDialog();
-
-										this.consultaIngresoTomado().then(function (respuestaIngresoTomado) {
-											if (!respuestaIngresoTomado.resolve) {
-												this.recepcionarComoSupervisor();
-											} else {
-												this.BusyDialog.close();
-												MessageBox.information("Este ingreso está siendo tratado actualmente por otro usuario, ¿Desea continuar?", {
-													title: "Aviso",
-													details: "<p><strong>Datos de acceso:</strong></p>\n" +
-														"<ul>" +
-														"<li><strong> > Nombre:</strong> " + respuestaIngresoTomado.data[0].NOMBRE_COMPLETO + "</li>" +
-														"<li><strong> > Fecha:</strong> " + respuestaIngresoTomado.data[0].FECHA + "</li>" +
-														"<li><strong> > Hora:</strong> " + respuestaIngresoTomado.data[0].HORA + "</li>" +
-														"</ul>",
-													contentWidth: "100px",
-													styleClass: "sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer",
-													actions: ["Si", "No"],
-													emphasizedAction: "Si",
-													onClose: function (oAction) {
-														if (oAction === "Si") {
-															this.openBusyDialog();
-															this.recepcionarComoSupervisor();
-														} else {
-															this.volverAlListMenu();
-														}
-													}.bind(this),
-												});
-											}
-										}.bind(this));
-
+										this.trasladoTemporal();
 									}
 								}.bind(this)
 							});
 						} else {
-							MessageToast.show("Ingresa cantidad, asigna almacén y/o selecciona a lo menos una posición para continuar.", {
+							MessageToast.show("Ingresa cantidad de traslado para cada una de las posiciones.", {
 								duration: 6000
 							});
 						}
@@ -223,126 +234,93 @@ sap.ui.define([
 					MessageToast.show("Completa los campos obligatorios para continuar.");
 
 					jQuery.sap.delayedCall(3000, this, function () {
-						this.quitarState(this.InputsView, "");
+						this.quitarState(this.InputsViewTrasladar, "");
 					}.bind(this));
 				}
 			}.bind(this));
 		},
 
-		recepcionarComoSupervisor: function () {
+		trasladoTemporal: function () {
 
+			this.openBusyDialog();
 			var error = "";
-			var ot = this.getView().byId("oInputOCRecepcion").getValue();
-			var guiDespacho = this.getView().byId("oInputGuiaDespachoRecepcion").getValue();
+			var nroPedido = this.getView().byId("oInputNroPedidoTraslado").getValue();
+			var centro = this.getView().byId("oInputCentroTraslado").getValue();
+			var almacen = this.getView().byId("oInputAlmacenTraslado").getValue();
 
-			var fechaConta = this.getView().byId("oDatePickerFCRecepcion").getDateValue();
-			var patente = this.getView().byId("oInputPatenteRecepcion").getValue();
-			var fechaGuia = this.getView().byId("oDatePickerFDRecepcion").getDateValue();
-			var observacion = this.getView().byId("oTextAreaObservacionRecepcion").getValue();
+			var recordDataTrasladoERP = {};
 
-			var recordDataIngresoERP = {};
+			recordDataTrasladoERP.Ikey = "1"; // Edm.String - MaxLength="1" 
 
-			recordDataIngresoERP.Ikey = "1"; // Edm.String - MaxLength="1" 
-			recordDataIngresoERP.IGmCode = "01"; // Edm.String - MaxLength="2" - sap:label="GM_Code" SIEMPRE 01 EN DURO
-			recordDataIngresoERP.IPstngDate = fechaConta; // Edm.DateTime - sap:label="Fecha contab." INGRESO > FECHA_CONTABILIZACION
-			recordDataIngresoERP.IDocDate = fechaGuia; // Edm.DateTime - sap:label="Fecha documento" INGRESO > FECHA_GUIA_DESPACHO
-			recordDataIngresoERP.RefDocNo = guiDespacho.slice(0, 16); // Edm.String - MaxLength="16" - sap:label="Referencia" INGRESO > GUIA_DESPACHO
-			recordDataIngresoERP.BillOfLading = patente.slice(0, 16); // Edm.String - MaxLength="16" - sap:label="Carta" INGRESO > PATENTE
+			recordDataTrasladoERP.NavEjeTrasladoDoc = {
+				Ikey: "1",
+				Ebeln: "", // Edm.String - MaxLength="10" - sap:label="Doc.compras"
+				Vbeln: "" // Edm.String - MaxLength="10" - sap:label="Entrega"
+			};
 
-			var obs = observacion;
-			if (obs.length > 25) {
-				obs = observacion.slice(0, 22) + "...";
-			}
-
-			recordDataIngresoERP.HeaderTxt = obs; // Edm.String - MaxLength="25" - sap:label="Texto" INGRESO > FECHA_CONTABILIZACION
-
-			//CrearDocMatItem
-			recordDataIngresoERP.NavCrearDocMatItem = [];
-
-			//CrearDocMatSerial
-			recordDataIngresoERP.NavCrearDocMatSerial = [];
-			/*var recordCrearDocMatSerial = {};
-
-			recordCrearDocMatSerial.Ikey = "1"; //Edm.String" - MaxLength="1"/>
-			recordCrearDocMatSerial.MatdocItm = ""; //Edm.String" - MaxLength="4" - sap:label="Posición DocMat"/> POSICION > NUMERO_POSICION
-			recordCrearDocMatSerial.Serialno = ""; //Edm.String" - MaxLength="8" - sap:label="Número de serie"/> SERIE_POSICION > NUMERO_SERIE
-			recordCrearDocMatSerial.Uii = ""; //Edm.String" - MaxLength="72" - sap:label="UII"/> ?
-
-			recordDataIngresoERP.CrearDocMatSerial.push(recordCrearDocMatSerial);*/
-
-			//CrearDocMatDocumento
-			var recordCrearDocMatDocumento = {};
-			recordDataIngresoERP.navCrearDocMatDocumento = recordCrearDocMatDocumento;
-
-			recordCrearDocMatDocumento.Ikey = "1"; //Edm.String" - MaxLength="1"/>
-			recordCrearDocMatDocumento.EMblnr = ""; //Edm.String" - MaxLength="10" - sap:label="Doc.material"/>
-			recordCrearDocMatDocumento.EMjahr = ""; //Edm.String" - MaxLength="4" - sap:label="Ejerc.doc.mat."/>
+			recordDataTrasladoERP.NavEjeTrasladoMen = [];
+			recordDataTrasladoERP.NavEjeTrasladoSer = [];
+			recordDataTrasladoERP.NavEjeTrasladoPos = [];
 
 			var fecha = new Date();
 			fecha.setHours(0);
 			fecha.setMinutes(0);
 			fecha.setSeconds(0);
 
-			var dataIngreso = {
-				ID_INGRESO: Number(this.idIngreso),
-				ID_OC: this.idOC,
-				ID_ESTADO_INGRESO: 2,
-				FECHA_CONTABILIZACION: this.convertFechaXSJS(fechaConta),
-				GUIA_DESPACHO: guiDespacho,
-				FECHA_GUIA_DESPACHO: this.convertFechaXSJS(fechaGuia),
-				PATENTE: patente,
-				OBSERVACION: observacion,
-				FECHA_RECEPCION: this.convertFechaXSJS(fecha),
-				HORA_RECEPCION: this.horaXSJS(),
-				USER_SCP_COD_RECEPCION: this.userSCPCod,
-				FECHA_INBOUND: null,
-				HORA_INBOUND: null,
-				NUMERO_INGRESO_ERP: null,
-				USER_SCP_COD_INBOUND: null,
-				LINK_GUIA_DESPACHO: this.linkGuiaDespacho
+			var dataTraslado = {
+				ID_TRASLADO: 0,
+				NRO_PEDIDO_TRASLADO: nroPedido,
+				CENTRO: centro,
+				ALMACEN: almacen,
+				FECHA_TRASLADO: this.convertFechaXSJS(fecha),
+				HORA_TRASLADO: this.horaXSJS(),
+				USER_SCP_COD: this.userSCPCod,
+				ID_ESTADO_TX: 5,
+				NUMERO_TRASLADO_ERP: "",
+				TEXTO_ERROR: ""
 			};
 
 			var creacionConError = 0;
 
-			this.createIngreso(dataIngreso, this.idEstadoIngresoFull).then(function (respuestaIngreso) {
+			this.createTraslado(dataTraslado).then(function (respuestaIngreso) {
 				if (respuestaIngreso.resolve) {
-					var idIngreso = respuestaIngreso.idIngreso;
-					var idList = this.getView().byId("idtableLPHIRecepcion");
+					var idTraslado = respuestaIngreso.idTraslado;
+					var idList = this.getView().byId("idListTraslados");
 
-					var posicionesSeleccionadas = [];
+					var posicionesSeleccionadas = idList.getItems();
 
 					var recorrerPosiciones = function (element, index) {
 						if (element.length === index) {
-
+debugger;
 							if (creacionConError === 0) {
 
-								this.createIngresoERP(recordDataIngresoERP).then(function (respuestaCreateIngresoERP) {
-									if (respuestaCreateIngresoERP.resolve) {
+								this.createTrasladoERP(recordDataTrasladoERP).then(function (respuestaCreateTrasladoERP) {
+									if (respuestaCreateTrasladoERP.resolve) {
 										this.datosCreacion = {
-											ID_AVISO: idIngreso,
+											ID_AVISO: idTraslado,
 											NUMERO_MATERIAL: ""
 										};
 
-										this.cambioEstadoMasivo(respuestaCreateIngresoERP.nroDocumento, "2", idIngreso, "").then(function () {
-											this.registrarLog("Ingreso_Temporal_Recepcionado", this.datosCreacion).then(function (respuestaRegistrarLog) {
+										this.cambioEstadoMasivoTraslado(respuestaCreateTrasladoERP.nroDocumento, "2", idTraslado, "").then(function () {
+											this.registrarLog("Traslado_Realizado", this.datosCreacion).then(function (respuestaRegistrarLog) {
 												this.BusyDialog.close();
-												this.preocesoGenerarOCConExito(idIngreso, respuestaCreateIngresoERP.nroDocumento);
+												this.preocesoGenerarOCConExito(idTraslado, respuestaCreateTrasladoERP.nroDocumento);
 											}.bind(this));
 										}.bind(this));
 									} else {
 										var detail = null;
 
-										if (respuestaCreateIngresoERP.error.length > 0) {
-											detail = respuestaCreateIngresoERP.error;
-											error = respuestaCreateIngresoERP.error;
+										if (respuestaCreateTrasladoERP.error.length > 0) {
+											detail = respuestaCreateTrasladoERP.error;
+											error = respuestaCreateTrasladoERP.error;
 										}
 										this.datosCreacion = {
-											ID_AVISO: idIngreso,
+											ID_AVISO: idTraslado,
 											NUMERO_MATERIAL: ""
 										};
 
-										this.cambioEstadoMasivo("", "4", idIngreso, error).then(function () {
-											this.registrarLog("Reprocesar_Ingreso_Temporal", this.datosCreacion).then(function (respuestaRegistrarLog) {
+										this.cambioEstadoMasivoTraslado("", "4", idTraslado, error).then(function () {
+											this.registrarLog("Reprocesar_Traslado", this.datosCreacion).then(function (respuestaRegistrarLog) {
 												this.BusyDialog.close();
 												this.errorAlRecepcionarOC(detail);
 											}.bind(this));
@@ -353,107 +331,78 @@ sap.ui.define([
 							} else {
 
 								this.datosCreacion = {
-									ID_AVISO: idIngreso,
+									ID_AVISO: idTraslado,
 									NUMERO_MATERIAL: ""
 								};
-								this.cambioEstadoMasivo("", "4", idIngreso, "").then(function () {
-									this.registrarLog("Reprocesar_Ingreso_Temporal", this.datosCreacion).then(function (respuestaRegistrarLog) {
+								this.cambioEstadoMasivoTraslado("", "4", idTraslado, "").then(function () {
+									this.registrarLog("Reprocesar_Traslado", this.datosCreacion).then(function (respuestaRegistrarLog) {
 										this.BusyDialog.close();
 										this.errorAlRecepcionarOC(null);
 									}.bind(this));
 								}.bind(this));
 							}
 						} else {
-
-							var pos0 = element[index].getContent()[0].getContent()[0].getContent();
+							var posModel = element[index].getBindingContext("oModeloDataTraslados").getObject();
 							var pos1 = element[index].getContent()[0].getContent()[1].getContent();
 
-							var cantPen = pos1[4].getItems()[1].getText();
-							//var cantPenNum = Number(pos1[4].getItems()[1].getText().replace(/\./g, ""));
+							var cantPen = pos1[0].getItems()[1].getText();
+
 							if (cantPen !== "0") {
-								var codMaterial = pos0[1].getItems()[1].getText();
-								var position = pos0[3].getItems()[1].getText();
-								var denomination = pos0[4].getItems()[1].getText();
-
-								var ubicacion = pos1[0].getItems()[1].getItems()[0].getText();
-								var centro = pos1[1].getItems()[1].getItems()[0].getText();
-								var almacen = pos1[2].getItems()[1].getText();
-								var cantTotal = pos1[3].getItems()[1].getText();
-								var unidadMedida = pos1[5].getItems()[1].getText();
-								var step = pos1[6].getItems()[1].getValue().toString();
-								//var check = pos1[7].getItems()[0].getSelected();
-
+								var step = pos1[2].getItems()[1].getValue().toString();
 								var loteo = "";
-								var vBoxLote = pos1[8];
+								var vBoxLote = pos1[3];
+								var idTipoPosicion = 1;
 
 								if (vBoxLote.getVisible()) {
 									loteo = vBoxLote.getItems()[1].getValue();
-								}
-
-								var stockZero = pos1[9].getItems()[1].getText();
-								var idPosicion = pos1[10].getItems()[1].getText();
-								var codigoSAPProveedor = pos1[11].getItems()[1].getText();
-								var idTipoPosicion = pos1[12].getItems()[1].getText();
-
-								if (almacen === "Asignar") {
-									almacen = "";
+									idTipoPosicion = 2;
 								}
 
 								var dataPosiciones = {
-									ID_POSICION: Number(idPosicion),
-									ID_INGRESO: idIngreso,
-									ID_ESTADO_POSICION: 2,
-									NUMERO_POSICION: position,
-									CODIGO_MATERIAL: codMaterial,
-									DESCRIPCION_MATERIAL: denomination,
-									CANTIDAD_MATERIAL_TOTAL: cantTotal,
-									CANTIDAD_MATERIAL_PENDIENTE: cantPen,
+									ID_DETALLE_TRASLADO: 1,
+									ID_TRASLADO: idTraslado,
+									NUMERO_POSICION: posModel.Ebelp,
+									CODIGO_MATERIAL: posModel.Matnr,
+									DESCRIPCION_MATERIAL: posModel.Txz01,
+									CANTIDAD_MATERIAL_TOTAL: posModel.MengeC,
 									CANTIDAD_MATERIAL_INGRESADO: step,
-									UNIDAD_DE_MEDIDA_MATERIAL: unidadMedida,
-									NUMERO_UBICACION: ubicacion,
+									UNIDAD_DE_MEDIDA_MATERIAL: posModel.Meins,
+									NUMERO_UBICACION: posModel.Lgpbe,
 									NUMERO_LOTE: loteo,
-									CENTRO: centro,
-									ALMACEN: almacen,
-									ID_TIPO_POSICION: Number(idTipoPosicion),
-									STOCK_MATERIAL: stockZero,
-									CODIGO_SAP_PROVEEDOR: codigoSAPProveedor
+									ID_TIPO_POSICION: Number(idTipoPosicion)
 								};
 
-								//#region DATOS PARA RECEPCIONAR EN EL ERP
+								//#region
 								var recordCrearDocMatItem = {};
 
-								recordCrearDocMatItem.Ikey = "1"; //Edm.String" - MaxLength="1"/> 
-								recordCrearDocMatItem.Material = codMaterial.slice(0, 18); //Edm.String" - MaxLength="18" - sap:label="Material"/> POSICION > CODIGO_MATERIAL
-								recordCrearDocMatItem.Plant = centro.slice(0, 4); //Edm.String" - MaxLength="4" - sap:label="Centro"/>  POSICION > CENTRO
-								recordCrearDocMatItem.StgeLoc = almacen.slice(0, 4); //Edm.String" - MaxLength="4" - sap:label="Almacén"/> POSICION > ALMACEN
-								recordCrearDocMatItem.MoveType = "101"; //Edm.String" - MaxLength="3" - sap:label="Cl.movimiento"/> POSICION > SIEMPRE 101 EN DURO
-								recordCrearDocMatItem.EntryQnt = step; //Edm.Decimal" - Precision="13" Scale="3" - sap:label="Ctd.en UME"/> POSICION > CANTIDAD_MATERIAL_INGRESADO
-								recordCrearDocMatItem.EntryUom = unidadMedida.slice(0, 3); //Edm.String" - MaxLength="3" - sap:label="UM entrada"/> POSICION > UNIDAD_DE_MEDIDA_MATERIAL
-								recordCrearDocMatItem.PoNumber = this.ordenDeCompra.slice(0, 10); //Edm.String" - MaxLength="10" - sap:label="Pedido"/> ORDEN_DE_COMPRA > ORDEN_DE_COMPRA
-								recordCrearDocMatItem.PoItem = position.slice(0, 5); //Edm.String" - MaxLength="5" - sap:label="Posición"/> POSICION > NUMERO_POSICION
-								recordCrearDocMatItem.StgeBin = ubicacion.slice(0, 10); //Edm.String" - MaxLength="10" - sap:label="Ubicación"/> POSICION > NUMERO_UBICACION
-								recordCrearDocMatItem.Vendor = codigoSAPProveedor.slice(0, 10); //Type="Edm.String" - MaxLength="10" - sap:label="Proveedor"/>
-								recordCrearDocMatItem.Batch = loteo.slice(0, 10); //Type="Edm.String" - MaxLength="10" - sap:label="Número de lote"/>
+								recordCrearDocMatItem.Ikey = "1"; //Edm.String" Nullable="false" MaxLength="1"
+								recordCrearDocMatItem.Ebeln = nroPedido.slice(0, 10); //Edm.String" Nullable="false" MaxLength="10" sap:label="Doc.compras"
+								recordCrearDocMatItem.Ebelp = posModel.Ebelp.slice(0, 5); //Edm.String" Nullable="false" MaxLength="5" sap:label="Posición"
+								recordCrearDocMatItem.Matnr = posModel.Matnr.slice(0, 18); //Edm.String" Nullable="false" MaxLength="18" sap:label="Material"
+								recordCrearDocMatItem.Txz01 = posModel.Txz01.slice(0, 40); //Edm.String" Nullable="false" MaxLength="40" sap:label="Txt.brv."
+								recordCrearDocMatItem.Menge = this.formatterInteger(posModel.MengeC).toString().slice(0, 13); //Edm.Decimal" Nullable="false" Precision="13" Scale="3" sap:label="Cantidad pedido"
+								recordCrearDocMatItem.Meins = posModel.Meins.slice(0, 3); //Edm.String" Nullable="false" MaxLength="3" sap:label="UM de pedido"
+								recordCrearDocMatItem.Lgpbe = posModel.Lgpbe.slice(0, 16); //Edm.String" Nullable="false" MaxLength="16" sap:label="Denominación"
+								recordCrearDocMatItem.Werks = centro.slice(0, 4); //Edm.String" Nullable="false" MaxLength="4" sap:label="Centro"
+								recordCrearDocMatItem.Lgort = almacen.slice(0, 4); //Edm.String" Nullable="false" MaxLength="4" sap:label="Almacén"
 
-								recordDataIngresoERP.NavCrearDocMatItem.push(recordCrearDocMatItem);
+								if (loteo.length > 0) {
+									loteo = loteo.slice(0, 10);
+								}
+
+								recordCrearDocMatItem.Charg = loteo; //Edm.String" Nullable="false" MaxLength="10" sap:label="Lote"
+								recordCrearDocMatItem.Picking = step; //Edm.Decimal" Nullable="false" Precision="13" Scale="3" sap:label="Cantidad pedido"
+								recordCrearDocMatItem.Sernp = ""; //Edm.String" Nullable="false" MaxLength="4" sap:label="Perfil de números de serie"
+								recordCrearDocMatItem.Ledat = fecha; //Edm.DateTime" Nullable="false" Precision="7" sap:label="Fecha de creación de la entrega"
+
+								recordDataTrasladoERP.NavEjeTrasladoPos.push(recordCrearDocMatItem);
 
 								//#endregion	
 
-								this.createPosicionIngreso(dataPosiciones, this.idEstadoIngresoFull).then(function (respuestaPosicionIngreso) {
-									if (respuestaPosicionIngreso) {
-										if (stockZero === "0") {
-											this.datosCreacion = {
-												ID_AVISO: idIngreso,
-												NUMERO_MATERIAL: codMaterial
-											};
-											this.registrarLog("Stock_Cero_Material", this.datosCreacion).then(function (respuestaRegistrarLog) {
-												index++;
-												recorrerPosiciones(element, index);
-											}.bind(this));
-										} else {
-											index++;
-											recorrerPosiciones(element, index);
-										}
+								this.createPosicionTraslado(dataPosiciones).then(function (respuestaPosicionTraslado) {
+									if (respuestaPosicionTraslado) {
+										index++;
+										recorrerPosiciones(element, index);
 									} else {
 										creacionConError++;
 										index++;
@@ -464,19 +413,7 @@ sap.ui.define([
 
 						}
 					}.bind(this);
-
-					idList.getItems().forEach(function (elementt, indexx) {
-						var pos1 = elementt.getContent()[0].getContent()[1].getContent();
-						var check = pos1[7].getItems()[0].getSelected();
-						if (check) {
-							posicionesSeleccionadas.push(elementt);
-						}
-
-						if (idList.getItems().length === indexx + 1) {
-							recorrerPosiciones(posicionesSeleccionadas, 0);
-						}
-					}.bind(this));
-
+					recorrerPosiciones(posicionesSeleccionadas, 0);
 				} else {
 					this.BusyDialog.close();
 					this.errorAlRecepcionarOC(null);
@@ -535,6 +472,47 @@ sap.ui.define([
 			this.getOwnerComponent().getRouter().navTo("Traslados_Master", {
 				estadoIngreso: this.idEstadoIngreso
 			});
+		},
+
+		validarTodasLasPosicionesSobreZero: function (nropedido) {
+			return new Promise(
+				function resolver(resolve) {
+
+					var idList = this.getView().byId("idListTraslados").getItems();
+					var countError = 0;
+
+					var functionRecorrer = function (item, i) {
+						if (item.length === i) {
+							if (countError === 0) {
+								resolve(true);
+							} else {
+								resolve(false);
+							}
+						} else {
+							var StepInput = item[i].getContent()[0].getContent()[1].getContent()[2].getItems()[1];
+
+							if (StepInput.getValueState() === "Error") {
+								countError++;
+							}
+
+							if (StepInput.getValue() === 0) {
+								StepInput.setValueState("Error");
+								countError++;
+							}
+
+							i++;
+							functionRecorrer(idList, i);
+						}
+					}.bind(this);
+
+					if (idList.length > 0) {
+						functionRecorrer(idList, 0);
+					} else {
+						resolve(false);
+					}
+
+				}.bind(this));
+
 		},
 
 		onExit: function () {

@@ -462,32 +462,6 @@ sap.ui.define([
 			return error;
 		},
 
-		onSearchAlmacenesTra: function (oEvent) {
-			var sValue = oEvent.getParameter("value");
-			var filterFinal = [];
-			if (sValue.trim().length > 0) {
-				var oFilterNumeroAlmacen = new sap.ui.model.Filter({
-					path: "Lgort",
-					operator: sap.ui.model.FilterOperator.Contains,
-					value1: sValue,
-					caseSensitive: false
-				});
-				var oFilterDenominacion = new sap.ui.model.Filter({
-					path: "Lgobe",
-					operator: sap.ui.model.FilterOperator.Contains,
-					value1: sValue,
-					caseSensitive: false
-				});
-
-				filterFinal = new sap.ui.model.Filter({
-					filters: [oFilterNumeroAlmacen, oFilterDenominacion],
-					and: false
-				});
-			}
-			var oBinding = oEvent.getParameter("itemsBinding");
-			oBinding.filter(filterFinal);
-		},
-
 		onSearchAyudaMaterial: function (oEvent) {
 			var oSelectLote = sap.ui.getCore().byId("oSelectLoteId");
 			var oModelLotes = new JSONModel([]);

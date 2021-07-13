@@ -95,7 +95,7 @@ sap.ui.define([
 				this.userSCPName = this._oStorage.get("user_name_IngresoMercaderia");
 				this.filtroDePantallaSeleccionado = this.idEstadoIngreso;
 				this.openBusyDialog();
-				this.iniciarView("X", this.idEstadoIngreso);
+				this.iniciarView();
 			} else {
 				this.onBackMenu();
 			}
@@ -288,7 +288,7 @@ sap.ui.define([
 
 		},
 
-		iniciarView: function (idIngreso, idEstadoIngreso) {
+		iniciarView: function () {
 			this.getView().byId("idPageMaster").scrollTo(0, 0, 1000);
 			this.onPressRestablecer();
 		},
@@ -309,14 +309,18 @@ sap.ui.define([
 				this.openBusyDialog();
 				this.busquedaPedidoTraslado(campo, inputBusqueda.getValue().trim()).then(function (
 					respuestaB) {
-						
+
 					var respuestaBusqueda = this.eliminaDuplicado(respuestaB.datos, "Ebeln");
-					
+
 					this.bindItemsList(respuestaBusqueda);
 
 					if (respuestaB.datos.length === 0 && !respuestaB.resolve) {
 						MessageToast.show("Encontramos algunos problemas al consultar la información, intente nuevamente.", {
 							duration: 6000
+						});
+					} else if (respuestaB.datos.length === 0) {
+						MessageToast.show("No encontramos resultados para el tipo de búsqueda seleccionado.", {
+							duration: 5000
 						});
 					}
 

@@ -94,7 +94,7 @@ sap.ui.define([
 				}.bind(this));
 
 		},
-		
+
 		busquedaPedidoTraslado: function (campo, dato) {
 			return new Promise(
 				function resolver(resolve) {
@@ -220,15 +220,17 @@ sap.ui.define([
 			var str = "<ul>";
 			var cont = 0;
 			var contPB = 0;
-			this.GeneraDoc=false;
+			this.GeneraDoc = false;
 			return new Promise(
 				function resolver(resolve, reject) {
 
 					if (datos.length === 0) {
-						this.strVerifica  += "<li>Para la posición: " + dataPos.Rspos + " ha ocurrido el siguiente error: " + dataPos.Message + ". </li>";
+						this.strVerifica += "<li>Para la posición: " + dataPos.Rspos + " ha ocurrido el siguiente error: " + dataPos.Message +
+							". </li>";
 						resolve({
-							resolve: true/*,
-							detail: this.strVerifica*/
+							resolve: true
+								/*,
+															detail: this.strVerifica*/
 
 						});
 					} else {
@@ -236,10 +238,10 @@ sap.ui.define([
 						var functionRecorrer = function recorrer(item, i) {
 
 							if (i === item.length) {
-								
+
 								resolve({
 									resolve: true,
-								/*	detail: this.strVerifica,*/
+									/*	detail: this.strVerifica,*/
 									datosPosicion: dataPos
 
 								});
@@ -249,18 +251,18 @@ sap.ui.define([
 									if (item[i].Rspos !== "0000") {
 
 										if (dataPos[i].Estado === "EP") {
-											this.strVerifica  += "<li>Para la posición " + item[i].Rspos + " se ha generado la reserva con exito con el siguiente mensaje: " + item[
-												i].Message + ". </li>";
+											this.strVerifica += "<li>Para la posición " + item[i].Rspos +
+												" se ha generado la reserva con exito con el siguiente mensaje: " + item[
+													i].Message + ". </li>";
 											dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
 											this.docSAP = dataPos[i].DocSAP;
 											dataPos[i].Resultado = true;
 											this.GeneraDoc = true;
-											
+
 											this.strVerifica += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong> </p>";
-							 
 
 										} else {
-											this.strVerifica  += "<li>Para la posición " + item[i].Rspos + " se ha cambiado de estado a En Preparación. </li>";
+											this.strVerifica += "<li>Para la posición " + item[i].Rspos + " se ha cambiado de estado a En Preparación. </li>";
 											dataPos[i].DocSAP = " - ";
 											dataPos[i].Resultado = false;
 										}
@@ -270,7 +272,8 @@ sap.ui.define([
 
 									if (item[i].Rspos !== "0000") {
 
-										this.strVerifica  += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message + ". </li>";
+										this.strVerifica += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message +
+											". </li>";
 										dataPos[i].Resultado = false;
 										dataPos[i].DocSAP = " - ";
 										this.docSAP = " - ";
@@ -289,28 +292,25 @@ sap.ui.define([
 		},
 
 		enviaPorPosicion: function (datos, tipo) {
-            
-            
+
 			return new Promise(
 				function resolver(resolve, reject) {
 					var functionRecorrer = function (item, i) {
 						if (item.length === i) {
-							
-							 this.strVerifica  += "</ul>";
-							
-							 resolve(true);
-							
+
+							this.strVerifica += "</ul>";
+
+							resolve(true);
 
 						} else {
 
-							this.createReservaERP(item[i],tipo).then(function (respuestaReservaERP) {
-                               
+							this.createReservaERP(item[i], tipo).then(function (respuestaReservaERP) {
+
 								i++;
-								functionRecorrer(item, i);	
+								functionRecorrer(item, i);
 
 							}.bind(this));
 
-							
 						}
 
 					}.bind(this);
@@ -344,7 +344,7 @@ sap.ui.define([
 										resolve({
 
 											resolve: true,
-											
+
 											error: ""
 										});
 
@@ -737,9 +737,11 @@ sap.ui.define([
 
 		formatterInteger: function (sValue) {
 			var retorno = 0;
-			if (sValue !== null) {
-				sValue = sValue.replace(/ /g, "");
-				retorno = sValue.replace(/\./g, "");
+			if (sValue !== undefined) {
+				if (sValue !== null) {
+					sValue = sValue.replace(/ /g, "");
+					retorno = sValue.replace(/\./g, "");
+				}
 			}
 
 			return Number(retorno);
@@ -2156,7 +2158,179 @@ sap.ui.define([
 
 				}.bind(this));
 
-		}
+		},
+
+		onSearchAlmacenesTra: function (oEvent) {
+			var sValue = oEvent.getParameter("value");
+			var filterFinal = [];
+			if (sValue.trim().length > 0) {
+				var oFilterNumeroAlmacen = new sap.ui.model.Filter({
+					path: "Lgort",
+					operator: sap.ui.model.FilterOperator.Contains,
+					value1: sValue,
+					caseSensitive: false
+				});
+				var oFilterDenominacion = new sap.ui.model.Filter({
+					path: "Lgobe",
+					operator: sap.ui.model.FilterOperator.Contains,
+					value1: sValue,
+					caseSensitive: false
+				});
+
+				filterFinal = new sap.ui.model.Filter({
+					filters: [oFilterNumeroAlmacen, oFilterDenominacion],
+					and: false
+				});
+			}
+			var oBinding = oEvent.getParameter("itemsBinding");
+			oBinding.filter(filterFinal);
+		},
+
+		createTrasladoERP: function (datos) {
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					this.getView().getModel("oModelSAPERP").create('/EjeTrasladoSet', datos, {
+						success: function (oResult) {
+							console.log(oResult);
+							var respuesta = oResult.NavEjeTrasladoDoc.Vbeln;
+
+							if (respuesta.length > 0) {
+								resolve({
+									nroDocumento: respuesta,
+									resolve: true,
+									error: ""
+								});
+							} else {
+								resolve({
+									nroDocumento: "",
+									resolve: false,
+									error: ""
+								});
+							}
+
+						}.bind(this),
+						error: function (oError) {
+							var mensaje = "";
+							try {
+								mensaje = JSON.parse(oError.responseText).error.message.value;
+								resolve({
+									nroDocumento: "",
+									error: mensaje,
+									resolve: false
+								});
+							} catch (e) {
+								resolve({
+									nroDocumento: "",
+									error: mensaje,
+									resolve: false
+								});
+							}
+
+						}.bind(this)
+					});
+
+				}.bind(this));
+		},
+
+		createTraslado: function (datos, idEstadoTraslado) {
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					var service = "NO";
+
+					if (idEstadoTraslado === 4) {
+						service = "SI";
+						datos.ID_ESTADO_TRASLADO = idEstadoTraslado;
+					}
+					datos.UPDATE = service;
+
+					var url = "/HANA/EGRESO_MERCADERIA/services.xsjs?accion=ingresoDos";
+
+					var json = datos;
+
+					$.ajax({
+						url: url,
+						method: "POST",
+						data: JSON.stringify(json),
+						success: function (oResult) {
+							var respuesta = oResult;
+							resolve({
+								idTraslado: respuesta,
+								resolve: true
+							});
+						}.bind(this),
+						error: function (oError) {
+							resolve({
+								idTraslado: null,
+								resolve: false
+							});
+						}.bind(this)
+					});
+
+				}.bind(this));
+		},
+
+		createPosicionTraslado: function (datos, idEstadoTraslado) {
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					var service = "NO";
+
+					if (idEstadoTraslado === 4) {
+						service = "SI";
+					}
+
+					datos.UPDATE = service;
+
+					var url = "/HANA/EGRESO_MERCADERIA/services.xsjs?accion=posicionDos";
+
+					var json = datos;
+
+					$.ajax({
+						url: url,
+						method: "POST",
+						data: JSON.stringify(json),
+						success: function (oResult) {
+							var respuesta = oResult;
+							resolve(true);
+						}.bind(this),
+						error: function (oError) {
+							resolve(false);
+						}.bind(this)
+					});
+
+				}.bind(this));
+		},
+
+		cambioEstadoMasivoTraslado: function (nroDocuento, idEstadoTraslado, idTraslado, textoError) {
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					var url = "/HANA/EGRESO_MERCADERIA/services.xsjs?accion=cambioEstadoMasivo";
+
+					var json = {
+						NUMERO_TRASLADO_ERP: nroDocuento,
+						ID_TRASLADO: idTraslado,
+						ID_ESTADO_TRASLADO: idEstadoTraslado,
+						TEXTO_ERROR: textoError
+					};
+
+					$.ajax({
+						url: url,
+						method: "POST",
+						data: JSON.stringify(json),
+						success: function (oResult) {
+							var respuesta = oResult;
+							resolve(respuesta);
+						}.bind(this),
+						error: function (oError) {
+							resolve([]);
+						}.bind(this)
+					});
+
+				}.bind(this));
+		},
 
 	});
 
