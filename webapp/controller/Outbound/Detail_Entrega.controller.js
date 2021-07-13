@@ -16,7 +16,7 @@ sap.ui.define([
 
 		_onRouteMatched: function (oEvent) {
 			this.corre = 1;
-
+ 
 			var oArgs = oEvent.getParameter("arguments");
 			this.idIngreso = oArgs.idReserva;
 			this.idEstadoIngreso = oArgs.ingreso;
@@ -27,7 +27,7 @@ sap.ui.define([
 			this.getView().setModel(new JSONModel([]), "oModelListaAdjuntos");
 			this.byId("mensajeFoto").setVisible(false);
 			this.byId("UploadCollection").setVisible(false);
-			this.getView().setModel(model, "oModeloDataTemporalDetailEntrega");
+			//this.getView().setModel(model, "oModeloDataTemporalDetailEntrega");
 			this.idGrund = "";
 			this.idItemText = "";
 			this.docSAP = " - ";
