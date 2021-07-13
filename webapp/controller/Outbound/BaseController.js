@@ -220,14 +220,15 @@ sap.ui.define([
 			var str = "<ul>";
 			var cont = 0;
 			var contPB = 0;
+			this.GeneraDoc=false;
 			return new Promise(
 				function resolver(resolve, reject) {
 
 					if (datos.length === 0) {
-						str += "<li>Para la posición: " + dataPos.Rspos + " ha ocurrido el siguiente error: " + dataPos.Message + ". </li>";
+						this.strVerifica  += "<li>Para la posición: " + dataPos.Rspos + " ha ocurrido el siguiente error: " + dataPos.Message + ". </li>";
 						resolve({
-							resolve: true,
-							detail: str
+							resolve: true/*,
+							detail: this.strVerifica*/
 
 						});
 					} else {
@@ -235,35 +236,45 @@ sap.ui.define([
 						var functionRecorrer = function recorrer(item, i) {
 
 							if (i === item.length) {
-
+								
 								resolve({
 									resolve: true,
-									detail: str,
+								/*	detail: this.strVerifica,*/
 									datosPosicion: dataPos
 
 								});
 
 							} else {
 								if (item[i].Type === "I") {
+									if (item[i].Rspos !== "0000") {
 
-									if (dataPos[i].Estado === "EP") {
-										str += "<li>Para la posición " + item[i].Rspos + " se ha generado la reserva con exito con el siguiente mensaje: " + item[
-											i].Message + ". </li>";
-										dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
-										this.docSAP = dataPos[i].DocSAP;
-										dataPos[i].Resultado = true;
+										if (dataPos[i].Estado === "EP") {
+											this.strVerifica  += "<li>Para la posición " + item[i].Rspos + " se ha generado la reserva con exito con el siguiente mensaje: " + item[
+												i].Message + ". </li>";
+											dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
+											this.docSAP = dataPos[i].DocSAP;
+											dataPos[i].Resultado = true;
+											this.GeneraDoc = true;
+											
+											this.strVerifica += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong> </p>";
+							
 
-									} else {
-										str += "<li>Para la posición " + item[i].Rspos + " se ha cambiado de estado a En Preparación. </li>";
-										dataPos[i].DocSAP = " - ";
-										dataPos[i].Resultado = false;
+										} else {
+											this.strVerifica  += "<li>Para la posición " + item[i].Rspos + " se ha cambiado de estado a En Preparación. </li>";
+											dataPos[i].DocSAP = " - ";
+											dataPos[i].Resultado = false;
+										}
 									}
 
 								} else {
-									this.str += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message + ". </li>";
-									dataPos[i].Resultado = false;
-									dataPos[i].DocSAP = " - ";
-									this.docSAP = " - ";
+
+									if (item[i].Rspos !== "0000") {
+
+										this.strVerifica  += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message + ". </li>";
+										dataPos[i].Resultado = false;
+										dataPos[i].DocSAP = " - ";
+										this.docSAP = " - ";
+									}
 								}
 								i++;
 								functionRecorrer(item, i);
@@ -276,6 +287,39 @@ sap.ui.define([
 					}
 				}.bind(this));
 		},
+
+		enviaPorPosicion: function (datos, tipo) {
+            
+            
+			return new Promise(
+				function resolver(resolve, reject) {
+					var functionRecorrer = function (item, i) {
+						if (item.length === i) {
+							
+							 this.strVerifica  += "</ul>";
+							
+							 resolve(true);
+							
+
+						} else {
+
+							this.createReservaERP(item[i],tipo).then(function (respuestaReservaERP) {
+                               
+								i++;
+								functionRecorrer(item, i);	
+
+							}.bind(this));
+
+							
+						}
+
+					}.bind(this);
+					functionRecorrer(datos, 0)
+
+				}.bind(this));
+
+		},
+
 		createReservaERP: function (datos, tipo) {
 			return new Promise(
 				function resolver(resolve, reject) {
@@ -296,11 +340,11 @@ sap.ui.define([
 
 									this.cargaHana(respuestaCargaDetalle.datosPosicion, tipo).then(function (
 										respuestacargaHana) {
-										respuestaCargaDetalle.detail += "</ul>";
+										//respuestaCargaDetalle.detail += "</ul>";
 										resolve({
 
 											resolve: true,
-											detail: respuestaCargaDetalle.detail,
+											
 											error: ""
 										});
 
@@ -311,11 +355,11 @@ sap.ui.define([
 
 						}.bind(this),
 						error: function (oError) {
-
+							console.log(oError);
 							var dataError = [];
 							var mensaje = "";
 							try {
-								mensaje = JSON.parse(oError.responseText).error.message.value;
+								mensaje = oError.message;
 								var record = {};
 								record.Rspos = posicion;
 								record.Message = mensaje;
@@ -600,7 +644,7 @@ sap.ui.define([
 						}.bind(this),
 						error: function (oError) {
 
-							var err = JSON.parse(oError.responseText);
+							var err = oError.message;
 
 							resolve({
 								mensajeError: "Error detectado: " + err.error.message.value,
