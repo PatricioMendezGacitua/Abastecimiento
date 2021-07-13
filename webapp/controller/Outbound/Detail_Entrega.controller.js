@@ -12,7 +12,7 @@ sap.ui.define([
 		onInit: function () {
 			this._route = this.getOwnerComponent().getRouter();
 			this._route.getRoute("Entrega_Detail").attachMatched(this._onRouteMatched, this);
-		},
+		}, 
 
 		_onRouteMatched: function (oEvent) {
 			this.corre = 1;
