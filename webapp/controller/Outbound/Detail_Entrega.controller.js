@@ -12,11 +12,11 @@ sap.ui.define([
 		onInit: function () {
 			this._route = this.getOwnerComponent().getRouter();
 			this._route.getRoute("Entrega_Detail").attachMatched(this._onRouteMatched, this);
-		}, 
+		},
 
 		_onRouteMatched: function (oEvent) {
 			this.corre = 1;
- 
+
 			var oArgs = oEvent.getParameter("arguments");
 			this.idIngreso = oArgs.idReserva;
 			this.idEstadoIngreso = oArgs.ingreso;
@@ -33,10 +33,11 @@ sap.ui.define([
 			this.docSAP = " - ";
 
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
-			this.userSCPName = this._oStorage.get("user_name_IngresoMercaderia");
+
 			if (this._oStorage.get("navegacion_IngresoMercaderia") === "si") {
 				this._oStorage.put("navegacion_IngresoMercaderia", "no");
-
+				this.userSCPCod = this._oStorage.get("user_code_IngresoMercaderia");
+				this.userSCPName = this._oStorage.get("user_name_IngresoMercaderia");
 				var model = sap.ui.getCore().getModel("oModeloTemporalesReservaCore").getData();
 				this.openBusyDialogCargando();
 
@@ -790,7 +791,7 @@ sap.ui.define([
 
 		cargaDetalleEntrega: function (datos, reserva, dataPos) {
 			var str = "<ul>";
-			var cargaB = false
+			var cargaB = false;
 			return new Promise(
 				function resolver(resolve, reject) {
 
@@ -806,14 +807,39 @@ sap.ui.define([
 						var functionRecorrer = function recorrer(item, i) {
 
 							if (i === item.length) {
-								str += "</ul>";
-								resolve({
-									resolve: true,
-									detail: str,
-									datosPosicion: dataPos,
-									cargaB: cargaB
 
-								});
+								if (cargaB) {
+
+									this.mensajeLog = "Entrega_realizada";
+									this.datosCreacion = {
+										NRO_DOCUMENTO_SAP: this.docSAP,
+										TX: "Aplicación Móvil Abastecimiento > Entrega Reserva",
+										Rspos: "",
+										reserva:reserva
+									};
+									this.registrarLog(this.mensajeLog, this.datosCreacion).then(function (respuestaRegistrarLog) {
+										str += "</ul>";
+										resolve({
+											resolve: true,
+											detail: str,
+											datosPosicion: dataPos,
+											cargaB: cargaB
+
+										});
+
+									}.bind(this));
+
+								} else {
+									str += "</ul>";
+									resolve({
+										resolve: true,
+										detail: str,
+										datosPosicion: dataPos,
+										cargaB: cargaB
+
+									});
+
+								}
 
 							} else {
 								if (item[i].Type === "I") {
@@ -1062,10 +1088,10 @@ sap.ui.define([
 									onClose: function (sAction) {
 
 										this.BusyDialogCargando.close();
-										if(this.docSAP !== " - "){
+										if (this.docSAP !== " - ") {
 											this.resetMasterDetail();
 										}
-										
+
 									}.bind(this)
 								});
 

@@ -94,7 +94,7 @@ sap.ui.define([
 				}.bind(this));
 
 		},
-		
+
 		busquedaPedidoTraslado: function (campo, dato) {
 			return new Promise(
 				function resolver(resolve) {
@@ -220,15 +220,19 @@ sap.ui.define([
 			var str = "<ul>";
 			var cont = 0;
 			var contPB = 0;
-			this.GeneraDoc=false;
+			this.GeneraDoc = false;
+			
+			this.mensajeLog="";
 			return new Promise(
 				function resolver(resolve, reject) {
 
 					if (datos.length === 0) {
-						this.strVerifica  += "<li>Para la posición: " + dataPos.Rspos + " ha ocurrido el siguiente error: " + dataPos.Message + ". </li>";
+						this.strVerifica += "<li>Para la posición: " + dataPos.Rspos + " ha ocurrido el siguiente error: " + dataPos.Message +
+							". </li>";
 						resolve({
-							resolve: true/*,
-							detail: this.strVerifica*/
+							resolve: true
+								/*,
+															detail: this.strVerifica*/
 
 						});
 					} else {
@@ -237,30 +241,61 @@ sap.ui.define([
 
 							if (i === item.length) {
 								
-								resolve({
-									resolve: true,
-								/*	detail: this.strVerifica,*/
-									datosPosicion: dataPos
+								if(this.GeneraDoc){
+									
+									 this.mensajeLog ="Paso_reserva_corralito";
+									 this.datosCreacion = {
+															NRO_DOCUMENTO_SAP: this.docSAP,
+															TX: "Aplicación Móvil Abastecimiento > Reservas",
+															Rspos: item[0].Rspos,
+															reserva: reserva
+														};
+									
+									
+									
+									
+									
+								}else{
+									this.mensajeLog ="Cambio_estado_reserva";
+									 this.datosCreacion = {
+															NRO_DOCUMENTO_SAP: "",
+															TX: "Aplicación Móvil Abastecimiento > Reservas",
+															Rspos: item[0].Rspos,
+															reserva: reserva
+															
+														};
+									
+									
+								}
+								
+								
 
-								});
+								this.registrarLog(this.mensajeLog, this.datosCreacion).then(function (respuestaRegistrarLog) {
+									resolve({
+										resolve: true,
+										
+										datosPosicion: dataPos
+
+									});
+								}.bind(this));
 
 							} else {
 								if (item[i].Type === "I") {
 									if (item[i].Rspos !== "0000") {
 
 										if (dataPos[i].Estado === "EP") {
-											this.strVerifica  += "<li>Para la posición " + item[i].Rspos + " se ha generado la reserva con exito con el siguiente mensaje: " + item[
-												i].Message + ". </li>";
+											this.strVerifica += "<li>Para la posición " + item[i].Rspos +
+												" se ha generado la reserva con exito con el siguiente mensaje: " + item[
+													i].Message + ". </li>";
 											dataPos[i].DocSAP = item[i].Mblnr + "-" + item[i].Mjahr;
 											this.docSAP = dataPos[i].DocSAP;
 											dataPos[i].Resultado = true;
 											this.GeneraDoc = true;
-											
+
 											this.strVerifica += "<p><strong>NRO DOCUMENTO SAP:" + this.docSAP + " </strong> </p>";
-							 
 
 										} else {
-											this.strVerifica  += "<li>Para la posición " + item[i].Rspos + " se ha cambiado de estado a En Preparación. </li>";
+											this.strVerifica += "<li>Para la posición " + item[i].Rspos + " se ha cambiado de estado a En Preparación. </li>";
 											dataPos[i].DocSAP = " - ";
 											dataPos[i].Resultado = false;
 										}
@@ -270,7 +305,8 @@ sap.ui.define([
 
 									if (item[i].Rspos !== "0000") {
 
-										this.strVerifica  += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message + ". </li>";
+										this.strVerifica += "<li>Para la posición: " + item[i].Rspos + " ha ocurrido el siguiente error: " + item[i].Message +
+											". </li>";
 										dataPos[i].Resultado = false;
 										dataPos[i].DocSAP = " - ";
 										this.docSAP = " - ";
@@ -289,28 +325,25 @@ sap.ui.define([
 		},
 
 		enviaPorPosicion: function (datos, tipo) {
-            
-            
+
 			return new Promise(
 				function resolver(resolve, reject) {
 					var functionRecorrer = function (item, i) {
 						if (item.length === i) {
-							
-							 this.strVerifica  += "</ul>";
-							
-							 resolve(true);
-							
+
+							this.strVerifica += "</ul>";
+
+							resolve(true);
 
 						} else {
 
-							this.createReservaERP(item[i],tipo).then(function (respuestaReservaERP) {
-                               
+							this.createReservaERP(item[i], tipo).then(function (respuestaReservaERP) {
+
 								i++;
-								functionRecorrer(item, i);	
+								functionRecorrer(item, i);
 
 							}.bind(this));
 
-							
 						}
 
 					}.bind(this);
@@ -341,12 +374,15 @@ sap.ui.define([
 									this.cargaHana(respuestaCargaDetalle.datosPosicion, tipo).then(function (
 										respuestacargaHana) {
 										//respuestaCargaDetalle.detail += "</ul>";
-										resolve({
 
-											resolve: true,
-											
-											error: ""
-										});
+									
+											resolve({
+
+												resolve: true,
+
+												error: ""
+											});
+								
 
 									}.bind(this));
 
@@ -587,6 +623,7 @@ sap.ui.define([
 							}
 							if (datos.length > 0) {
 								console.log(datos);
+								
 
 								for (var e = 0; e < datos.length; e++) {
 									var record = {};
@@ -1235,6 +1272,7 @@ sap.ui.define([
 			var datos = obj.getBindingContext("oModeloDataTemporalDetailReserva").getObject();
 			var path = obj.getBindingContext("oModeloDataTemporalDetailReserva").getPath();
 			path = path.slice(1, path.length);
+			
 			this.byId("idtableLPReserva").getItems()[path].getContent()[0].getItems()[0].getContent()[6].getItems()[1].setType("Ghost");
 
 			var numeroCentro = datos.Werks;
@@ -1934,7 +1972,14 @@ sap.ui.define([
 					} else if (actividad === "Tarea_Finalizada") {
 						this.contenido = "La actividad que se acaba de realizar corresponde a la finalización de la tarea N°" + datos.ID_TAREA +
 							", acción realizada por el usuario " + this.userSCPCod;
+					} else if (actividad === "Paso_reserva_corralito"){
+						this.contenido = "La posición " + datos.Rspos + " de la Reserva N° " + datos.reserva + " enviada a corralito con número documento sap " + datos.NRO_DOCUMENTO_SAP + ", acción realizada por el usuario " + this.userSCPCod;
+					} else if (actividad === "Cambio_estado_reserva"){
+						this.contenido = "La posición " + datos.Rspos + " de la Reserva N° " + datos.reserva + "  cambiada de estado a En preparación, acción realizada por el usuario " + this.userSCPCod;
+					} else if (actividad === "Entrega_realizada"){
+						this.contenido = "Reserva N° " + datos.reserva + " fue entregada con exito, acción realizada por el usuario " + this.userSCPCod;
 					}
+					
 
 					this.contenidoLog = {
 						ID_LOG: 0,
