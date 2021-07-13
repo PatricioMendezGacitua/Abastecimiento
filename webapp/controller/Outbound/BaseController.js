@@ -594,7 +594,7 @@ sap.ui.define([
 						}.bind(this),
 						error: function (oError) {
 
-							var err = oError.message;;
+							var err = oError.message;
 
 							resolve({
 								mensajeError: "Error detectado: " + err.error.message.value,
