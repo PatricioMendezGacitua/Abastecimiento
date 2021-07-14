@@ -243,11 +243,11 @@ sap.ui.define([
 									resolve: true,
 									/*	detail: this.strVerifica,*/
 									datosPosicion: dataPos
+								});
 
 								this.registrarLog(this.mensajeLog, this.datosCreacion).then(function (respuestaRegistrarLog) {
 									resolve({
 										resolve: true,
-										
 										datosPosicion: dataPos
 
 									});
@@ -348,11 +348,9 @@ sap.ui.define([
 									this.cargaHana(respuestaCargaDetalle.datosPosicion, tipo).then(function (
 										respuestacargaHana) {
 										//respuestaCargaDetalle.detail += "</ul>";
-
-											resolve: true,
-
-											error: ""
-										});
+										//	resolve: true,
+										//	error: ""
+										// });
 
 									}.bind(this));
 
@@ -593,7 +591,6 @@ sap.ui.define([
 							}
 							if (datos.length > 0) {
 								console.log(datos);
-								
 
 								for (var e = 0; e < datos.length; e++) {
 									var record = {};
@@ -1244,7 +1241,7 @@ sap.ui.define([
 			var datos = obj.getBindingContext("oModeloDataTemporalDetailReserva").getObject();
 			var path = obj.getBindingContext("oModeloDataTemporalDetailReserva").getPath();
 			path = path.slice(1, path.length);
-			
+
 			this.byId("idtableLPReserva").getItems()[path].getContent()[0].getItems()[0].getContent()[6].getItems()[1].setType("Ghost");
 
 			var numeroCentro = datos.Werks;
@@ -1944,14 +1941,15 @@ sap.ui.define([
 					} else if (actividad === "Tarea_Finalizada") {
 						this.contenido = "La actividad que se acaba de realizar corresponde a la finalización de la tarea N°" + datos.ID_TAREA +
 							", acción realizada por el usuario " + this.userSCPCod;
-					} else if (actividad === "Paso_reserva_corralito"){
-						this.contenido = "La posición " + datos.Rspos + " de la Reserva N° " + datos.reserva + " enviada a corralito con número documento sap " + datos.NRO_DOCUMENTO_SAP + ", acción realizada por el usuario " + this.userSCPCod;
-					} else if (actividad === "Cambio_estado_reserva"){
-						this.contenido = "La posición " + datos.Rspos + " de la Reserva N° " + datos.reserva + "  cambiada de estado a En preparación, acción realizada por el usuario " + this.userSCPCod;
-					} else if (actividad === "Entrega_realizada"){
+					} else if (actividad === "Paso_reserva_corralito") {
+						this.contenido = "La posición " + datos.Rspos + " de la Reserva N° " + datos.reserva +
+							" enviada a corralito con número documento sap " + datos.NRO_DOCUMENTO_SAP + ", acción realizada por el usuario " + this.userSCPCod;
+					} else if (actividad === "Cambio_estado_reserva") {
+						this.contenido = "La posición " + datos.Rspos + " de la Reserva N° " + datos.reserva +
+							"  cambiada de estado a En preparación, acción realizada por el usuario " + this.userSCPCod;
+					} else if (actividad === "Entrega_realizada") {
 						this.contenido = "Reserva N° " + datos.reserva + " fue entregada con exito, acción realizada por el usuario " + this.userSCPCod;
 					}
-					
 
 					this.contenidoLog = {
 						ID_LOG: 0,
@@ -2208,14 +2206,47 @@ sap.ui.define([
 					this.getView().getModel("oModelSAPERP").create('/EjeTrasladoSet', datos, {
 						success: function (oResult) {
 							console.log(oResult);
-							var respuesta = oResult.NavEjeTrasladoDoc.Vbeln;
+							var respuestaMen = oResult.NavEjeTrasladoMen.results;
+							if (respuestaMen.length > 0) {
+								var conteoError = 0;
+								var mensajeErrorConcat = "";
+								var mensajeErrorConcatHtml = "";
+								respuestaMen.forEach(function (element, index) {
 
-							if (respuesta.length > 0) {
-								resolve({
-									nroDocumento: respuesta,
-									resolve: true,
-									error: ""
-								});
+									if (element.Type === "E") {
+										conteoError++;
+										if(index === 0){
+											mensajeErrorConcat += "- " + element.Message;
+											mensajeErrorConcatHtml += "- " + element.Message;
+										}else{
+										mensajeErrorConcat += " \n \n - " + element.Message;
+										mensajeErrorConcatHtml += " <br> <br> - " + element.Message;
+										}
+									}
+
+									if (respuestaMen.length === (index + 1)) {
+										if (conteoError > 0) {
+											resolve({
+												nroDocumento: "",
+												resolve: false,
+												error: mensajeErrorConcat,
+												errorHtml: mensajeErrorConcatHtml
+											});
+										} else {
+											var respuestaDoc = oResult.NavEjeTrasladoDoc.results;
+
+											if (respuestaDoc.length > 0) {
+												resolve({
+													nroDocumento: respuestaDoc[0].Vbeln,
+													resolve: true,
+													error: ""
+												});
+											}
+
+										}
+									}
+								}.bind(this));
+
 							} else {
 								resolve({
 									nroDocumento: "",
@@ -2232,12 +2263,14 @@ sap.ui.define([
 								resolve({
 									nroDocumento: "",
 									error: mensaje,
+									errorHtml: mensaje,
 									resolve: false
 								});
 							} catch (e) {
 								resolve({
 									nroDocumento: "",
 									error: mensaje,
+									errorHtml: mensaje,
 									resolve: false
 								});
 							}
@@ -2260,7 +2293,7 @@ sap.ui.define([
 					}
 					datos.UPDATE = service;
 
-					var url = "/HANA/EGRESO_MERCADERIA/services.xsjs?accion=ingresoDos";
+					var url = "/HANA/EGRESO_MERCADERIA/services.xsjs?accion=trasladoDos";
 
 					var json = datos;
 
@@ -2322,7 +2355,7 @@ sap.ui.define([
 			return new Promise(
 				function resolver(resolve, reject) {
 
-					var url = "/HANA/EGRESO_MERCADERIA/services.xsjs?accion=cambioEstadoMasivo";
+					var url = "/HANA/EGRESO_MERCADERIA/services.xsjs?accion=cambioEstadoMasivoTraslado";
 
 					var json = {
 						NUMERO_TRASLADO_ERP: nroDocuento,

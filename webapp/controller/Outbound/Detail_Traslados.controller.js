@@ -38,7 +38,7 @@ sap.ui.define([
 			}, {
 				"id": "oInputCentroTraslado",
 				"required": true,
-				"type": "dt"
+				"type": "ip"
 			}, {
 				"id": "oInputAlmacenTraslado",
 				"required": true,
@@ -230,9 +230,7 @@ sap.ui.define([
 						}
 					}.bind(this));
 				} else {
-					this._wizard.goToStep(this.getView().byId("CabeceraStep"));
 					MessageToast.show("Completa los campos obligatorios para continuar.");
-
 					jQuery.sap.delayedCall(3000, this, function () {
 						this.quitarState(this.InputsViewTrasladar, "");
 					}.bind(this));
@@ -252,12 +250,7 @@ sap.ui.define([
 
 			recordDataTrasladoERP.Ikey = "1"; // Edm.String - MaxLength="1" 
 
-			recordDataTrasladoERP.NavEjeTrasladoDoc = {
-				Ikey: "1",
-				Ebeln: "", // Edm.String - MaxLength="10" - sap:label="Doc.compras"
-				Vbeln: "" // Edm.String - MaxLength="10" - sap:label="Entrega"
-			};
-
+			recordDataTrasladoERP.NavEjeTrasladoDoc = [];
 			recordDataTrasladoERP.NavEjeTrasladoMen = [];
 			recordDataTrasladoERP.NavEjeTrasladoSer = [];
 			recordDataTrasladoERP.NavEjeTrasladoPos = [];
@@ -275,7 +268,7 @@ sap.ui.define([
 				FECHA_TRASLADO: this.convertFechaXSJS(fecha),
 				HORA_TRASLADO: this.horaXSJS(),
 				USER_SCP_COD: this.userSCPCod,
-				ID_ESTADO_TX: 5,
+				ID_ESTADO_TRASLADO: 5,
 				NUMERO_TRASLADO_ERP: "",
 				TEXTO_ERROR: ""
 			};
@@ -291,7 +284,7 @@ sap.ui.define([
 
 					var recorrerPosiciones = function (element, index) {
 						if (element.length === index) {
-debugger;
+
 							if (creacionConError === 0) {
 
 								this.createTrasladoERP(recordDataTrasladoERP).then(function (respuestaCreateTrasladoERP) {
@@ -311,7 +304,7 @@ debugger;
 										var detail = null;
 
 										if (respuestaCreateTrasladoERP.error.length > 0) {
-											detail = respuestaCreateTrasladoERP.error;
+											detail = respuestaCreateTrasladoERP.errorHtml;
 											error = respuestaCreateTrasladoERP.error;
 										}
 										this.datosCreacion = {
@@ -359,12 +352,12 @@ debugger;
 								}
 
 								var dataPosiciones = {
-									ID_DETALLE_TRASLADO: 1,
+									ID_DETALLE_TRASLADO: 0,
 									ID_TRASLADO: idTraslado,
 									NUMERO_POSICION: posModel.Ebelp,
 									CODIGO_MATERIAL: posModel.Matnr,
 									DESCRIPCION_MATERIAL: posModel.Txz01,
-									CANTIDAD_MATERIAL_TOTAL: posModel.MengeC,
+									CANTIDAD_MATERIAL_TOTAL: this.formatterInteger(posModel.MengeC).toString(),
 									CANTIDAD_MATERIAL_INGRESADO: step,
 									UNIDAD_DE_MEDIDA_MATERIAL: posModel.Meins,
 									NUMERO_UBICACION: posModel.Lgpbe,
@@ -423,7 +416,7 @@ debugger;
 		},
 
 		preocesoGenerarOCConExito: function (idIngreso, nroDoc) {
-			MessageBox.success("Ingreso temporal N°" + idIngreso + " fue recepcionado con éxito. \n  \n El documento SAP asociado es el N°" +
+			MessageBox.success("El pedido fue trasladado correctamente. \n  \n El documento SAP asociado es el N°" +
 				nroDoc + ".", {
 					title: "Aviso",
 					onClose: function (sAction) {
@@ -435,7 +428,7 @@ debugger;
 		errorAlRecepcionarOC: function (detail) {
 
 			MessageBox.information(
-				"No fue posible recepcionar el ingreso de la Orden de Compra, intenta más tarde o comunícate con el área encargada.", {
+				"No fue posible trasladar el pedido, intenta más tarde o comunícate con el área encargada.", {
 					title: "Aviso",
 					details: detail,
 					contentWidth: "500px",
@@ -490,12 +483,18 @@ debugger;
 							}
 						} else {
 							var StepInput = item[i].getContent()[0].getContent()[1].getContent()[2].getItems()[1];
-
+							var cantidadPedido = item[i].getContent()[0].getContent()[1].getContent()[0].getItems()[1];
+							
 							if (StepInput.getValueState() === "Error") {
 								countError++;
 							}
 
 							if (StepInput.getValue() === 0) {
+								StepInput.setValueState("Error");
+								countError++;
+							}
+							
+							if (StepInput.getValue() > cantidadPedido) {
 								StepInput.setValueState("Error");
 								countError++;
 							}
