@@ -49,6 +49,20 @@
 								<l:GridData span="XL6 L6 M6 S6"/>
 							</layoutData>
 						</VBox>
+						<VBox class="sapUiTinyMarginTop" id="idNumeroDocumentoVBOXT" visible="false" width="100%" justifyContent="Center" alignItems="Center">
+							<Label text="Número Documento SAP ERP" design="Bold"></Label>
+							<Title id="oTextNroDocuentoIdT" text="" width="100%" wrapping="true" level="H3" titleStyle="H3" textAlign="Center"></Title>
+							<layoutData>
+								<l:GridData span="XL12 L12 M12 S12"/>
+							</layoutData>
+						</VBox>
+						<VBox class="sapUiTinyMarginTop" id="idTextoErrorVBOXT" visible="false" width="100%" justifyContent="Center" alignItems="Center">
+							<Label text="Motivo Falla Traslado" design="Bold"></Label>
+							<Title id="oTextMotivoFallaIdT" text="" width="100%" wrapping="true" level="H5" titleStyle="H5" textAlign="Begin"></Title>
+							<layoutData>
+								<l:GridData span="XL12 L12 M12 S12"/>
+							</layoutData>
+						</VBox>
 					</l:Grid>
 					<l:VerticalLayout id="oVBoxRecepcionId" class="sapUiSmallMargin" width="auto">
 						<Toolbar>
@@ -106,7 +120,8 @@
 											</VBox>
 											<VBox>
 												<Label class="fontSizeSmall" text="Cant. Picking:" textAlign="Center" width="100%"></Label>
-												<StepInput max="{path:'oModeloDataTraslados>MengeC', formatter: '.formatterInteger'}" min="0" width="100%" textAlign="Center"/>
+												<StepInput max="{path:'oModeloDataTraslados>MengeC', formatter: '.formatterInteger'}"
+													value="{path:'oModeloDataTraslados>Picking', formatter: '.formatterInteger'}" min="0" width="100%" textAlign="Center"/>
 												<layoutData>
 													<l:GridData span="XL12 L12 M12 S12"/>
 												</layoutData>
@@ -142,7 +157,9 @@
 		</content>
 		<footer>
 			<Bar>
-				<contentMiddle></contentMiddle>
+				<contentMiddle>
+					<ObjectStatus visible="false" id="oObjectStatusIdT"></ObjectStatus>
+				</contentMiddle>
 				<contentRight>
 					<Button id="oButtonTrasladarId" type="Emphasized" text="Trasladar" press="onTrasladar"></Button>
 				</contentRight>

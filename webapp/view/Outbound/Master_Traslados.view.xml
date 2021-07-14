@@ -1,6 +1,6 @@
 <mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:l="sap.ui.layout"
 	controllerName="com.gasco.Abastecimiento.controller.Outbound.Master_Traslados" xmlns:html="http://www.w3.org/1999/xhtml">
-	<Page id="idPageMaster" title="Traslados (0)" showFooter="true" floatingFooter="false">
+	<Page id="idPageMaster" title="Traslados (0)" showFooter="false" floatingFooter="false">
 		<customHeader>
 			<Bar>
 				<contentLeft>
@@ -29,7 +29,7 @@
 					</VBox>
 					<VBox class="sapUiTinyMarginTop" id="oVBoxNroPedidoId" visible="false">
 						<Label class="font-smaller" text=" Número de Pedido:" textAlign="Begin" required="true" design="Bold" width="100%"></Label>
-						<Input id="oInputNroPedido" maxLength="10" width="100%" liveChange="onlyNumber"></Input>
+						<Input id="oInputNroPedido" maxLength="10" width="100%" liveChange="preOnlyNumber"></Input>
 					</VBox>
 				</content>
 			</Panel>
@@ -57,8 +57,8 @@
 					</FacetFilterList>
 				</lists>
 			</FacetFilter>
-			<List id="idList" selectionChange="onListItemPressed" updateFinished="countTitleLPTraspaso" mode="SingleSelectMaster" items="{oModeloTraslados>/}"
-				sticky="HeaderToolbar">
+			<List id="idList" selectionChange="onListItemPressed" updateFinished="countTitleLPTraspaso" mode="SingleSelectMaster"
+				items="{oModeloTraslados>/}" sticky="HeaderToolbar">
 				<headerToolbar>
 					<Toolbar>
 						<Title id="oTitleIdLPHI" text="Resultados (0)"></Title>
@@ -69,6 +69,9 @@
 					<ObjectListItem title="{oModeloTraslados>Ebeln}" type="Navigation">
 						<ObjectAttribute title="Centro" text="{oModeloTraslados>Werks}"/>
 						<ObjectAttribute title="Almacén" text="{oModeloTraslados>Lgort}"/>
+						<firstStatus>
+							<ObjectStatus text="{oModeloTraslados>TITULO_ESTADO_TRASLADO}" state="{oModeloTraslados>STATE_ESTADO_TRASLADO}" inverted="true"/>
+						</firstStatus>
 					</ObjectListItem>
 				</items>
 			</List>

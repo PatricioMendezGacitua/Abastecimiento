@@ -95,6 +95,26 @@ sap.ui.define([
 
 		},
 
+		busquedaPedidoTrasladoDetalle: function (campo, dato, datosHana) {
+			return new Promise(
+				function resolver(resolve) {
+
+					if (datosHana.length > 0) {
+						resolve({
+							mensajeError: "",
+							datos: datosHana,
+							resolve: true
+						});
+					} else {
+						this.busquedaPedidoTraslado(campo, dato).then(function (respuestaB) {
+							resolve(respuestaB);
+						}.bind(this));
+					}
+
+				}.bind(this));
+
+		},
+
 		busquedaPedidoTraslado: function (campo, dato) {
 			return new Promise(
 				function resolver(resolve) {
@@ -2215,12 +2235,12 @@ sap.ui.define([
 
 									if (element.Type === "E") {
 										conteoError++;
-										if(index === 0){
+										if (index === 0) {
 											mensajeErrorConcat += "- " + element.Message;
 											mensajeErrorConcatHtml += "- " + element.Message;
-										}else{
-										mensajeErrorConcat += " \n \n - " + element.Message;
-										mensajeErrorConcatHtml += " <br> <br> - " + element.Message;
+										} else {
+											mensajeErrorConcat += " \n \n - " + element.Message;
+											mensajeErrorConcatHtml += " <br> <br> - " + element.Message;
 										}
 									}
 
@@ -2289,7 +2309,7 @@ sap.ui.define([
 
 					if (idEstadoTraslado === 4) {
 						service = "SI";
-						datos.ID_ESTADO_TRASLADO = idEstadoTraslado;
+						datos.ID_ESTADO_TRASLADO = 5;
 					}
 					datos.UPDATE = service;
 
@@ -2362,6 +2382,33 @@ sap.ui.define([
 						ID_TRASLADO: idTraslado,
 						ID_ESTADO_TRASLADO: idEstadoTraslado,
 						TEXTO_ERROR: textoError
+					};
+
+					$.ajax({
+						url: url,
+						method: "POST",
+						data: JSON.stringify(json),
+						success: function (oResult) {
+							var respuesta = oResult;
+							resolve(respuesta);
+						}.bind(this),
+						error: function (oError) {
+							resolve([]);
+						}.bind(this)
+					});
+
+				}.bind(this));
+		},
+		
+		busquedaPedidoTrasladoHana: function (pedidoTraslado, detalle) {
+			return new Promise(
+				function resolver(resolve, reject) {
+
+					var url = "/HANA/EGRESO_MERCADERIA/services.xsjs?accion=trasladosTemporales";
+
+					var json = {
+						NRO_PEDIDO_TRASLADO: pedidoTraslado,
+						DETALLE: detalle
 					};
 
 					$.ajax({

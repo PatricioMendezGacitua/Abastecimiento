@@ -251,10 +251,7 @@
 			}, {
 				"name": "Traslados_Detail",
 				"pattern": "Traslados_Detail/{pedidoTraslado}",
-				"target": [
-					"Master_Traslados",
-					"Detail_Traslados"
-				]
+				"target": ["Detail_Traslados"]
 			}, {
 				"name": "Traslados_Master_Dos",
 				"pattern": "Traslados_Masters",

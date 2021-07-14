@@ -29,6 +29,7 @@ sap.ui.define([
 			this._route = this.getOwnerComponent().getRouter();
 			this._route.getRoute("Traslados_Master").attachMatched(this._onRouteMatched, this);
 			this._route.getRoute("Traslados_Master_Dos").attachMatched(this._onRouteMatched, this);
+			//this._route.getRoute("Traslados_Detail").attachMatched(this._onRouteMatchedDetail, this);
 
 		},
 
@@ -78,6 +79,8 @@ sap.ui.define([
 		},
 
 		_onRouteMatched: function (oEvent) {
+			
+			this.getView().byId("idPageMaster").setShowFooter(false);
 			var oComponent = this.getOwnerComponent();
 			this._route = oComponent.getRouter();
 			var oArgs = oEvent.getParameter("arguments");
@@ -192,6 +195,7 @@ sap.ui.define([
 
 		onChangeTipoBusqueda: function (oEvent) {
 
+			this.onPressRestablecerModel();
 			var oSelectTipoBusqueda = this.getView().byId("oSelectTipoBusquedaId");
 
 			var oInputNroPedido = this.getView().byId("oInputNroPedido");
@@ -214,17 +218,7 @@ sap.ui.define([
 		},
 
 		onPressRestablecer: function () {
-
-			var oViewModel = new JSONModel({
-				busy: false,
-				delay: 0,
-				lineItemTableTitle: this.getResourceBundle().getText("detailLineItemTableHeading")
-			});
-			this.setModel(oViewModel, "mainView");
-
-			var oModeloTraslados = new JSONModel([]);
-			this.getView().setModel(oModeloTraslados, "oModeloTraslados");
-
+			this.onPressRestablecerModel();
 			var oInputNroPedido = this.getView().byId("oInputNroPedido");
 			var oInputCentroTra = this.getView().byId("oInputCentroTra");
 
@@ -238,12 +232,30 @@ sap.ui.define([
 			oInputNroPedido.setValue();
 			oInputCentroTra.setValue();
 			oPanelId.setExpanded(true);
+		},
+
+		onPressRestablecerModel: function () {
+			var oViewModel = new JSONModel({
+				busy: false,
+				delay: 0,
+				lineItemTableTitle: this.getResourceBundle().getText("detailLineItemTableHeading")
+			});
+			this.setModel(oViewModel, "mainView");
+
+			var oModeloTraslados = new JSONModel([]);
+			this.getView().setModel(oModeloTraslados, "oModeloTraslados");
+
 			this.finishedEvent([]);
 			this._feedFacetFilter([]);
 		},
 
-		openListCentrosCompleta: function (oEvent) {
+		preOnlyNumber: function (e) {
+			this.onPressRestablecerModel();
+			this.onlyNumber(e);
+		},
 
+		openListCentrosCompleta: function (oEvent) {
+			this.onPressRestablecerModel();
 			this.idCentro = oEvent.getSource().getId();
 			if (!this._valueDialogListCentrosTraslados) {
 				this._valueDialogListCentrosTraslados = sap.ui.xmlfragment("com.gasco.Abastecimiento.view.fragments.dialogoListCentroAll", this);
@@ -312,16 +324,132 @@ sap.ui.define([
 
 					var respuestaBusqueda = this.eliminaDuplicado(respuestaB.datos, "Ebeln");
 
-					this.bindItemsList(respuestaBusqueda);
+					respuestaBusqueda.forEach(function (element) {
+						element.TITULO_ESTADO_TRASLADO = "Pendiente";
+						element.STATE_ESTADO_TRASLADO = "Warning";
+					}.bind(this));
+					var nroPedidoERPPendientes = [];
 
-					if (respuestaB.datos.length === 0 && !respuestaB.resolve) {
-						MessageToast.show("Encontramos algunos problemas al consultar la información, intente nuevamente.", {
-							duration: 6000
-						});
-					} else if (respuestaB.datos.length === 0) {
-						MessageToast.show("No encontramos resultados para el tipo de búsqueda seleccionado.", {
-							duration: 5000
-						});
+					if (respuestaBusqueda.length > 0) {
+
+						var functionRecorrer = function (item, i) {
+							if (item.length === i) {
+
+								if (oSelectTipoBusqueda.getSelectedKey() === "centro") {
+									this.busquedaNroPedidoHana(nroPedidoERPPendientes, inputBusqueda.getValue().trim()).then(function (
+										respuestaBusquedaNroPedidoHana) {
+
+										if (respuestaBusquedaNroPedidoHana.length > 0) {
+
+											respuestaBusquedaNroPedidoHana.forEach(function (element2, index2) {
+												respuestaBusqueda.push(element2);
+
+												if (respuestaBusquedaNroPedidoHana.length === (index2 + 1)) {
+
+													respuestaBusqueda.sort(function (a, b) {
+														if (a.TITULO_ESTADO_TRASLADO > b.TITULO_ESTADO_TRASLADO)
+															return 1;
+														else if (a.TITULO_ESTADO_TRASLADO < b.TITULO_ESTADO_TRASLADO)
+															return -1;
+
+														return 0;
+													});
+
+													this.bindItemsList(respuestaBusqueda);
+												}
+											}.bind(this));
+
+										} else {
+											this.bindItemsList(respuestaBusqueda);
+											if (respuestaBusqueda.length === 0) {
+												MessageToast.show("No encontramos resultados para el tipo de búsqueda seleccionado.", {
+													duration: 5000
+												});
+											}
+										}
+
+									}.bind(this));
+								} else {
+									this.bindItemsList(respuestaBusqueda);
+									if (respuestaBusqueda.length === 0) {
+										MessageToast.show("No encontramos resultados para el tipo de búsqueda seleccionado.", {
+											duration: 5000
+										});
+									}
+								}
+
+							} else {
+
+								nroPedidoERPPendientes.push(new sap.ui.model.Filter({
+									path: "NRO_PEDIDO_TRASLADO",
+									operator: sap.ui.model.FilterOperator.NE,
+									value1: item[i].Ebeln
+								}));
+
+								this.busquedaPedidoTrasladoHana(item[i].Ebeln, true).then(function (respuestaHana) {
+									if (respuestaHana.length > 0) {
+										item[i].TITULO_ESTADO_TRASLADO = respuestaHana[0].TITULO_ESTADO_TRASLADO;
+										item[i].STATE_ESTADO_TRASLADO = respuestaHana[0].STATE_ESTADO_TRASLADO;
+										item[i].Ebeln = respuestaHana[0].Ebeln;
+										item[i].Werks = respuestaHana[0].Werks;
+										item[i].Lgort = respuestaHana[0].Lgort;
+									}
+									i++;
+									functionRecorrer(respuestaBusqueda, i);
+								}.bind(this));
+							}
+						}.bind(this);
+						functionRecorrer(respuestaBusqueda, 0);
+
+					} else {
+
+						if (oSelectTipoBusqueda.getSelectedKey() === "centro") {
+							this.busquedaNroPedidoHana(nroPedidoERPPendientes, inputBusqueda.getValue().trim()).then(function (
+								respuestaBusquedaNroPedidoHana) {
+
+								if (respuestaBusquedaNroPedidoHana.length > 0) {
+
+									respuestaBusquedaNroPedidoHana.forEach(function (element2, index2) {
+										respuestaBusqueda.push(element2);
+
+										if (respuestaBusquedaNroPedidoHana.length === (index2 + 1)) {
+
+											respuestaBusqueda.sort(function (a, b) {
+												if (a.TITULO_ESTADO_TRASLADO > b.TITULO_ESTADO_TRASLADO)
+													return 1;
+												else if (a.TITULO_ESTADO_TRASLADO < b.TITULO_ESTADO_TRASLADO)
+													return -1;
+
+												return 0;
+											});
+
+											this.bindItemsList(respuestaBusqueda);
+										}
+									}.bind(this));
+
+								} else {
+									this.bindItemsList(respuestaBusqueda);
+									if (respuestaBusqueda.length === 0) {
+										MessageToast.show("No encontramos resultados para el tipo de búsqueda seleccionado.", {
+											duration: 5000
+										});
+									}
+								}
+
+							}.bind(this));
+						} else {
+							if (respuestaB.datos.length === 0 && !respuestaB.resolve) {
+								MessageToast.show("Encontramos algunos problemas al consultar la información, intente nuevamente.", {
+									duration: 6000
+								});
+							} else if (respuestaB.datos.length === 0) {
+								MessageToast.show("No encontramos resultados para el tipo de búsqueda seleccionado.", {
+									duration: 5000
+								});
+							}
+							this.BusyDialog.close();
+						}
+
 					}
 
 				}.bind(this));
@@ -333,6 +461,71 @@ sap.ui.define([
 					inputBusqueda.setValueState("None");
 				}.bind(this));
 			}
+
+		},
+
+		busquedaNroPedidoHana: function (oFilters, centro) {
+			return new Promise(
+				function resolver(resolve) {
+
+					var filterEstado = new Filter({
+						path: "ID_ESTADO_TRASLADO",
+						operator: sap.ui.model.FilterOperator.NE,
+						value1: 2
+					});
+
+					var filterCentro = new Filter({
+						path: "CENTRO",
+						operator: sap.ui.model.FilterOperator.EQ,
+						value1: centro
+					});
+
+					var finalFilter = new sap.ui.model.Filter({
+						filters: oFilters,
+						and: true
+					});
+
+					var finalFinalFilter = new sap.ui.model.Filter({
+						filters: [finalFilter, filterEstado, filterCentro],
+						and: true
+					});
+
+					this.getView().getModel("oModeloHanaSalida").read('/Traslado', {
+						filters: [finalFinalFilter],
+						success: function (oResult) {
+							var datos = oResult.results;
+
+							if (datos.length > 0) {
+								datos.forEach(function (element) {
+
+									var textEstadoIngreso = "Pendiente";
+									var stateEstadoIngreso = "Warning";
+
+									if (element.ID_ESTADO_TRASLADO === 4) {
+										textEstadoIngreso = "Reprocesar ⚠";
+										stateEstadoIngreso = "None";
+									} else if (element.ID_ESTADO_TRASLADO === 5) {
+										textEstadoIngreso = "En Proceso ↻";
+										stateEstadoIngreso = "Information";
+									}
+
+									element.TITULO_ESTADO_TRASLADO = textEstadoIngreso;
+									element.STATE_ESTADO_TRASLADO = stateEstadoIngreso;
+									element.Ebeln = element.NRO_PEDIDO_TRASLADO;
+									element.Werks = element.CENTRO;
+									element.Lgort = element.ALMACEN;
+
+								}.bind(this));
+							}
+
+							resolve(datos);
+						}.bind(this),
+						error: function (oError) {
+							resolve([]);
+						}.bind(this)
+					});
+
+				}.bind(this));
 
 		},
 
@@ -418,7 +611,9 @@ sap.ui.define([
 			var base = eventoTraslado;
 			var paths = base.getBindingContext("oModeloTraslados").getPath();
 			var pedidoTraslado = base.getBindingContext("oModeloTraslados").getProperty(paths).Ebeln;
-
+			
+			this.getView().byId("idPageMaster").setShowFooter(true);
+			
 			this._oStorage.put("navegacion_IngresoMercaderia", "si");
 			this.getOwnerComponent().getRouter().navTo("Traslados_Detail", {
 				pedidoTraslado: pedidoTraslado

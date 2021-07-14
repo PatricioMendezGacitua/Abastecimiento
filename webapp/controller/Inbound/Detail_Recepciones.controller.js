@@ -628,9 +628,9 @@ sap.ui.define([
 					styleClass: "sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer",
 					actions: ["OK"],
 					onClose: function (oAction) {
-						this.registrarUsoIngreso().then(function () {
+					//	this.registrarUsoIngreso().then(function () {
 							this.resetMasterDetail();
-						}.bind(this));
+					//	}.bind(this));
 					}.bind(this)
 				});
 

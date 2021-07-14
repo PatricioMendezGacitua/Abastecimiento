@@ -17,6 +17,12 @@ sap.ui.define([
 			var buttonMenu = this.getView().byId("buttonMenuId");
 			var buttonMenu2 = this.getView().byId("buttonMenu2Id");
 
+			var numeroDocumentoVBOX = this.getView().byId("idNumeroDocumentoVBOXT");
+			numeroDocumentoVBOX.setVisible(false);
+
+			var textoErrorVBOX = this.getView().byId("idTextoErrorVBOXT");
+			textoErrorVBOX.setVisible(false);
+
 			buttonMenu.setVisible(false);
 			buttonMenu2.setVisible(false);
 
@@ -26,116 +32,154 @@ sap.ui.define([
 			var oArgs = oEvent.getParameter("arguments");
 
 			this._oStorage = jQuery.sap.storage(jQuery.sap.storage.Type.local);
-			//if (this._oStorage.get("navegacion_IngresoMercaderia") !== null) {
-			this._oStorage.put("navegacion_IngresoMercaderia", null);
-			this.userSCPCod = this._oStorage.get("user_code_IngresoMercaderia");
-			this.userSCPName = this._oStorage.get("user_name_IngresoMercaderia");
 
-			this.InputsViewTrasladar = [{
-				"id": "oInputNroPedidoTraslado",
-				"required": true,
-				"type": "ip"
-			}, {
-				"id": "oInputCentroTraslado",
-				"required": true,
-				"type": "ip"
-			}, {
-				"id": "oInputAlmacenTraslado",
-				"required": true,
-				"type": "ip"
-			}];
+			if (this._oStorage.get("navegacion_IngresoMercaderia") !== null) {
 
-			this.pedidoTraslado = oArgs.pedidoTraslado;
-			//this.getView().byId("tituloDetalleSolicitudView").setText("Detalle Pedido Traslado");
+				this._oStorage.put("navegacion_IngresoMercaderia", null);
+				this.userSCPCod = this._oStorage.get("user_code_IngresoMercaderia");
+				this.userSCPName = this._oStorage.get("user_name_IngresoMercaderia");
 
-			if (!sap.ui.Device.system.desktop) {
-				buttonMenu.setVisible(true);
-				buttonMenu2.setVisible(true);
+				this.InputsViewTrasladar = [{
+					"id": "oInputNroPedidoTraslado",
+					"required": true,
+					"type": "ip"
+				}, {
+					"id": "oInputCentroTraslado",
+					"required": true,
+					"type": "ip"
+				}, {
+					"id": "oInputAlmacenTraslado",
+					"required": true,
+					"type": "ip"
+				}];
+
+				this.pedidoTraslado = oArgs.pedidoTraslado;
+
+				this.getView().byId("tituloDetalleSolicitudView").setText("Detalle Pedido Traslado");
+
+				if (!sap.ui.Device.system.desktop) {
+					buttonMenu.setVisible(true);
+					buttonMenu2.setVisible(true);
+				}
+
+				var oButtonRecepcionar = this.getView().byId("oButtonTrasladarId");
+				oButtonRecepcionar.setVisible(true);
+
+				this.iniciarView();
+
+			} else {
+				this.onBackMenu();
 			}
-
-			var oButtonRecepcionar = this.getView().byId("oButtonTrasladarId");
-			oButtonRecepcionar.setVisible(true);
-
-			this.iniciarView();
-
-			//	} else {
-			//		this.onBackMenu();
-			//	}
 
 		},
 
 		iniciarView: function (idEstadoIngreso) {
+
 			this.openBusyDialog();
+			this.trasladoTemporalHana = false;
+			this.idTraslado = 0;
+			this.idEstadoTraslado = 5;
+			this.busquedaPedidoTrasladoHana(this.pedidoTraslado, true).then(function (
+				respuestaHana) {
 
-			this.busquedaPedidoTraslado("IEbeln", this.pedidoTraslado).then(function (
-				respuestaB) {
-				var respuestaBusqueda = respuestaB.datos;
-				if (respuestaBusqueda.length > 0) {
-
-					var data = respuestaBusqueda[0];
-					this.pedidoTraslado = data.Ebeln;
-					this.codCetnro = data.Werks;
-					this.codAlmacen = data.Lgort;
-
-					var oInputNroPedidoTraslado = this.getView().byId("oInputNroPedidoTraslado");
-					var oInputCentroTraslado = this.getView().byId("oInputCentroTraslado");
-					var oInputAlmacenTraslado = this.getView().byId("oInputAlmacenTraslado");
-					var oButtonRecepcionar = this.getView().byId("oButtonTrasladarId");
-					oButtonRecepcionar.setEnabled(false);
-
-					oInputNroPedidoTraslado.setValue(data.Ebeln);
-					oInputCentroTraslado.setValue(data.Werks);
-					oInputAlmacenTraslado.setValue(data.Lgort);
-					oInputAlmacenTraslado.setEditable(false);
-
-					if (data.Lgort !== null) {
-						if (data.Lgort.trim().length === 0) {
-							oInputAlmacenTraslado.setEditable(true);
-						}
-					}
-
-					var countSeriado = 0,
-						countLoteado = 0;
-
-					respuestaBusqueda.forEach(function (element, index) {
-
-						if (element.Sernp !== "") {
-							countSeriado++;
-							element.seriado = "si";
-						}
-
-						if (element.Charg !== "") {
-							countLoteado++;
-							element.loteado = "si";
-						}
-
-						if (respuestaBusqueda.length === (index + 1)) {
-							if (countSeriado === 0) {
-								oButtonRecepcionar.setEnabled(true);
-							} else {
-								MessageBox.information('El pedido de traslado N°' + this.pedidoTraslado +
-									' cuenta con una o más posiciones de tipo "Seriado". \n Para recepcionar esté ingreso debe acceder desde el Portal Web.', {
-										title: "Aviso",
-										onClose: function (sAction) {}.bind(this)
-									});
-							}
-						}
-					}.bind(this));
-					this.bindView(respuestaBusqueda);
-
-					if (respuestaBusqueda.length === 0 && !respuestaB.resolve) {
-						MessageToast.show("Encontramos algunos problemas al consultar la información, intente nuevamente.", {
-							duration: 6000
-						});
-					}
-
-				} else {
-					this.BusyDialog.close();
-					MessageToast.show("No se encontró información para el detalle del pedido.");
+				if (respuestaHana.length > 0) {
+					this.idEstadoTraslado = respuestaHana[0].ID_ESTADO_TRASLADO;
+					this.idTraslado = respuestaHana[0].ID_TRASLADO;
+					this.trasladoTemporalHana = true;
 				}
 
-			}.bind(this));
+				this.busquedaPedidoTrasladoDetalle("IEbeln", this.pedidoTraslado, respuestaHana).then(function (
+					respuestaB) {
+					var respuestaBusqueda = respuestaB.datos;
+					if (respuestaBusqueda.length > 0) {
 
+						var data = respuestaBusqueda[0];
+						this.pedidoTraslado = data.Ebeln;
+						this.codCetnro = data.Werks;
+						this.codAlmacen = data.Lgort;
+
+						var oInputNroPedidoTraslado = this.getView().byId("oInputNroPedidoTraslado");
+						var oInputCentroTraslado = this.getView().byId("oInputCentroTraslado");
+						var oInputAlmacenTraslado = this.getView().byId("oInputAlmacenTraslado");
+						var oButtonRecepcionar = this.getView().byId("oButtonTrasladarId");
+						oButtonRecepcionar.setEnabled(false);
+
+						oInputNroPedidoTraslado.setValue(data.Ebeln);
+						oInputCentroTraslado.setValue(data.Werks);
+						oInputAlmacenTraslado.setValue(data.Lgort);
+						oInputAlmacenTraslado.setEditable(false);
+
+						if (data.Lgort !== null) {
+							if (data.Lgort.trim().length === 0) {
+								oInputAlmacenTraslado.setEditable(true);
+							}
+						}
+
+						var oObjectStatus = this.getView().byId("oObjectStatusIdT");
+						oObjectStatus.setVisible(false);
+
+						if (this.trasladoTemporalHana) {
+
+							oObjectStatus.setState(data.STATE_ESTADO_TRASLADO);
+							oObjectStatus.setText(data.TITULO_ESTADO_TRASLADO);
+							oObjectStatus.setVisible(true);
+
+							var numeroDocumentoVBOX = this.getView().byId("idNumeroDocumentoVBOXT");
+							var oTextNroDocuento = this.getView().byId("oTextNroDocuentoIdT");
+
+							numeroDocumentoVBOX.setVisible(data.VISIBLE_NRO_DOCUMENTO);
+							oTextNroDocuento.setText(data.NUMERO_TRASLADO_ERP);
+
+							var textoErrorVBOX = this.getView().byId("idTextoErrorVBOXT");
+							var oTextMotivoFalla = this.getView().byId("oTextMotivoFallaIdT");
+
+							textoErrorVBOX.setVisible(data.VISIBLE_TEXTO_ERROR);
+							oTextMotivoFalla.setText(data.TEXTO_ERROR);
+							oInputAlmacenTraslado.setEditable(true);
+						}
+
+						var countSeriado = 0,
+							countLoteado = 0;
+
+						respuestaBusqueda.forEach(function (element, index) {
+
+							if (element.Sernp !== "") {
+								countSeriado++;
+								element.seriado = "si";
+							}
+
+							if (element.Charg !== "") {
+								countLoteado++;
+								element.loteado = "si";
+							}
+
+							if (respuestaBusqueda.length === (index + 1)) {
+								if (countSeriado === 0) {
+									oButtonRecepcionar.setEnabled(true);
+								} else {
+									MessageBox.information('El pedido de traslado N°' + this.pedidoTraslado +
+										' cuenta con una o más posiciones de tipo "Seriado". \n Para recepcionar esté ingreso debe acceder desde el Portal Web.', {
+											title: "Aviso",
+											onClose: function (sAction) {}.bind(this)
+										});
+								}
+							}
+						}.bind(this));
+						this.bindView(respuestaBusqueda);
+
+						if (respuestaBusqueda.length === 0 && !respuestaB.resolve) {
+							MessageToast.show("Encontramos algunos problemas al consultar la información, intente nuevamente.", {
+								duration: 6000
+							});
+						}
+
+					} else {
+						this.BusyDialog.close();
+						MessageToast.show("No se encontró información para el detalle del pedido.");
+					}
+
+				}.bind(this));
+			}.bind(this));
 		},
 
 		onValueHelpDialogCloseAlmacen: function (oEvent) {
@@ -261,7 +305,7 @@ sap.ui.define([
 			fecha.setSeconds(0);
 
 			var dataTraslado = {
-				ID_TRASLADO: 0,
+				ID_TRASLADO: this.idTraslado,
 				NRO_PEDIDO_TRASLADO: nroPedido,
 				CENTRO: centro,
 				ALMACEN: almacen,
@@ -275,7 +319,7 @@ sap.ui.define([
 
 			var creacionConError = 0;
 
-			this.createTraslado(dataTraslado).then(function (respuestaIngreso) {
+			this.createTraslado(dataTraslado, this.idEstadoTraslado).then(function (respuestaIngreso) {
 				if (respuestaIngreso.resolve) {
 					var idTraslado = respuestaIngreso.idTraslado;
 					var idList = this.getView().byId("idListTraslados");
@@ -352,7 +396,7 @@ sap.ui.define([
 								}
 
 								var dataPosiciones = {
-									ID_DETALLE_TRASLADO: 0,
+									ID_DETALLE_TRASLADO: this.trasladoTemporalHana === true ? posModel.ID_DETALLE_TRASLADO : 0,
 									ID_TRASLADO: idTraslado,
 									NUMERO_POSICION: posModel.Ebelp,
 									CODIGO_MATERIAL: posModel.Matnr,
@@ -392,7 +436,7 @@ sap.ui.define([
 
 								//#endregion	
 
-								this.createPosicionTraslado(dataPosiciones).then(function (respuestaPosicionTraslado) {
+								this.createPosicionTraslado(dataPosiciones, this.idEstadoTraslado).then(function (respuestaPosicionTraslado) {
 									if (respuestaPosicionTraslado) {
 										index++;
 										recorrerPosiciones(element, index);
@@ -484,7 +528,7 @@ sap.ui.define([
 						} else {
 							var StepInput = item[i].getContent()[0].getContent()[1].getContent()[2].getItems()[1];
 							var cantidadPedido = item[i].getContent()[0].getContent()[1].getContent()[0].getItems()[1];
-							
+
 							if (StepInput.getValueState() === "Error") {
 								countError++;
 							}
@@ -493,7 +537,7 @@ sap.ui.define([
 								StepInput.setValueState("Error");
 								countError++;
 							}
-							
+
 							if (StepInput.getValue() > cantidadPedido) {
 								StepInput.setValueState("Error");
 								countError++;
