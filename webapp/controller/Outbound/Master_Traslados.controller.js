@@ -79,7 +79,7 @@ sap.ui.define([
 		},
 
 		_onRouteMatched: function (oEvent) {
-			
+
 			this.getView().byId("idPageMaster").setShowFooter(false);
 			var oComponent = this.getOwnerComponent();
 			this._route = oComponent.getRouter();
@@ -336,7 +336,7 @@ sap.ui.define([
 							if (item.length === i) {
 
 								if (oSelectTipoBusqueda.getSelectedKey() === "centro") {
-									this.busquedaNroPedidoHana(nroPedidoERPPendientes, inputBusqueda.getValue().trim()).then(function (
+									this.busquedaNroPedidoHana(nroPedidoERPPendientes, inputBusqueda.getValue().trim(), oSelectTipoBusqueda).then(function (
 										respuestaBusquedaNroPedidoHana) {
 
 										if (respuestaBusquedaNroPedidoHana.length > 0) {
@@ -402,9 +402,8 @@ sap.ui.define([
 						functionRecorrer(respuestaBusqueda, 0);
 
 					} else {
-
 						if (oSelectTipoBusqueda.getSelectedKey() === "centro") {
-							this.busquedaNroPedidoHana(nroPedidoERPPendientes, inputBusqueda.getValue().trim()).then(function (
+							this.busquedaNroPedidoHana(nroPedidoERPPendientes, inputBusqueda.getValue().trim(), oSelectTipoBusqueda).then(function (
 								respuestaBusquedaNroPedidoHana) {
 
 								if (respuestaBusquedaNroPedidoHana.length > 0) {
@@ -438,16 +437,7 @@ sap.ui.define([
 
 							}.bind(this));
 						} else {
-							if (respuestaB.datos.length === 0 && !respuestaB.resolve) {
-								MessageToast.show("Encontramos algunos problemas al consultar la información, intente nuevamente.", {
-									duration: 6000
-								});
-							} else if (respuestaB.datos.length === 0) {
-								MessageToast.show("No encontramos resultados para el tipo de búsqueda seleccionado.", {
-									duration: 5000
-								});
-							}
-							this.BusyDialog.close();
+							this.bindItemsList(respuestaBusqueda);
 						}
 
 					}
@@ -464,9 +454,10 @@ sap.ui.define([
 
 		},
 
-		busquedaNroPedidoHana: function (oFilters, centro) {
+		busquedaNroPedidoHana: function (oFilters, centro, oSelectTipoBusqueda) {
 			return new Promise(
 				function resolver(resolve) {
+					var oFilters2 = [];
 
 					var filterEstado = new Filter({
 						path: "ID_ESTADO_TRASLADO",
@@ -474,19 +465,25 @@ sap.ui.define([
 						value1: 2
 					});
 
-					var filterCentro = new Filter({
-						path: "CENTRO",
-						operator: sap.ui.model.FilterOperator.EQ,
-						value1: centro
-					});
+					if (oSelectTipoBusqueda.getSelectedKey() === "centro") {
+						var filterCentro = new Filter({
+							path: "CENTRO",
+							operator: sap.ui.model.FilterOperator.EQ,
+							value1: centro
+						});
+						oFilters2.push(filterCentro);
+					}
 
 					var finalFilter = new sap.ui.model.Filter({
 						filters: oFilters,
 						and: true
 					});
 
+					oFilters2.push(finalFilter);
+					oFilters2.push(filterEstado);
+
 					var finalFinalFilter = new sap.ui.model.Filter({
-						filters: [finalFilter, filterEstado, filterCentro],
+						filters: oFilters2,
 						and: true
 					});
 
@@ -611,9 +608,9 @@ sap.ui.define([
 			var base = eventoTraslado;
 			var paths = base.getBindingContext("oModeloTraslados").getPath();
 			var pedidoTraslado = base.getBindingContext("oModeloTraslados").getProperty(paths).Ebeln;
-			
+
 			this.getView().byId("idPageMaster").setShowFooter(true);
-			
+
 			this._oStorage.put("navegacion_IngresoMercaderia", "si");
 			this.getOwnerComponent().getRouter().navTo("Traslados_Detail", {
 				pedidoTraslado: pedidoTraslado

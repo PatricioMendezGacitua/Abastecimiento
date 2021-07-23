@@ -37,6 +37,15 @@ sap.ui.define([
 						var ultimoNumero = arrayUbicacionesHana[arrayUbicacionesHana.length - 1].ORDEN;
 						if (item.length === i) {
 
+							oModel.POSICIONES.sort(function (a, b) {
+								if (a.UBICACION < b.UBICACION) {
+									return 1;
+								} else if (a.UBICACION > b.UBICACION) {
+									return -1;
+								}
+								return 0;
+							});
+							
 							oModel.POSICIONES.forEach(function (element2, index2) {
 
 								if (element2.flagOrden !== "X") {

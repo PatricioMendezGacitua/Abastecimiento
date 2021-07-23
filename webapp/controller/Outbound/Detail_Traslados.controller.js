@@ -74,7 +74,7 @@ sap.ui.define([
 		},
 
 		iniciarView: function (idEstadoIngreso) {
-
+			this.lotesSeleccionados = [];
 			this.openBusyDialog();
 			this.trasladoTemporalHana = false;
 			this.idTraslado = 0;
@@ -155,8 +155,22 @@ sap.ui.define([
 
 							if (respuestaBusqueda.length === (index + 1)) {
 								if (countSeriado === 0) {
-									oButtonRecepcionar.setEnabled(true);
+									this.buscarLotesPorPosicion(respuestaBusqueda).then(function () {
+										oButtonRecepcionar.setEnabled(true);
+										var arrayUbicaciones = [];
+										respuestaBusqueda.forEach(function (element3) {
+											arrayUbicaciones.push(element3.Lgpbe);
+										}.bind(this));
+
+										this.consultaConOrden(arrayUbicaciones, respuestaBusqueda).then(function (respuestaconsultaConOrden) {
+											this.ordenarUbicacionesDT(respuestaconsultaConOrden, respuestaBusqueda).then(function (
+												respuestaOrdenarUbicaciones) {
+												this.bindView(respuestaOrdenarUbicaciones);
+											}.bind(this));
+										}.bind(this));
+									}.bind(this));
 								} else {
+									this.bindView(respuestaBusqueda);
 									MessageBox.information('El pedido de traslado N°' + this.pedidoTraslado +
 										' cuenta con una o más posiciones de tipo "Seriado". \n Para recepcionar esté ingreso debe acceder desde el Portal Web.', {
 											title: "Aviso",
@@ -165,9 +179,9 @@ sap.ui.define([
 								}
 							}
 						}.bind(this));
-						this.bindView(respuestaBusqueda);
 
 						if (respuestaBusqueda.length === 0 && !respuestaB.resolve) {
+							this.bindView(respuestaBusqueda);
 							MessageToast.show("Encontramos algunos problemas al consultar la información, intente nuevamente.", {
 								duration: 6000
 							});
@@ -180,6 +194,69 @@ sap.ui.define([
 
 				}.bind(this));
 			}.bind(this));
+		},
+
+		ordenarUbicacionesDT: function (arrayUbicacionesHana, oModel) {
+			return new Promise(
+				function resolver(resolve) {
+					var arrayNuevo = [];
+					var functionRecorrer = function (item, i) {
+						var ultimoNumero = arrayUbicacionesHana[arrayUbicacionesHana.length - 1].ORDEN;
+						if (item.length === i) {
+
+							oModel.sort(function (a, b) {
+								if (a.Lgpbe < b.Lgpbe) {
+									return 1;
+								} else if (a.Lgpbe > b.Lgpbe) {
+									return -1;
+								}
+								return 0;
+							});
+
+							oModel.forEach(function (element2, index2) {
+
+								if (element2.flagOrden !== "X") {
+									ultimoNumero++;
+									element2.order = ultimoNumero;
+									arrayNuevo.push(element2);
+								}
+
+								if (oModel.length === (index2 + 1)) {
+									resolve(arrayNuevo);
+								}
+
+							}.bind(this));
+
+						} else {
+
+							var pos = item[i];
+
+							oModel.forEach(function (element, index) {
+
+								if (pos.CODIGO === element.Lgpbe) {
+									var record = element;
+									record.order = pos.ORDEN;
+									arrayNuevo.push(record);
+									element.flagOrden = "X";
+
+								}
+
+								if (oModel.length === (index + 1)) {
+									i++;
+									functionRecorrer(item, i);
+								}
+
+							}.bind(this));
+
+						}
+					}.bind(this);
+					if (arrayUbicacionesHana.length > 0) {
+						functionRecorrer(arrayUbicacionesHana, 0);
+					} else {
+						resolve(oModel);
+					}
+
+				}.bind(this));
 		},
 
 		onValueHelpDialogCloseAlmacen: function (oEvent) {
@@ -227,6 +304,30 @@ sap.ui.define([
 				retorno = false;
 			}
 			return retorno;
+		},
+
+		formatterForceSelection: function (sValue) {
+			var retorno = false;
+			if (sValue !== undefined) {
+				if (sValue !== null) {
+					if (sValue !== "") {
+						if (this.trasladoTemporalHana) {
+							retorno = true;
+						}
+					}
+				}
+			} else {
+				retorno = false;
+			}
+			return retorno;
+		},
+
+		selectedKeySelectedERP: function (sValue) {
+			var selected = null;
+			if (this.trasladoTemporalHana) {
+				selected = sValue;
+			}
+			return selected;
 		},
 
 		fechaRevert: function (fecha) {
@@ -334,8 +435,8 @@ sap.ui.define([
 								this.createTrasladoERP(recordDataTrasladoERP).then(function (respuestaCreateTrasladoERP) {
 									if (respuestaCreateTrasladoERP.resolve) {
 										this.datosCreacion = {
-											ID_AVISO: idTraslado,
-											NUMERO_MATERIAL: ""
+											NRO_PEDIDO_TRASLADO: nroPedido,
+											NUMERO_DOCUMENTO: respuestaCreateTrasladoERP.nroDocumento
 										};
 
 										this.cambioEstadoMasivoTraslado(respuestaCreateTrasladoERP.nroDocumento, "2", idTraslado, "").then(function () {
@@ -351,31 +452,18 @@ sap.ui.define([
 											detail = respuestaCreateTrasladoERP.errorHtml;
 											error = respuestaCreateTrasladoERP.error;
 										}
-										this.datosCreacion = {
-											ID_AVISO: idTraslado,
-											NUMERO_MATERIAL: ""
-										};
-
+									
 										this.cambioEstadoMasivoTraslado("", "4", idTraslado, error).then(function () {
-											this.registrarLog("Reprocesar_Traslado", this.datosCreacion).then(function (respuestaRegistrarLog) {
 												this.BusyDialog.close();
 												this.errorAlRecepcionarOC(detail);
-											}.bind(this));
 										}.bind(this));
 
 									}
 								}.bind(this));
 							} else {
-
-								this.datosCreacion = {
-									ID_AVISO: idTraslado,
-									NUMERO_MATERIAL: ""
-								};
 								this.cambioEstadoMasivoTraslado("", "4", idTraslado, "").then(function () {
-									this.registrarLog("Reprocesar_Traslado", this.datosCreacion).then(function (respuestaRegistrarLog) {
 										this.BusyDialog.close();
 										this.errorAlRecepcionarOC(null);
-									}.bind(this));
 								}.bind(this));
 							}
 						} else {
@@ -391,7 +479,7 @@ sap.ui.define([
 								var idTipoPosicion = 1;
 
 								if (vBoxLote.getVisible()) {
-									loteo = vBoxLote.getItems()[1].getValue();
+									loteo = vBoxLote.getItems()[1].getSelectedKey();
 									idTipoPosicion = 2;
 								}
 
@@ -479,9 +567,7 @@ sap.ui.define([
 					styleClass: "sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer",
 					actions: ["OK"],
 					onClose: function (oAction) {
-						this.registrarUsoIngreso().then(function () {
-							this.resetMasterDetail();
-						}.bind(this));
+						this.resetMasterDetail();
 					}.bind(this)
 				});
 
@@ -527,6 +613,8 @@ sap.ui.define([
 							}
 						} else {
 							var StepInput = item[i].getContent()[0].getContent()[1].getContent()[2].getItems()[1];
+							var vBoxLote = item[i].getContent()[0].getContent()[1].getContent()[3];
+							var SelectLote = vBoxLote.getItems()[1];
 							var cantidadPedido = item[i].getContent()[0].getContent()[1].getContent()[0].getItems()[1];
 
 							if (StepInput.getValueState() === "Error") {
@@ -543,6 +631,18 @@ sap.ui.define([
 								countError++;
 							}
 
+							if (vBoxLote.getVisible()) {
+								if (SelectLote.getSelectedKey() === null) {
+									SelectLote.setValueState("Error");
+									countError++;
+								} else {
+									if (SelectLote.getSelectedKey() === "") {
+										SelectLote.setValueState("Error");
+										countError++;
+									}
+								}
+							}
+
 							i++;
 							functionRecorrer(idList, i);
 						}
@@ -552,6 +652,79 @@ sap.ui.define([
 						functionRecorrer(idList, 0);
 					} else {
 						resolve(false);
+					}
+
+				}.bind(this));
+
+		},
+
+		alSeleccioarUnLote: function (oEvent) {
+			var seleccion = oEvent.getSource();
+			var selectedItem = oEvent.getParameters().selectedItem;
+			if (selectedItem !== null) {
+				var binding = selectedItem.getBindingContext("oModeloDataTraslados");
+				var path = binding.getPath().slice(0, 3);
+				var object = this.getView().getModel("oModeloDataTraslados").getProperty(path);
+				var pos = object.Ebelp;
+
+				this.lotesSeleccionados.forEach(function (elementt, ii) {
+					if (elementt.pos === pos) {
+						this.lotesSeleccionados.splice(ii, 1);
+					}
+				}.bind(this));
+
+				var countErrorLote = 0;
+				if (this.lotesSeleccionados.length > 0) {
+					this.lotesSeleccionados.forEach(function (element, index) {
+						if (seleccion.getSelectedKey() === element.Charg) {
+							countErrorLote++;
+						}
+
+						if (this.lotesSeleccionados.length === index + 1) {
+							if (countErrorLote > 0) {
+								MessageToast.show("Número de lote ya fue seleccionado en otra posición");
+								oEvent.getSource().setSelectedKey();
+							} else {
+								seleccion.setValueState("None");
+								this.lotesSeleccionados.push({
+									Charg: seleccion.getSelectedKey(),
+									pos: pos
+								});
+							}
+						}
+					}.bind(this));
+				} else {
+					this.lotesSeleccionados.push({
+						Charg: seleccion.getSelectedKey(),
+						pos: pos
+					});
+				}
+			}
+
+		},
+
+		buscarLotesPorPosicion: function (datos) {
+			return new Promise(
+				function resolver(resolve) {
+
+					var functionRecorrer = function (item, i) {
+						if (item.length === i) {
+							resolve(datos);
+						} else {
+							var pos = item[i];
+
+							this.getLoteMaterialesERP(pos.Matnr, pos.Werks).then(function (respuesta) {
+								pos.lotes = respuesta;
+								i++;
+								functionRecorrer(datos, i);
+							}.bind(this));
+						}
+					}.bind(this);
+
+					if (datos.length > 0) {
+						functionRecorrer(datos, 0);
+					} else {
+						resolve(datos);
 					}
 
 				}.bind(this));

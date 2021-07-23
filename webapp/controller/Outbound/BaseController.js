@@ -1969,6 +1969,8 @@ sap.ui.define([
 							"  cambiada de estado a En preparación, acción realizada por el usuario " + this.userSCPCod;
 					} else if (actividad === "Entrega_realizada") {
 						this.contenido = "Reserva N° " + datos.reserva + " fue entregada con exito, acción realizada por el usuario " + this.userSCPCod;
+					} else if (actividad === "Traslado_Realizado") {
+						this.contenido = "La actividad que se acaba de realizar corresponde a la realización del traslado del pedido N° " + datos.NRO_PEDIDO_TRASLADO + " con el número de documento sap  " + datos.NUMERO_DOCUMENTO + ", acción realizada por el usuario " + this.userSCPCod;
 					}
 
 					this.contenidoLog = {

@@ -128,8 +128,9 @@
 											</VBox>
 											<VBox visible="{path:'oModeloDataTraslados>loteado', formatter: '.visibleLoteoTraslados'}">
 												<Label class="fontSizeSmall" text="Lote:" textAlign="Left" width="100%"></Label>
-												<Select items="{oModeloDataTraslados>lotes}" width="100%">
-													<core:Item text="" key=""></core:Item>
+												<Select items="{oModeloDataTraslados>lotes/}" width="100%" change="alSeleccioarUnLote" forceSelection="{path:'oModeloDataTraslados>Charg', formatter: '.formatterForceSelection'}"
+													selectedKey="{path:'oModeloDataTraslados>Charg', formatter: '.selectedKeySelectedERP'}">
+													<core:Item text="{oModeloDataTraslados>Charg}" key="{oModeloDataTraslados>Charg}"></core:Item>
 												</Select>
 												<layoutData>
 													<l:GridData span="XL12 L12 M12 S12"/>
